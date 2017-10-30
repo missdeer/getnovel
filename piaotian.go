@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"github.com/dfordsoft/golib/ic"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -81,7 +82,7 @@ doRequest:
 		}
 		return
 	}
-	c = Convert("gbk", "utf-8", c)
+	c = ic.Convert("gbk", "utf-8", c)
 	c = bytes.Replace(c, []byte("\r\n"), []byte(""), -1)
 	c = bytes.Replace(c, []byte("\r"), []byte(""), -1)
 	c = bytes.Replace(c, []byte("\n"), []byte(""), -1)
@@ -237,7 +238,7 @@ doRequest:
 	for scanner.Scan() {
 		line := scanner.Text()
 		// convert from gbk to UTF-8
-		l := ConvertString("gbk", "utf-8", line)
+		l := ic.ConvertString("gbk", "utf-8", line)
 		if r.MatchString(l) {
 			ss := r.FindAllStringSubmatch(l, -1)
 			s := ss[0]
