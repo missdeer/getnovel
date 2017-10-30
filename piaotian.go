@@ -163,17 +163,24 @@ doRequest:
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
 		<title>Get Novel</title>
 		<style type="text/css">
+		@font-face{
+			font-family: "CustomFont";
+			src: url(fonts/CustomFont.ttf);
+		}
 		body{
+			font-family: "CustomFont";
 			font-size: 1.1em;
 			margin:0 5px;
 		}
 	
 		h1{
+			font-family: "CustomFont";
 			font-size:4em;
 			font-weight:bold;
 		}
 	
 		h2 {
+			font-family: "CustomFont";
 			font-size: 1.2em;
 			font-weight: bold;
 			margin:0;
@@ -189,6 +196,7 @@ doRequest:
 			cursor: pointer
 		}
 		p{
+			font-family: "CustomFont";
 			text-indent:1.5em;
 			line-height:1.3em;
 			margin-top:0;
