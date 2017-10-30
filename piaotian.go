@@ -147,8 +147,16 @@ doRequest:
 		return
 	}
 
-	scanner := bufio.NewScanner(resp.Body)
-	scanner.Split(bufio.ScanLines)
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("piaotian - Reading response body failed", err)
+		retry++
+		if retry < 3 {
+			time.Sleep(3 * time.Second)
+			goto doRequest
+		}
+		return
+	}
 
 	contentHTML, err := os.OpenFile(`content.html`, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
@@ -240,10 +248,27 @@ doRequest:
 	</body>
 	</html>`
 
+	tocTmp, err := os.OpenFile(`toc.tmp`, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		log.Println("opening file toc.tmp for writing failed ", err)
+		return
+	}
+	contentTmp, err := os.OpenFile(`content.tmp`, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		log.Println("opening file content.tmp for writing failed ", err)
+		return
+	}
+	navTmp, err := os.OpenFile(`nav.tmp`, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		log.Println("opening file nav.tmp for writing failed ", err)
+		return
+	}
+
 	var title string
-	var toc, content []string
-	var navPoint []string
+	count := 0
 	r, _ = regexp.Compile(`^<li><a\shref="([0-9]+\.html)">([^<]+)</a></li>$`)
+	scanner := bufio.NewScanner(bytes.NewReader(b))
+	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
 		line := scanner.Text()
 		// convert from gbk to UTF-8
@@ -265,30 +290,57 @@ doRequest:
 			ss := r.FindAllStringSubmatch(l, -1)
 			s := ss[0]
 			finalURL := fmt.Sprintf("%s%s", tocURL, s[1])
-			idx := len(toc)
-			toc = append(toc, fmt.Sprintf(`<li><a href="#article_%d">%s</a></li>`, idx, s[2]))
+			tocTmp.WriteString(fmt.Sprintf(`<li><a href="#article_%d">%s</a></li>`, count, s[2]))
+			count++
 			c := dlPiaotianPage(finalURL)
-			content = append(content, fmt.Sprintf(`<div id="article_%d" class="article">
+			contentTmp.WriteString(fmt.Sprintf(`<div id="article_%d" class="article">
 				<h2 class="do_article_title">				  
 				  <a href="%s">%s</a>				  
 				</h2>				
 				<div>
 				<p>%s</p>
 				</div>
-				</div>`, idx, finalURL, s[2], string(c)))
-			navPoint = append(navPoint, fmt.Sprintf(`
+				</div>`, count, finalURL, s[2], string(c)))
+			navTmp.WriteString(fmt.Sprintf(`
 				<navPoint class="chapter" id="%d" playOrder="1">
 					<navLabel><text>%s</text></navLabel>
 					<content src="content.html#article_%d" />
 				</navPoint>
-				`, idx, s[2], idx))
+				`, count, s[2], count))
 
 			fmt.Println(s[2], finalURL, len(c), "bytes")
 		}
 	}
+	tocTmp.Close()
+	contentTmp.Close()
+	navTmp.Close()
+
+	tocTmp, err = os.OpenFile(`toc.tmp`, os.O_RDONLY, 0644)
+	if err != nil {
+		log.Println("opening file toc.tmp for reading failed ", err)
+		return
+	}
+	tocC, err := ioutil.ReadAll(tocTmp)
+	if err != nil {
+		log.Println("reading file toc.tmp failed ", err)
+		return
+	}
+	contentTmp, err = os.OpenFile(`content.tmp`, os.O_RDONLY, 0644)
+	if err != nil {
+		log.Println("opening file content.tmp for reading failed ", err)
+		return
+	}
+	contentC, err := ioutil.ReadAll(contentTmp)
+	if err != nil {
+		log.Println("reading file content.tmp failed ", err)
+		return
+	}
+
 	contentHTML.WriteString(fmt.Sprintf(contentHTMLTemplate, title, title, time.Now().String(),
-		strings.Join(toc, "\n"), strings.Join(content, "\n")))
+		string(tocC), string(contentC)))
 	contentHTML.Close()
+	tocTmp.Close()
+	contentTmp.Close()
 
 	tocNCX, err := os.OpenFile("toc.ncx", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
@@ -296,7 +348,7 @@ doRequest:
 		return
 	}
 
-	uid := time.Now().Nanosecond()
+	uid := time.Now().UnixNano()
 	tocNCXTemplate := `<?xml version="1.0" encoding="UTF-8"?>
 	<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="zh-CN">
 	<head>
@@ -316,8 +368,19 @@ doRequest:
 	</navMap>
 	</ncx>`
 
-	tocNCX.WriteString(fmt.Sprintf(tocNCXTemplate, uid, title, title, strings.Join(navPoint, "\n")))
+	navTmp, err = os.OpenFile(`nav.tmp`, os.O_RDONLY, 0644)
+	if err != nil {
+		log.Println("opening file nav.tmp for reading failed ", err)
+		return
+	}
+	navC, err := ioutil.ReadAll(navTmp)
+	if err != nil {
+		log.Println("reading file nav.tmp failed ", err)
+		return
+	}
+	tocNCX.WriteString(fmt.Sprintf(tocNCXTemplate, uid, title, title, string(navC)))
 	tocNCX.Close()
+	navTmp.Close()
 
 	contentOPF, err := os.OpenFile("content.opf", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
@@ -355,6 +418,7 @@ doRequest:
 	</guide>
 	</package>
 	`
-	contentOPF.WriteString(fmt.Sprintf(contentOPFTemplate, title, uid, time.Now().String(), title, time.Now().String()))
+	contentOPF.WriteString(fmt.Sprintf(contentOPFTemplate,
+		title, uid, time.Now().String(), title, time.Now().String()))
 	contentOPF.Close()
 }
