@@ -147,7 +147,6 @@ doRequest:
 		return
 	}
 
-	r, _ = regexp.Compile(`^<li><a\shref="([0-9]+\.html)">([^<]+)</a></li>$`)
 	scanner := bufio.NewScanner(resp.Body)
 	scanner.Split(bufio.ScanLines)
 
@@ -161,7 +160,7 @@ doRequest:
 	<html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
-		<title>Get Novel</title>
+		<title>%s</title>
 		<style type="text/css">
 		@font-face{
 			font-family: "CustomFont";
@@ -169,7 +168,7 @@ doRequest:
 		}
 		body{
 			font-family: "CustomFont";
-			font-size: 1.1em;
+			font-size: 1.2em;
 			margin:0 5px;
 		}
 	
@@ -223,8 +222,8 @@ doRequest:
 	</head>
 	<body>
 	<div id="cover">
-	<h1 id="title">Get Novel</h1>
-	<a href="#content">Go straight to first item</a><br />	06/17 06:31
+	<h1 id="title">%s</h1>
+	<a href="#content">跳到第一篇</a><br />%s
 	</div>
 	<div id="toc">
 	<h2>目录</h2> 
@@ -241,12 +240,27 @@ doRequest:
 	</body>
 	</html>`
 
+	var title string
 	var toc, content []string
 	var navPoint []string
+	r, _ = regexp.Compile(`^<li><a\shref="([0-9]+\.html)">([^<]+)</a></li>$`)
 	for scanner.Scan() {
 		line := scanner.Text()
 		// convert from gbk to UTF-8
 		l := ic.ConvertString("gbk", "utf-8", line)
+		if title == "" {
+			re, _ := regexp.Compile(`^<h1>([^<]+)</h1>$`)
+			ss := re.FindAllStringSubmatch(l, -1)
+			if len(ss) > 0 && len(ss[0]) > 0 {
+				s := ss[0]
+				title = s[1]
+				idx := strings.Index(title, `最新章节`)
+				if idx > 0 {
+					title = title[:idx]
+				}
+				continue
+			}
+		}
 		if r.MatchString(l) {
 			ss := r.FindAllStringSubmatch(l, -1)
 			s := ss[0]
@@ -272,7 +286,8 @@ doRequest:
 			fmt.Println(s[2], finalURL, len(c), "bytes")
 		}
 	}
-	contentHTML.WriteString(fmt.Sprintf(contentHTMLTemplate, strings.Join(toc, "\n"), strings.Join(content, "\n")))
+	contentHTML.WriteString(fmt.Sprintf(contentHTMLTemplate, title, title, time.Now().String(),
+		strings.Join(toc, "\n"), strings.Join(content, "\n")))
 	contentHTML.Close()
 
 	tocNCX, err := os.OpenFile("toc.ncx", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
@@ -281,26 +296,27 @@ doRequest:
 		return
 	}
 
+	uid := time.Now().Nanosecond()
 	tocNCXTemplate := `<?xml version="1.0" encoding="UTF-8"?>
 	<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="zh-CN">
 	<head>
-	<meta name="dtb:uid" content="11562530804848545888" />
+	<meta name="dtb:uid" content="%d" />
 	<meta name="dtb:depth" content="4" />
 	<meta name="dtb:totalPageCount" content="0" />
 	<meta name="dtb:maxPageNumber" content="0" />
 	</head>
-	<docTitle><text>Get Novel</text></docTitle>
-	<docAuthor><text>类库</text></docAuthor>
+	<docTitle><text>%s</text></docTitle>
+	<docAuthor><text>类库大魔王</text></docAuthor>
 	<navMap>		
 		<navPoint class="book">
-			<navLabel><text>Get Novel</text></navLabel>
+			<navLabel><text>%s</text></navLabel>
 			<content src="content.html" />
 			%s        
 		</navPoint>			
 	</navMap>
 	</ncx>`
 
-	tocNCX.WriteString(fmt.Sprintf(tocNCXTemplate, strings.Join(navPoint, "\n")))
+	tocNCX.WriteString(fmt.Sprintf(tocNCXTemplate, uid, title, title, strings.Join(navPoint, "\n")))
 	tocNCX.Close()
 
 	contentOPF, err := os.OpenFile("content.opf", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
@@ -312,13 +328,13 @@ doRequest:
 	<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="uid">
 	<metadata>
 	<dc-metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
-		<dc:title>Get Novel</dc:title>
+		<dc:title>%s</dc:title>
 		<dc:language>zh-CN</dc:language>
-		<dc:identifier id="uid">115625308048485458882013-06-16T22:31:08Z</dc:identifier>
-		<dc:creator>kindlereader</dc:creator>
-		<dc:publisher>kindlereader</dc:publisher>
-		<dc:subject>Get Novel</dc:subject>
-		<dc:date>2013-06-16T22:31:08Z</dc:date>
+		<dc:identifier id="uid">%d%s</dc:identifier>
+		<dc:creator>GetNovel</dc:creator>
+		<dc:publisher>类库大魔王</dc:publisher>
+		<dc:subject>%s</dc:subject>
+		<dc:date>%s</dc:date>
 		<dc:description></dc:description>
 	</dc-metadata>
 	
@@ -339,6 +355,6 @@ doRequest:
 	</guide>
 	</package>
 	`
-	contentOPF.WriteString(contentOPFTemplate)
+	contentOPF.WriteString(fmt.Sprintf(contentOPFTemplate, title, uid, time.Now().String(), title, time.Now().String()))
 	contentOPF.Close()
 }
