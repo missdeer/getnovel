@@ -181,6 +181,10 @@ func (m *Mobi) End() {
 	m.writeContentHTML()
 	m.writeTocNCX()
 	m.writeContentOPF()
+
+	os.Remove(`toc.tmp`)
+	os.Remove(`content.tmp`)
+	os.Remove(`nav.tmp`)
 }
 
 func (m *Mobi) AppendContent(articleTitle, articleURL, articleContent string) {
