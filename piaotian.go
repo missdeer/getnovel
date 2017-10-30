@@ -160,6 +160,7 @@ doRequest:
 	mobi := &Mobi{}
 	mobi.Begin()
 
+	var title string
 	r, _ = regexp.Compile(`^<li><a\shref="([0-9]+\.html)">([^<]+)</a></li>$`)
 	scanner := bufio.NewScanner(bytes.NewReader(b))
 	scanner.Split(bufio.ScanLines)
@@ -167,16 +168,17 @@ doRequest:
 		line := scanner.Text()
 		// convert from gbk to UTF-8
 		l := ic.ConvertString("gbk", "utf-8", line)
-		if mobi.Title == "" {
+		if title == "" {
 			re, _ := regexp.Compile(`^<h1>([^<]+)</h1>$`)
 			ss := re.FindAllStringSubmatch(l, -1)
 			if len(ss) > 0 && len(ss[0]) > 0 {
 				s := ss[0]
-				mobi.Title = s[1]
-				idx := strings.Index(mobi.Title, `最新章节`)
+				title = s[1]
+				idx := strings.Index(title, `最新章节`)
 				if idx > 0 {
-					mobi.Title = mobi.Title[:idx]
+					title = title[:idx]
 				}
+				mobi.SetTitle(title)
 				continue
 			}
 		}

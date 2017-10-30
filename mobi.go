@@ -9,9 +9,9 @@ import (
 )
 
 type Mobi struct {
-	Title      string
-	UID        int64
-	Count      int
+	title      string
+	uid        int64
+	count      int
 	tocTmp     *os.File
 	contentTmp *os.File
 	navTmp     *os.File
@@ -184,7 +184,7 @@ func (m *Mobi) End() {
 }
 
 func (m *Mobi) AppendContent(articleTitle, articleURL, articleContent string) {
-	m.tocTmp.WriteString(fmt.Sprintf(`<li><a href="#article_%d">%s</a></li>`, m.Count, articleTitle))
+	m.tocTmp.WriteString(fmt.Sprintf(`<li><a href="#article_%d">%s</a></li>`, m.count, articleTitle))
 	m.contentTmp.WriteString(fmt.Sprintf(`<div id="article_%d" class="article">
 		<h2 class="do_article_title">				  
 		  <a href="%s">%s</a>				  
@@ -192,15 +192,19 @@ func (m *Mobi) AppendContent(articleTitle, articleURL, articleContent string) {
 		<div>
 		<p>%s</p>
 		</div>
-		</div>`, m.Count, articleURL, articleTitle, articleContent))
+		</div>`, m.count, articleURL, articleTitle, articleContent))
 	m.navTmp.WriteString(fmt.Sprintf(`
 		<navPoint class="chapter" id="%d" playOrder="1">
 			<navLabel><text>%s</text></navLabel>
 			<content src="content.html#article_%d" />
 		</navPoint>
-		`, m.Count, articleTitle, m.Count))
+		`, m.count, articleTitle, m.count))
 
-	m.Count++
+	m.count++
+}
+
+func (m *Mobi) SetTitle(title string) {
+	m.title = title
 }
 
 func (m *Mobi) writeContentHTML() {
@@ -231,7 +235,7 @@ func (m *Mobi) writeContentHTML() {
 		return
 	}
 
-	contentHTML.WriteString(fmt.Sprintf(contentHTMLTemplate, m.Title, m.Title, time.Now().String(),
+	contentHTML.WriteString(fmt.Sprintf(contentHTMLTemplate, m.title, m.title, time.Now().String(),
 		string(tocC), string(contentC)))
 	contentHTML.Close()
 
@@ -246,7 +250,7 @@ func (m *Mobi) writeContentOPF() {
 		return
 	}
 	contentOPF.WriteString(fmt.Sprintf(contentOPFTemplate,
-		m.Title, m.UID, time.Now().String(), m.Title, time.Now().String()))
+		m.title, m.uid, time.Now().String(), m.title, time.Now().String()))
 	contentOPF.Close()
 }
 
@@ -257,7 +261,7 @@ func (m *Mobi) writeTocNCX() {
 		return
 	}
 
-	m.UID = time.Now().UnixNano()
+	m.uid = time.Now().UnixNano()
 
 	navTmp, err := os.OpenFile(`nav.tmp`, os.O_RDONLY, 0644)
 	if err != nil {
@@ -269,7 +273,7 @@ func (m *Mobi) writeTocNCX() {
 		log.Println("reading file nav.tmp failed ", err)
 		return
 	}
-	tocNCX.WriteString(fmt.Sprintf(tocNCXTemplate, m.UID, m.Title, m.Title, string(navC)))
+	tocNCX.WriteString(fmt.Sprintf(tocNCXTemplate, m.uid, m.title, m.title, string(navC)))
 	tocNCX.Close()
 	navTmp.Close()
 }
