@@ -1,0 +1,71 @@
+language: go
+go:
+- tip
+env:
+  global:
+  - GITHUB_REPO: missdeer/getnovel
+  - GIT_NAME: missdeer
+  - GIT_EMAIL: missdeer@dfordsoft.com
+deploy:
+  provider: releases
+  api_key:
+    secure: aPwmvkYdVaSg8WNZNaBNX4bAcqmr7B/tGSbbMa8T39PCPhKdZv9/aZQ06oOhMEp6ZQb4J0lWHgu7Rs659bGX5rzft8WxqLtRa8m1rEoNvDAFauFTjCNzcjwYGakykTRa/U+jhebLD8lyAY4WT9WwLLZNSLc4g5fPTTRr67GgB+E=
+  file:        
+    - getnovel-darwin-amd64.tar.gz           
+    - getnovel-dragonflybsd-amd64.tar.gz     
+    - getnovel-freebsd-amd64.tar.gz          
+    - getnovel-freebsd-arm.tar.gz            
+    - getnovel-freebsd-x86.tar.gz            
+    - getnovel-linux-amd64.tar.gz            
+    - getnovel-linux-arm64.tar.gz            
+    - getnovel-linux-armv6.tar.gz            
+    - getnovel-linux-armv7.tar.gz            
+    - getnovel-linux-mips64.tar.gz           
+    - getnovel-linux-mips64le.tar.gz             
+    - getnovel-linux-mips.tar.gz           
+    - getnovel-linux-mipsle.tar.gz     
+    - getnovel-linux-ppc64.tar.gz            
+    - getnovel-linux-ppc64le.tar.gz          
+    - getnovel-linux-x86.tar.gz              
+    - getnovel-netbsd-amd64.tar.gz           
+    - getnovel-netbsd-arm.tar.gz             
+    - getnovel-netbsd-x86.tar.gz             
+    - getnovel-openbsd-amd64.tar.gz          
+    - getnovel-openbsd-x86.tar.gz            
+    - getnovel-solaris-amd64.tar.gz                
+    - getnovel-windows-amd64.tar.gz              
+    - getnovel-windows-x86.tar.gz    
+  on:
+    repo: dfordsoft/getnovel
+    tags: true
+skip_cleanup: true
+install:
+  - go get github.com/dfordsoft/getnovel
+script:
+  - pwd && ls -l 
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=amd64 GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-amd64.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=386 GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-x86.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=arm GOARM=5 GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-armv5.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=arm GOARM=6 GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-armv6.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=arm GOARM=7 GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-armv7.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=arm64 GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-arm64.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=ppc64 GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-ppc64.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=ppc64le GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-ppc64le.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=mips64 GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-mips64.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=mips64le GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-mips64le.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=mips GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-mips.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=mipsle GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-mipsle.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=amd64 GOOS=darwin go build  && tar czvf getnovel-darwin-amd64.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=amd64 GOOS=windows go build  && tar czvf getnovel-windows-amd64.tar.gz app.conf.sample getnovel.exe && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=386 GOOS=windows go build  && tar czvf getnovel-windows-x86.tar.gz app.conf.sample getnovel.exe && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=amd64 GOOS=freebsd go build  && tar czvf getnovel-freebsd-amd64.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=386 GOOS=freebsd go build  && tar czvf getnovel-freebsd-x86.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=arm GOOS=freebsd go build  && tar czvf getnovel-freebsd-arm.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=amd64 GOOS=openbsd go build  && tar czvf getnovel-openbsd-amd64.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=386 GOOS=openbsd go build  && tar czvf getnovel-openbsd-x86.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=amd64 GOOS=netbsd go build  && tar czvf getnovel-netbsd-amd64.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=386 GOOS=netbsd go build  && tar czvf getnovel-netbsd-x86.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=arm GOOS=netbsd go build  && tar czvf getnovel-netbsd-arm.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=amd64 GOOS=dragonfly go build  && tar czvf getnovel-dragonflybsd-amd64.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - env GOPATH=$GOPATH:$PWD/../.. GOARCH=amd64 GOOS=solaris go build  && tar czvf getnovel-solaris-amd64.tar.gz app.conf.sample getnovel && cp ./*.tar.gz ../
+  - ls -l
