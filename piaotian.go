@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"github.com/dfordsoft/golib/ebook"
 	"github.com/dfordsoft/golib/ic"
 	"io/ioutil"
 	"log"
@@ -157,7 +158,7 @@ doRequest:
 		return
 	}
 
-	mobi := &Mobi{}
+	mobi := &ebook.Mobi{}
 	mobi.Begin()
 
 	var title string
