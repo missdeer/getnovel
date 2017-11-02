@@ -4,18 +4,17 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/dfordsoft/golib/ebook"
-	"github.com/dfordsoft/golib/ic"
-	"io/ioutil"
-	"log"
-	"net/http"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/dfordsoft/golib/ebook"
+	"github.com/dfordsoft/golib/httputil"
+	"github.com/dfordsoft/golib/ic"
 )
 
 func init() {
-	registerNovelSiteHandler(&NovelSiteHandler{
+	registerNovelSiteHandler(&novelSiteHandler{
 		Match:    isPiaotian,
 		Download: dlPiaotian,
 	})
@@ -34,52 +33,16 @@ func isPiaotian(u string) bool {
 }
 
 func dlPiaotianPage(u string) (c []byte) {
-	client := &http.Client{
-		Timeout: 60 * time.Second,
+	var err error
+	headers := map[string]string{
+		"Referer":                   "http://www.piaotian.com/",
+		"User-Agent":                "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0",
+		"Accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+		"Accept-Language":           `en-US,en;q=0.8`,
+		"Upgrade-Insecure-Requests": "1",
 	}
-	retry := 0
-	req, err := http.NewRequest("GET", u, nil)
+	c, err = httputil.GetBytes(u, headers, 60*time.Second, 3)
 	if err != nil {
-		log.Println("piaotian - Could not parse novel page request:", err)
-		return
-	}
-
-	req.Header.Set("Referer", "http://www.piaotian.com/")
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0")
-	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-	req.Header.Set("accept-language", `en-US,en;q=0.8`)
-	req.Header.Set("Upgrade-Insecure-Requests", "1")
-doRequest:
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Println("piaotian - Could not send novel page request:", err)
-		retry++
-		if retry < 3 {
-			time.Sleep(3 * time.Second)
-			goto doRequest
-		}
-		return
-	}
-
-	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
-		log.Println("piaotian - novel page request not 200")
-		retry++
-		if retry < 3 {
-			time.Sleep(3 * time.Second)
-			goto doRequest
-		}
-		return
-	}
-
-	c, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println("piaotian - novel page content reading failed")
-		retry++
-		if retry < 3 {
-			time.Sleep(3 * time.Second)
-			goto doRequest
-		}
 		return
 	}
 	c = ic.Convert("gbk", "utf-8", c)
@@ -109,52 +72,15 @@ func dlPiaotian(u string) {
 	}
 	fmt.Println("download book from", tocURL)
 
-	client := &http.Client{
-		Timeout: 60 * time.Second,
+	headers := map[string]string{
+		"Referer":                   "http://www.piaotian.com/",
+		"User-Agent":                "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0",
+		"Accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+		"Accept-Language":           `en-US,en;q=0.8`,
+		"Upgrade-Insecure-Requests": "1",
 	}
-	retry := 0
-	req, err := http.NewRequest("GET", tocURL, nil)
+	b, err := httputil.GetBytes(tocURL, headers, 60*time.Second, 3)
 	if err != nil {
-		log.Println("piaotian - Could not parse novel request:", err)
-		return
-	}
-
-	req.Header.Set("Referer", "http://www.piaotian.com/")
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0")
-	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-	req.Header.Set("accept-language", `en-US,en;q=0.8`)
-	req.Header.Set("Upgrade-Insecure-Requests", "1")
-doRequest:
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Println("piaotian - Could not send novel request:", err)
-		retry++
-		if retry < 3 {
-			time.Sleep(3 * time.Second)
-			goto doRequest
-		}
-		return
-	}
-
-	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
-		log.Println("piaotian - novel request not 200")
-		retry++
-		if retry < 3 {
-			time.Sleep(3 * time.Second)
-			goto doRequest
-		}
-		return
-	}
-
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println("piaotian - Reading response body failed", err)
-		retry++
-		if retry < 3 {
-			time.Sleep(3 * time.Second)
-			goto doRequest
-		}
 		return
 	}
 

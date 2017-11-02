@@ -6,18 +6,18 @@ import (
 	"os"
 )
 
-type Matcher func(string) bool
-type Downloader func(string)
-type NovelSiteHandler struct {
-	Match    Matcher
-	Download Downloader
+type matcher func(string) bool
+type downloader func(string)
+type novelSiteHandler struct {
+	Match    matcher
+	Download downloader
 }
 
 var (
-	novelSiteHandlers []*NovelSiteHandler
+	novelSiteHandlers []*novelSiteHandler
 )
 
-func registerNovelSiteHandler(h *NovelSiteHandler) {
+func registerNovelSiteHandler(h *novelSiteHandler) {
 	novelSiteHandlers = append(novelSiteHandlers, h)
 }
 
