@@ -48,6 +48,8 @@ func dlUUKanshu(u string) {
 	var lines []string
 	// 	<li><a href="/b/2816/52791.html" title="调教初唐 第一千零八十五章 调教完毕……" target="_blank">第一千零八十五章 调教完毕……</a></li>
 	r, _ := regexp.Compile(`<li><a\shref="/b/[0-9]+/([0-9]+\.html)"\stitle="[^"]+"\starget="_blank">([^<]+)</a></li>$`)
+	// <h1><a href="/b/2816/" title="调教初唐最新章节">调教初唐最新章节</a></h1>
+	re, _ := regexp.Compile(`<h1><a\shref="/b/[0-9]+/"\stitle="[^"]+">([^<]+)</a></h1>$`)
 	scanner := bufio.NewScanner(bytes.NewReader(b))
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
@@ -55,8 +57,6 @@ func dlUUKanshu(u string) {
 		// convert from gbk to UTF-8
 		l := ic.ConvertString("gbk", "utf-8", line)
 		if title == "" {
-			// <h1><a href="/b/2816/" title="调教初唐最新章节">调教初唐最新章节</a></h1>
-			re, _ := regexp.Compile(`<h1><a\shref="/b/[0-9]+/"\stitle="[^"]+">([^<]+)</a></h1>$`)
 			ss := re.FindAllStringSubmatch(l, -1)
 			if len(ss) > 0 && len(ss[0]) > 0 {
 				s := ss[0]
