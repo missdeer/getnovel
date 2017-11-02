@@ -38,6 +38,14 @@ var (
 			articleTitlePos: 2,
 		},
 		{
+			host:            "www.biquge.cm",
+			bookTitle:       `<h1>([^<]+)</h1>$`,
+			bookTitlePos:    1,
+			item:            `<dd>\s*<a\s*href="([^"]+)">([^<]+)</a></dd>$`,
+			articleURLPos:   1,
+			articleTitlePos: 2,
+		},
+		{
 			host:            "www.qu.la",
 			bookTitle:       `<h1>([^<]+)</h1>$`,
 			bookTitlePos:    1,
@@ -51,6 +59,11 @@ var (
 			host:  "www.biqudu.com",
 			start: []byte(`<div id="content"><script>readx();</script>`),
 			end:   []byte(`<script>chaptererror();</script>`),
+		},
+		{
+			host:  "www.biquge.cm",
+			start: []byte(`<div id="content">&nbsp;&nbsp;&nbsp;&nbsp;`),
+			end:   []byte(`找本站搜索"笔趣阁CM" 或输入网址:www.biquge.cm</div>`),
 		},
 		{
 			host:  "www.qu.la",
@@ -180,6 +193,7 @@ func dlBiqugePage(u string) (c []byte) {
 		}
 	}
 
+	c = bytes.Replace(c, []byte("<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;"), []byte("</p><p>"), -1)
 	c = bytes.Replace(c, []byte("<br/><br/>"), []byte("</p><p>"), -1)
 	c = bytes.Replace(c, []byte(`　　`), []byte(""), -1)
 	return
