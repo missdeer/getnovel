@@ -21,13 +21,15 @@ func init() {
 }
 
 func isPiaotian(u string) bool {
-	r, _ := regexp.Compile(`http://www\.piaotian\.com/html/[0-9]/[0-9]+/`)
-	if r.MatchString(u) {
-		return true
+	patterns := []string{
+		`http://www\.piaotian\.com/html/[0-9]/[0-9]+/`,
+		`http://www\.piaotian\.com/bookinfo/[0-9]/[0-9]+\.html`,
 	}
-	r, _ = regexp.Compile(`http://www\.piaotian\.com/bookinfo/[0-9]/[0-9]+\.html`)
-	if r.MatchString(u) {
-		return true
+	for _, pattern := range patterns {
+		r, _ := regexp.Compile(pattern)
+		if r.MatchString(u) {
+			return true
+		}
 	}
 	return false
 }
@@ -89,6 +91,7 @@ func dlPiaotian(u string) {
 
 	var title string
 	r, _ = regexp.Compile(`^<li><a\shref="([0-9]+\.html)">([^<]+)</a></li>$`)
+	re, _ := regexp.Compile(`^<h1>([^<]+)</h1>$`)
 	scanner := bufio.NewScanner(bytes.NewReader(b))
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
@@ -96,7 +99,6 @@ func dlPiaotian(u string) {
 		// convert from gbk to UTF-8
 		l := ic.ConvertString("gbk", "utf-8", line)
 		if title == "" {
-			re, _ := regexp.Compile(`^<h1>([^<]+)</h1>$`)
 			ss := re.FindAllStringSubmatch(l, -1)
 			if len(ss) > 0 && len(ss[0]) > 0 {
 				s := ss[0]
