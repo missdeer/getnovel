@@ -19,6 +19,7 @@ type tocPattern struct {
 	item            string
 	articleTitlePos int
 	articleURLPos   int
+	isAbsoluteURL   bool
 }
 
 type pageContentMarker struct {
@@ -35,6 +36,7 @@ var (
 		`http://www\.biqugezw\.com/[0-9]+_[0-9]+/`,
 		`http://www\.630zw\.com/[0-9]+_[0-9]+/`,
 		`http://www\.biquge\.lu/book/[0-9]+/`,
+		`http://www\.biquge5200\.com/[0-9]+_[0-9]+/`,
 	}
 	tocPatterns = []tocPattern{
 		{
@@ -85,6 +87,15 @@ var (
 			articleURLPos:   1,
 			articleTitlePos: 2,
 		},
+		{
+			host:            "www.biquge5200.com",
+			bookTitle:       `<h1>([^<]+)</h1>$`,
+			bookTitlePos:    1,
+			item:            `<dd>\s*<a\s*href="([^"]+)">([^<]+)</a></dd>$`,
+			articleURLPos:   1,
+			articleTitlePos: 2,
+			isAbsoluteURL:   true,
+		},
 	}
 	pageContentMarkers = []pageContentMarker{
 		{
@@ -116,6 +127,11 @@ var (
 			host:  "www.biquge.lu",
 			start: []byte(`<div id="content" class="showtxt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`),
 			end:   []byte(`请记住本书首发域名：www.biquge.lu。笔趣阁手机版阅读网址：m.biquge.lu</div>`),
+		},
+		{
+			host:  "www.biquge5200.com",
+			start: []byte(`<div id="content">`),
+			end:   []byte(`</div>`),
 		},
 	}
 )
@@ -193,6 +209,9 @@ func dlBiquge(u string) {
 		ss := r.FindAllStringSubmatch(line, -1)
 		s := ss[0]
 		finalURL := fmt.Sprintf("%s://%s%s", theURL.Scheme, theURL.Host, s[p.articleURLPos])
+		if p.isAbsoluteURL {
+			finalURL = s[p.articleURLPos]
+		}
 		c := dlBiqugePage(finalURL)
 		mobi.AppendContent(s[p.articleTitlePos], finalURL, string(c))
 		fmt.Println(s[p.articleTitlePos], finalURL, len(c), "bytes")
