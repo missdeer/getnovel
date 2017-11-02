@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -92,11 +93,16 @@ doRequest:
 		// convert from gbk to UTF-8
 		l := ic.ConvertString("gbk", "utf-8", line)
 		if title == "" {
-			re, _ := regexp.Compile(`<h1\sid="timu">([^<]+)</h1>$`)
+			// <h1><a href="/b/2816/" title="调教初唐最新章节">调教初唐最新章节</a></h1>
+			re, _ := regexp.Compile(`<h1><a\shref="/b/[0-9]+/"\stitle="[^"]+">([^<]+)</a></h1>$`)
 			ss := re.FindAllStringSubmatch(l, -1)
 			if len(ss) > 0 && len(ss[0]) > 0 {
 				s := ss[0]
 				title = s[1]
+				idx := strings.Index(title, `最新章节`)
+				if idx > 0 {
+					title = title[:idx]
+				}
 				mobi.SetTitle(title)
 				continue
 			}
@@ -193,5 +199,6 @@ doRequest:
 	}
 	c = bytes.Replace(c, []byte("<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;"), []byte("</p><p>"), -1)
 	c = bytes.Replace(c, []byte("&nbsp;&nbsp;&nbsp;&nbsp;"), []byte(""), -1)
+	c = bytes.Replace(c, []byte("<p>　　"), []byte("<p>"), -1)
 	return
 }
