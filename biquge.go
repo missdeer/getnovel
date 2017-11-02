@@ -28,6 +28,14 @@ type pageContentMarker struct {
 }
 
 var (
+	urlPatterns = []string{
+		`http://www\.biqudu\.com/[0-9]+_[0-9]+/`,
+		`http://www\.biquge\.cm/[0-9]+/[0-9]+/`,
+		`http://www\.qu\.la/book/[0-9]+/`,
+		`http://www\.biqugezw\.com/[0-9]+_[0-9]+/`,
+		`http://www\.630zw\.com/[0-9]+_[0-9]+/`,
+		`http://www\.biquge\.lu/book/[0-9]+/`,
+	}
 	tocPatterns = []tocPattern{
 		{
 			host:            "www.biqudu.com",
@@ -53,6 +61,30 @@ var (
 			articleURLPos:   2,
 			articleTitlePos: 3,
 		},
+		{
+			host:            "www.biqugezw.com",
+			bookTitle:       `<h1>([^<]+)</h1>$`,
+			bookTitlePos:    1,
+			item:            `<dd>\s*<a\s*href="([^"]+)">([^<]+)</a></dd>$`,
+			articleURLPos:   1,
+			articleTitlePos: 2,
+		},
+		{
+			host:            "www.630zw.com",
+			bookTitle:       `<h1>([^<]+)</h1>$`,
+			bookTitlePos:    1,
+			item:            `<dd>\s*<a\s*href="([^"]+)">([^<]+)</a></dd>$`,
+			articleURLPos:   1,
+			articleTitlePos: 2,
+		},
+		{
+			host:            "www.biquge.lu",
+			bookTitle:       `<h2>([^<]+)</h2>$`,
+			bookTitlePos:    1,
+			item:            `<dd>\s*<a\s*href="([^"]+)">([^<]+)</a></dd>$`,
+			articleURLPos:   1,
+			articleTitlePos: 2,
+		},
 	}
 	pageContentMarkers = []pageContentMarker{
 		{
@@ -70,6 +102,21 @@ var (
 			start: []byte(`<div id="content">`),
 			end:   []byte(`<script>chaptererror();</script>`),
 		},
+		{
+			host:  "www.biqugezw.com",
+			start: []byte(`<div id="content">&nbsp;&nbsp;&nbsp;&nbsp;一秒记住【笔趣阁中文网<a href="http://www.biqugezw.com" target="_blank">www.biqugezw.com</a>】，为您提供精彩小说阅读。`),
+			end:   []byte(`手机用户请浏览m.biqugezw.com阅读，更优质的阅读体验。</div>`),
+		},
+		{
+			host:  "www.630zw.com",
+			start: []byte(`<div id="content">&nbsp;&nbsp;&nbsp;&nbsp;`),
+			end:   []byte(`(新笔趣阁：biqugee.cc，手机笔趣阁 m.biqugee.cc )</div>`),
+		},
+		{
+			host:  "www.biquge.lu",
+			start: []byte(`<div id="content" class="showtxt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`),
+			end:   []byte(`请记住本书首发域名：www.biquge.lu。笔趣阁手机版阅读网址：m.biquge.lu</div>`),
+		},
 	}
 )
 
@@ -81,15 +128,6 @@ func init() {
 }
 
 func isBiquge(u string) bool {
-	urlPatterns := []string{
-		`http://www\.biquge\.cm/[0-9]+/[0-9]+/`,
-		`http://www\.biqugezw\.com/[0-9]+_[0-9]+/`,
-		`http://www\.630zw\.com/[0-9]+_[0-9]+/`,
-		`http://www\.biqudu\.com/[0-9]+_[0-9]+/`,
-		`http://www\.biquge\.lu/book/[0-9]+/`,
-		`http://www\.qu\.la/book/[0-9]+/`,
-	}
-
 	for _, pattern := range urlPatterns {
 		r, _ := regexp.Compile(pattern)
 		if r.MatchString(u) {
@@ -112,6 +150,8 @@ func dlBiquge(u string) {
 	if err != nil {
 		return
 	}
+
+	b = bytes.Replace(b, []byte("</dd>"), []byte("</dd>\n"), -1)
 
 	mobi := &ebook.Mobi{}
 	mobi.Begin()
