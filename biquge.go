@@ -29,15 +29,6 @@ type pageContentMarker struct {
 }
 
 var (
-	urlPatterns = []string{
-		`http://www\.biqudu\.com/[0-9]+_[0-9]+/`,
-		`http://www\.biquge\.cm/[0-9]+/[0-9]+/`,
-		`http://www\.qu\.la/book/[0-9]+/`,
-		`http://www\.biqugezw\.com/[0-9]+_[0-9]+/`,
-		`http://www\.630zw\.com/[0-9]+_[0-9]+/`,
-		`http://www\.biquge\.lu/book/[0-9]+/`,
-		`http://www\.biquge5200\.com/[0-9]+_[0-9]+/`,
-	}
 	tocPatterns = []tocPattern{
 		{
 			host:            "www.biqudu.com",
@@ -138,19 +129,17 @@ var (
 
 func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
-		Match:    isBiquge,
+		MatchPatterns: []string{
+			`http://www\.biqudu\.com/[0-9]+_[0-9]+/`,
+			`http://www\.biquge\.cm/[0-9]+/[0-9]+/`,
+			`http://www\.qu\.la/book/[0-9]+/`,
+			`http://www\.biqugezw\.com/[0-9]+_[0-9]+/`,
+			`http://www\.630zw\.com/[0-9]+_[0-9]+/`,
+			`http://www\.biquge\.lu/book/[0-9]+/`,
+			`http://www\.biquge5200\.com/[0-9]+_[0-9]+/`,
+		},
 		Download: dlBiquge,
 	})
-}
-
-func isBiquge(u string) bool {
-	for _, pattern := range urlPatterns {
-		r, _ := regexp.Compile(pattern)
-		if r.MatchString(u) {
-			return true
-		}
-	}
-	return false
 }
 
 func dlBiquge(u string) {

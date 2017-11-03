@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"regexp"
 )
 
-type matcher func(string) bool
-type downloader func(string)
 type novelSiteHandler struct {
-	Match    matcher
-	Download downloader
+	MatchPatterns []string
+	Download      func(string)
 }
 
 var (
@@ -23,7 +22,7 @@ func registerNovelSiteHandler(h *novelSiteHandler) {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: getnovel novel-url")
+		fmt.Println("Usage: getnovel novel-toc-url")
 		return
 	}
 	_, e := url.Parse(os.Args[1])
@@ -33,10 +32,13 @@ func main() {
 	}
 
 	for _, h := range novelSiteHandlers {
-		if h.Match(os.Args[1]) {
-			h.Download(os.Args[1])
-			return
+		for _, pattern := range h.MatchPatterns {
+			r, _ := regexp.Compile(pattern)
+			if r.MatchString(os.Args[1]) {
+				h.Download(os.Args[1])
+				return
+			}
 		}
 	}
-	fmt.Println("Usage: getnovel novel-url")
+	fmt.Println("Usage: getnovel novel-toc-url")
 }

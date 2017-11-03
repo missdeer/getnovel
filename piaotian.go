@@ -15,23 +15,12 @@ import (
 
 func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
-		Match:    isPiaotian,
+		MatchPatterns: []string{
+			`http://www\.piaotian\.com/html/[0-9]/[0-9]+/`,
+			`http://www\.piaotian\.com/bookinfo/[0-9]/[0-9]+\.html`,
+		},
 		Download: dlPiaotian,
 	})
-}
-
-func isPiaotian(u string) bool {
-	patterns := []string{
-		`http://www\.piaotian\.com/html/[0-9]/[0-9]+/`,
-		`http://www\.piaotian\.com/bookinfo/[0-9]/[0-9]+\.html`,
-	}
-	for _, pattern := range patterns {
-		r, _ := regexp.Compile(pattern)
-		if r.MatchString(u) {
-			return true
-		}
-	}
-	return false
 }
 
 func dlPiaotianPage(u string) (c []byte) {

@@ -15,17 +15,9 @@ import (
 
 func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
-		Match:    isUUKanshu,
-		Download: dlUUKanshu,
+		MatchPatterns: []string{`http://www\.uukanshu\.net/b/[0-9]+/`},
+		Download:      dlUUKanshu,
 	})
-}
-
-func isUUKanshu(u string) bool {
-	r, _ := regexp.Compile(`http://www\.uukanshu\.net/b/[0-9]+/`)
-	if r.MatchString(u) {
-		return true
-	}
-	return false
 }
 
 func dlUUKanshu(u string) {
