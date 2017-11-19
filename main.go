@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"regexp"
+	"strings"
 )
 
 type novelSiteHandler struct {
@@ -21,6 +22,25 @@ func registerNovelSiteHandler(h *novelSiteHandler) {
 	novelSiteHandlers = append(novelSiteHandlers, h)
 }
 
+func listCommandHandler() {
+	fmt.Println("支持小说网站：")
+	for _, h := range novelSiteHandlers {
+		urlMap := make(map[string]struct{})
+		for _, p := range h.MatchPatterns {
+			u := strings.Replace(p, `\`, ``, -1)
+			idxStart := strings.Index(u, `www.`)
+			idxEnd := strings.Index(u[idxStart:], `/`)
+			u = u[:idxStart+idxEnd]
+			urlMap[u] = struct{}{}
+		}
+		var urls []string
+		for u := range urlMap {
+			urls = append(urls, u)
+		}
+		fmt.Println(h.Title + ": " + strings.Join(urls, ", "))
+	}
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: getnovel novel-toc-url")
@@ -28,10 +48,7 @@ func main() {
 	}
 
 	if os.Args[1] == "list" {
-		fmt.Println("支持小说网站：")
-		for _, h := range novelSiteHandlers {
-			fmt.Println(h.Title)
-		}
+		listCommandHandler()
 		return
 	}
 
