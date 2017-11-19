@@ -15,6 +15,7 @@ import (
 
 func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
+		Title: `飘天`,
 		MatchPatterns: []string{
 			`http://www\.piaotian\.com/html/[0-9]/[0-9]+/`,
 			`http://www\.piaotian\.com/bookinfo/[0-9]/[0-9]+\.html`,

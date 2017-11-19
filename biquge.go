@@ -129,6 +129,7 @@ var (
 
 func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
+		Title: `笔趣阁系列`,
 		MatchPatterns: []string{
 			`http://www\.biqudu\.com/[0-9]+_[0-9]+/`,
 			`http://www\.biquge\.cm/[0-9]+/[0-9]+/`,

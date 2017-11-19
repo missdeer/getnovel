@@ -8,6 +8,7 @@ import (
 )
 
 type novelSiteHandler struct {
+	Title         string
 	MatchPatterns []string
 	Download      func(string)
 }
@@ -25,6 +26,15 @@ func main() {
 		fmt.Println("Usage: getnovel novel-toc-url")
 		return
 	}
+
+	if os.Args[1] == "list" {
+		fmt.Println("支持小说网站：")
+		for _, h := range novelSiteHandlers {
+			fmt.Println(h.Title)
+		}
+		return
+	}
+
 	_, e := url.Parse(os.Args[1])
 	if e != nil {
 		fmt.Println("invalid novel url input")

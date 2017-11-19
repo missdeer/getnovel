@@ -15,6 +15,7 @@ import (
 
 func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
+		Title:         `UU看书`,
 		MatchPatterns: []string{`http://www\.uukanshu\.net/b/[0-9]+/`},
 		Download:      dlUUKanshu,
 	})

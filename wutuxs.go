@@ -14,6 +14,7 @@ import (
 
 func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
+		Title: `无图小说`,
 		MatchPatterns: []string{
 			`http://www\.wutuxs\.com/html/[0-9]/[0-9]+/`,
 		},
