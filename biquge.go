@@ -10,6 +10,7 @@ import (
 
 	"github.com/dfordsoft/golib/ebook"
 	"github.com/dfordsoft/golib/httputil"
+	"github.com/dfordsoft/golib/ic"
 )
 
 type tocPattern struct {
@@ -44,6 +45,8 @@ func init() {
 			if err != nil {
 				return
 			}
+
+			c = ic.Convert("gbk", "utf-8", c)
 			c = bytes.Replace(c, []byte("\r\n"), []byte(""), -1)
 			c = bytes.Replace(c, []byte("\r"), []byte(""), -1)
 			c = bytes.Replace(c, []byte("\n"), []byte(""), -1)
@@ -51,12 +54,12 @@ func init() {
 				if theURL.Host == m.host {
 					idx := bytes.Index(c, m.start)
 					if idx > 1 {
-						fmt.Println("found start")
+						//fmt.Println("found start")
 						c = c[idx+len(m.start):]
 					}
 					idx = bytes.Index(c, m.end)
 					if idx > 1 {
-						fmt.Println("found end")
+						//fmt.Println("found end")
 						c = c[:idx]
 					}
 					break
@@ -83,6 +86,7 @@ func init() {
 		}
 
 		b = bytes.Replace(b, []byte("</dd>"), []byte("</dd>\n"), -1)
+		b = ic.Convert("gbk", "utf-8", b)
 
 		mobi := &ebook.Mobi{}
 		mobi.Begin()
@@ -134,6 +138,31 @@ func init() {
 		mobi.End()
 	}
 
+	registerNovelSiteHandler(&novelSiteHandler{
+		Title:         `燃文小说`,
+		MatchPatterns: []string{`http://www\.ranwena\.com/files/article/[0-9]+/[0-9]+/`},
+		Download: func(u string) {
+			tocPatterns := []tocPattern{
+				{
+					host:            "www.ranwena.com",
+					bookTitle:       `<h1>([^<]+)</h1>$`,
+					bookTitlePos:    1,
+					item:            `<dd>\s*<a\s*href="([^"]+)">([^<]+)</a></dd>$`,
+					articleURLPos:   1,
+					articleTitlePos: 2,
+					isAbsoluteURL:   true,
+				},
+			}
+			pageContentMarkers := []pageContentMarker{
+				{
+					host:  "www.ranwena.com",
+					start: []byte(`<div id="content">`),
+					end:   []byte(`</div>`),
+				},
+			}
+			dl(u, tocPatterns, pageContentMarkers)
+		},
+	})
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title: `笔趣阁系列`,
 		MatchPatterns: []string{
