@@ -37,13 +37,14 @@ func listCommandHandler() {
 		for u := range urlMap {
 			urls = append(urls, u)
 		}
-		fmt.Println(h.Title + ": " + strings.Join(urls, ", "))
+		fmt.Println("\t" + h.Title + ": " + strings.Join(urls, ", "))
 	}
 }
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: getnovel novel-toc-url")
+		fmt.Println("使用方法：\n\tgetnovel 小说目录网址")
+		listCommandHandler()
 		return
 	}
 
@@ -54,7 +55,8 @@ func main() {
 
 	_, e := url.Parse(os.Args[1])
 	if e != nil {
-		fmt.Println("invalid novel url input")
+		fmt.Println("不支持的输入参数")
+		listCommandHandler()
 		return
 	}
 
@@ -67,5 +69,6 @@ func main() {
 			}
 		}
 	}
-	fmt.Println("Usage: getnovel novel-toc-url")
+	fmt.Println("使用方法：\n\tgetnovel 小说目录网址")
+	listCommandHandler()
 }
