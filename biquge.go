@@ -127,9 +127,13 @@ func init() {
 		for _, line := range lines {
 			ss := r.FindAllStringSubmatch(line, -1)
 			s := ss[0]
-			finalURL := fmt.Sprintf("%s://%s%s", theURL.Scheme, theURL.Host, s[p.articleURLPos])
+			articleURL := s[p.articleURLPos]
+			finalURL := fmt.Sprintf("%s://%s%s", theURL.Scheme, theURL.Host, articleURL)
+			if articleURL[0] != '/' {
+				finalURL = fmt.Sprintf("%s%s", u, articleURL)
+			}
 			if p.isAbsoluteURL {
-				finalURL = s[p.articleURLPos]
+				finalURL = articleURL
 			}
 			c := dlPage(finalURL)
 			mobi.AppendContent(s[p.articleTitlePos], finalURL, string(c))
@@ -138,6 +142,30 @@ func init() {
 		mobi.End()
 	}
 
+	registerNovelSiteHandler(&novelSiteHandler{
+		Title:         `少年文学网`,
+		MatchPatterns: []string{`https://www\.snwx8\.com/book/[0-9]+/[0-9]+/`},
+		Download: func(u string) {
+			tocPatterns := []tocPattern{
+				{
+					host:            "www.snwx8.com",
+					bookTitle:       `<h1>([^<]+)</h1>$`,
+					bookTitlePos:    1,
+					item:            `<dd>\s*<a\s+href="([^"]+)"\s+title="[^"]+">([^<]+)</a></dd>$`,
+					articleURLPos:   1,
+					articleTitlePos: 2,
+				},
+			}
+			pageContentMarkers := []pageContentMarker{
+				{
+					host:  "www.snwx8.com",
+					start: []byte(`<div id="BookText">`),
+					end:   []byte(`</div>`),
+				},
+			}
+			dl(u, tocPatterns, pageContentMarkers)
+		},
+	})
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `燃文小说`,
 		MatchPatterns: []string{`http://www\.ranwena\.com/files/article/[0-9]+/[0-9]+/`},
