@@ -191,6 +191,30 @@ func init() {
 		},
 	})
 	registerNovelSiteHandler(&novelSiteHandler{
+		Title:         `手牵手`,
+		MatchPatterns: []string{`https://www\.sqsxs\.com/book/[0-9]+/[0-9]+/`},
+		Download: func(u string) {
+			tocPatterns := []tocPattern{
+				{
+					host:            "www.sqsxs.com",
+					bookTitle:       `<h1>([^<]+)</h1>$`,
+					bookTitlePos:    1,
+					item:            `<dd>\s*<a\s+href="([^"]+)"\s+class="f-green">([^<]+)</a></a></dd>$`,
+					articleURLPos:   1,
+					articleTitlePos: 2,
+				},
+			}
+			pageContentMarkers := []pageContentMarker{
+				{
+					host:  "www.sqsxs.com",
+					start: []byte(`<div id="content">`),
+					end:   []byte(`</div>`),
+				},
+			}
+			dl(u, tocPatterns, pageContentMarkers)
+		},
+	})
+	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `燃文小说`,
 		MatchPatterns: []string{`http://www\.ranwena\.com/files/article/[0-9]+/[0-9]+/`},
 		Download: func(u string) {
