@@ -167,6 +167,30 @@ func init() {
 		},
 	})
 	registerNovelSiteHandler(&novelSiteHandler{
+		Title:         `大海中文`,
+		MatchPatterns: []string{`https://www\.dhzw\.org/book/[0-9]+/[0-9]+/`},
+		Download: func(u string) {
+			tocPatterns := []tocPattern{
+				{
+					host:            "www.dhzw.org",
+					bookTitle:       `<h1>([^<]+)</h1>$`,
+					bookTitlePos:    1,
+					item:            `<dd>\s*<a\s+href="([^"]+)"\s+title="[^"]+">([^<]+)</a></dd>$`,
+					articleURLPos:   1,
+					articleTitlePos: 2,
+				},
+			}
+			pageContentMarkers := []pageContentMarker{
+				{
+					host:  "www.dhzw.org",
+					start: []byte(`<div id="BookText">`),
+					end:   []byte(`</div>`),
+				},
+			}
+			dl(u, tocPatterns, pageContentMarkers)
+		},
+	})
+	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `燃文小说`,
 		MatchPatterns: []string{`http://www\.ranwena\.com/files/article/[0-9]+/[0-9]+/`},
 		Download: func(u string) {
