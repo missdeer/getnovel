@@ -3,38 +3,38 @@ go:
 - tip
 env:
   global:
-  - GITHUB_REPO: missdeer/getnovel
+  - GITHUB_REPO: dfordsoft/getnovel
   - GIT_NAME: missdeer
   - GIT_EMAIL: missdeer@dfordsoft.com
 deploy:
   provider: releases
   api_key:
-    secure: aPwmvkYdVaSg8WNZNaBNX4bAcqmr7B/tGSbbMa8T39PCPhKdZv9/aZQ06oOhMEp6ZQb4J0lWHgu7Rs659bGX5rzft8WxqLtRa8m1rEoNvDAFauFTjCNzcjwYGakykTRa/U+jhebLD8lyAY4WT9WwLLZNSLc4g5fPTTRr67GgB+E=
-  file:        
-    - getnovel-darwin-amd64.tar.gz           
-    - getnovel-dragonflybsd-amd64.tar.gz     
-    - getnovel-freebsd-amd64.tar.gz          
-    - getnovel-freebsd-arm.tar.gz            
-    - getnovel-freebsd-x86.tar.gz            
-    - getnovel-linux-amd64.tar.gz            
-    - getnovel-linux-arm64.tar.gz            
-    - getnovel-linux-armv6.tar.gz            
-    - getnovel-linux-armv7.tar.gz            
-    - getnovel-linux-mips64.tar.gz           
-    - getnovel-linux-mips64le.tar.gz             
-    - getnovel-linux-mips.tar.gz           
-    - getnovel-linux-mipsle.tar.gz     
-    - getnovel-linux-ppc64.tar.gz            
-    - getnovel-linux-ppc64le.tar.gz          
-    - getnovel-linux-x86.tar.gz              
-    - getnovel-netbsd-amd64.tar.gz           
-    - getnovel-netbsd-arm.tar.gz             
-    - getnovel-netbsd-x86.tar.gz             
-    - getnovel-openbsd-amd64.tar.gz          
-    - getnovel-openbsd-x86.tar.gz            
-    - getnovel-solaris-amd64.tar.gz                
-    - getnovel-windows-amd64.tar.gz              
-    - getnovel-windows-x86.tar.gz    
+    secure: kF52OsS0vqxvfFn/xiRJvJ0XW2vkbLq8g5cjI1JH2lQn6oMvtj7rNuLwb1p9vNaB/kxss7S4mNCvR1BY/yzT39eR0jxrp+zeQLLdy0QuY9U+frhTvGIXsRXZY527kFxjfhS6lBfrWWBL6WJKIoMib1zZI4bdxLbq849b39hruMEItGJ/GbTkLdFMhpW9WcFl6O7zJgkuP6o7Moyr3w4b8mXQDkRzfjUc700DkRe9INh5d2fWonZkpBValy/myFeKR6pUUrFGYuvNKOFXRtrn5pnyI7iLpnyhdnLP/woDjm/1HwaPvl3le0pg+9CBd+eyoxMLZKZv20QSxoB2YgyECvdf7Nk6sNT4DgahnwIkKpfJgljdvNhe0aAAZezT3Yh0W2JW98PjmM8wifK2Qo9aWkSMQuk2hkFy93srOrT+0lpkyoXN60BP6d6fKgq4W2X3vY0bB3xa6k+3juV24X4np07NV6g411830tq/k/Wbuc2dMdpZCf3fkjV1I2TuSiUNYlpDj5gASXbXa1/or442FLlnOdj8U4Zo/sLtgK/Vvzy1lZh5d9v7eepVU41U/aIw8Rj9yDRFnvj9ACovx3ocSZVa2Tj/ta94juQ1XD/gVbgoTqbuuIEJXGjvQMU69SHn/epYpZ7xcGTOXHYnJIjZPMgcncYaTgaY5SyWKimafcc=
+  file:
+    - getnovel-darwin-amd64.tar.gz
+    - getnovel-dragonflybsd-amd64.tar.gz
+    - getnovel-freebsd-amd64.tar.gz
+    - getnovel-freebsd-arm.tar.gz
+    - getnovel-freebsd-x86.tar.gz
+    - getnovel-linux-amd64.tar.gz
+    - getnovel-linux-arm64.tar.gz
+    - getnovel-linux-armv6.tar.gz
+    - getnovel-linux-armv7.tar.gz
+    - getnovel-linux-mips64.tar.gz
+    - getnovel-linux-mips64le.tar.gz
+    - getnovel-linux-mips.tar.gz
+    - getnovel-linux-mipsle.tar.gz
+    - getnovel-linux-ppc64.tar.gz
+    - getnovel-linux-ppc64le.tar.gz
+    - getnovel-linux-x86.tar.gz
+    - getnovel-netbsd-amd64.tar.gz
+    - getnovel-netbsd-arm.tar.gz
+    - getnovel-netbsd-x86.tar.gz
+    - getnovel-openbsd-amd64.tar.gz
+    - getnovel-openbsd-x86.tar.gz
+    - getnovel-solaris-amd64.tar.gz
+    - getnovel-windows-amd64.tar.gz
+    - getnovel-windows-x86.tar.gz
   on:
     repo: dfordsoft/getnovel
     tags: true
@@ -42,7 +42,7 @@ skip_cleanup: true
 install:
   - go get github.com/dfordsoft/getnovel
 script:
-  - pwd && ls -l 
+  - pwd && ls -l
   - env GOARCH=amd64 GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-amd64.tar.gz getnovel && cp ./*.tar.gz ../
   - env GOARCH=386 GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-x86.tar.gz getnovel && cp ./*.tar.gz ../
   - env GOARCH=arm GOARM=5 GOOS=linux go build -ldflags="-s -w"  && tar czvf getnovel-linux-armv5.tar.gz getnovel && cp ./*.tar.gz ../
