@@ -38,7 +38,7 @@ deploy:
   on:
     repo: dfordsoft/getnovel
     tags: true
-skip_cleanup: true
+  skip_cleanup: true
 install:
   - go get github.com/dfordsoft/getnovel
 script:
@@ -58,7 +58,7 @@ script:
   - env GOARCH=amd64 GOOS=darwin go build  && tar czvf getnovel-darwin-amd64.tar.gz getnovel
   - env GOARCH=amd64 GOOS=windows go build  && tar czvf getnovel-windows-amd64.tar.gz getnovel.exe
   - env GOARCH=386 GOOS=windows go build  && tar czvf getnovel-windows-x86.tar.gz getnovel.exe
-  - env GOARCH=amd64 GOOS=freebsd go build  && tar czvf getnovel-freebsd-amd64.tar.gz getnovel 
+  - env GOARCH=amd64 GOOS=freebsd go build  && tar czvf getnovel-freebsd-amd64.tar.gz getnovel
   - env GOARCH=386 GOOS=freebsd go build  && tar czvf getnovel-freebsd-x86.tar.gz getnovel
   - env GOARCH=arm GOOS=freebsd go build  && tar czvf getnovel-freebsd-arm.tar.gz getnovel
   - env GOARCH=amd64 GOOS=openbsd go build  && tar czvf getnovel-openbsd-amd64.tar.gz getnovel
