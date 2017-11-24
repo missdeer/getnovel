@@ -6,20 +6,22 @@ Work as you think
 
 ## 使用方法：
 
-    getnovel 小说目录网址
+```
+getnovel 小说目录网址
+```
 
 ## 支持小说网站：
 
-    * 一流吧: http://www.168xs.com
-	* 爱上中文: https://www.aszw.org
-	* 少年文学网: https://www.snwx8.com
-	* 大海中文: https://www.dhzw.org
-	* 手牵手: https://www.sqsxs.com
-	* 燃文小说: http://www.ranwena.com
-	* 笔趣阁系列: http://www.biqugezw.com, http://www.630zw.com, http://www.biquge.lu, http://www.biquge5200.com, http://www.biqudu.com, http://www.biquge.cm, http://www.qu.la
-	* 落霞: http://www.luoxia.com
-	* 飘天: http://www.piaotian.com
-	* 书迷楼: http://www.shumil.com
-	* UU看书: http://www.uukanshu.net
-	* 无图小说: http://www.wutuxs.com
-	* 幼狮书盟: http://www.yssm.org
+* 一流吧: http://www.168xs.com
+* 爱上中文: https://www.aszw.org
+* 少年文学网: https://www.snwx8.com
+* 大海中文: https://www.dhzw.org
+* 手牵手: https://www.sqsxs.com
+* 燃文小说: http://www.ranwena.com
+* 笔趣阁系列: http://www.biqugezw.com, http://www.630zw.com, http://www.biquge.lu, http://www.biquge5200.com, http://www.biqudu.com, http://www.biquge.cm, http://www.qu.la
+* 落霞: http://www.luoxia.com
+* 飘天: http://www.piaotian.com
+* 书迷楼: http://www.shumil.com
+* UU看书: http://www.uukanshu.net
+* 无图小说: http://www.wutuxs.com
+* 幼狮书盟: http://www.yssm.org
