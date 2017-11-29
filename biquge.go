@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/dfordsoft/golib/ebook"
@@ -46,7 +47,9 @@ func init() {
 				return
 			}
 
-			c = ic.Convert("gbk", "utf-8", c)
+			if bytes.Index(c, []byte("utf-8")) < 0 {
+				c = ic.Convert("gbk", "utf-8", c)
+			}
 			c = bytes.Replace(c, []byte("\r\n"), []byte(""), -1)
 			c = bytes.Replace(c, []byte("\r"), []byte(""), -1)
 			c = bytes.Replace(c, []byte("\n"), []byte(""), -1)
@@ -86,7 +89,9 @@ func init() {
 		}
 
 		b = bytes.Replace(b, []byte("</dd>"), []byte("</dd>\n"), -1)
-		b = ic.Convert("gbk", "utf-8", b)
+		if bytes.Index(b, []byte("utf-8")) < 0 {
+			b = ic.Convert("gbk", "utf-8", b)
+		}
 
 		mobi := &ebook.Mobi{}
 		mobi.Begin()
@@ -132,7 +137,7 @@ func init() {
 			if articleURL[0] != '/' {
 				finalURL = fmt.Sprintf("%s%s", u, articleURL)
 			}
-			if p.isAbsoluteURL {
+			if strings.HasPrefix(articleURL, "http") {
 				finalURL = articleURL
 			}
 			c := dlPage(finalURL)
@@ -249,6 +254,7 @@ func init() {
 			`http://www\.630zw\.com/[0-9]+_[0-9]+/`,
 			`http://www\.biquge\.lu/book/[0-9]+/`,
 			`http://www\.biquge5200\.com/[0-9]+_[0-9]+/`,
+			`http://www\.xxbiquge\.com/[0-9]+_[0-9]+/`,
 		},
 		Download: func(u string) {
 			tocPatterns := []tocPattern{
@@ -309,6 +315,15 @@ func init() {
 					articleTitlePos: 2,
 					isAbsoluteURL:   true,
 				},
+				{
+					host:            "www.xxbiquge.com",
+					bookTitle:       `^<h1>([^<]+)</h1>$`,
+					bookTitlePos:    1,
+					item:            `<dd>\s*<a\s*href="([^"]+)"(\sclass="empty")?>([^<]+)</a></dd>$`,
+					articleURLPos:   1,
+					articleTitlePos: 3,
+					isAbsoluteURL:   true,
+				},
 			}
 			pageContentMarkers := []pageContentMarker{
 				{
@@ -343,6 +358,11 @@ func init() {
 				},
 				{
 					host:  "www.biquge5200.com",
+					start: []byte(`<div id="content">`),
+					end:   []byte(`</div>`),
+				},
+				{
+					host:  "www.xxbiquge.com",
 					start: []byte(`<div id="content">`),
 					end:   []byte(`</div>`),
 				},

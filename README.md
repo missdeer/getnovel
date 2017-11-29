@@ -17,7 +17,7 @@ Work as you think
 * 大海中文: https://www.dhzw.org
 * 手牵手: https://www.sqsxs.com
 * 燃文小说: http://www.ranwena.com
-* 笔趣阁系列: http://www.biqugezw.com, http://www.630zw.com, http://www.biquge.lu, http://www.biquge5200.com, http://www.biqudu.com, http://www.biquge.cm, http://www.qu.la
+* 笔趣阁系列: http://www.biqugezw.com, http://www.630zw.com, http://www.biquge.lu, http://www.biquge5200.com, http://www.biqudu.com, http://www.biquge.cm, http://www.qu.la, http://www.xxbiquge.com
 * 落霞: http://www.luoxia.com
 * 飘天: http://www.piaotian.com
 * 书迷楼: http://www.shumil.com
