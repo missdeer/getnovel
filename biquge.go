@@ -14,22 +14,6 @@ import (
 	"github.com/dfordsoft/golib/ic"
 )
 
-type tocPattern struct {
-	host            string
-	bookTitle       string
-	bookTitlePos    int
-	item            string
-	articleTitlePos int
-	articleURLPos   int
-	isAbsoluteURL   bool
-}
-
-type pageContentMarker struct {
-	host  string
-	start []byte
-	end   []byte
-}
-
 func init() {
 	dl := func(u string, tocPatterns []tocPattern, pageContentMarkers []pageContentMarker) {
 		dlPage := func(u string) (c []byte) {
@@ -47,7 +31,7 @@ func init() {
 				return
 			}
 
-			if bytes.Index(c, []byte("utf-8")) < 0 {
+			if bytes.Index(c, []byte("charset=gbk")) > 0 {
 				c = ic.Convert("gbk", "utf-8", c)
 			}
 			c = bytes.Replace(c, []byte("\r\n"), []byte(""), -1)
@@ -89,7 +73,7 @@ func init() {
 		}
 
 		b = bytes.Replace(b, []byte("</dd>"), []byte("</dd>\n"), -1)
-		if bytes.Index(b, []byte("utf-8")) < 0 {
+		if bytes.Index(b, []byte("charset=gbk")) > 0 {
 			b = ic.Convert("gbk", "utf-8", b)
 		}
 

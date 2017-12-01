@@ -8,6 +8,22 @@ import (
 	"strings"
 )
 
+type tocPattern struct {
+	host            string
+	bookTitle       string
+	bookTitlePos    int
+	item            string
+	articleTitlePos int
+	articleURLPos   int
+	isAbsoluteURL   bool
+}
+
+type pageContentMarker struct {
+	host  string
+	start []byte
+	end   []byte
+}
+
 type novelSiteHandler struct {
 	Title         string
 	MatchPatterns []string
