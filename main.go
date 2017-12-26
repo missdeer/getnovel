@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/dfordsoft/golib/ebook"
 	"net/url"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/dfordsoft/golib/ebook"
 )
 
 type tocPattern struct {
