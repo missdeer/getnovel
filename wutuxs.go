@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/dfordsoft/golib/ebook"
 	"github.com/dfordsoft/golib/httputil"
 	"github.com/dfordsoft/golib/ic"
 )
@@ -63,8 +62,7 @@ func init() {
 				return
 			}
 
-			mobi := &ebook.Mobi{}
-			mobi.Begin()
+			gen.Begin()
 
 			var title string
 			// 	<td class="L"><a href="/html/7/7542/5843860.html">第一章.超级网吧系统</a></td>
@@ -82,7 +80,7 @@ func init() {
 					if len(ss) > 0 && len(ss[0]) > 0 {
 						s := ss[0]
 						title = s[1]
-						mobi.SetTitle(title)
+						gen.SetTitle(title)
 						continue
 					}
 				}
@@ -91,11 +89,11 @@ func init() {
 					s := ss[0]
 					finalURL := fmt.Sprintf("http://www.wutuxs.com%s", s[1])
 					c := dlPage(finalURL)
-					mobi.AppendContent(s[2], finalURL, string(c))
+					gen.AppendContent(s[2], finalURL, string(c))
 					fmt.Println(s[2], finalURL, len(c), "bytes")
 				}
 			}
-			mobi.End()
+			gen.End()
 		},
 	})
 }

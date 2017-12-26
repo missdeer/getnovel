@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/dfordsoft/golib/ebook"
 	"net/url"
 	"os"
 	"regexp"
@@ -32,6 +33,7 @@ type novelSiteHandler struct {
 
 var (
 	novelSiteHandlers []*novelSiteHandler
+	gen               ebook.IBook
 )
 
 func registerNovelSiteHandler(h *novelSiteHandler) {
@@ -64,23 +66,32 @@ func main() {
 		return
 	}
 
-	if os.Args[1] == "list" {
-		listCommandHandler()
-		return
+	var novelURL string
+	for i := 1; i < len(os.Args); i++ {
+		switch os.Args[i] {
+		case "list":
+			listCommandHandler()
+			return
+		case "dxg":
+			gen = &ebook.Pdf{}
+		default:
+			_, e := url.Parse(os.Args[i])
+			if e == nil {
+				novelURL = os.Args[i]
+			}
+		}
 	}
 
-	_, e := url.Parse(os.Args[1])
-	if e != nil {
-		fmt.Println("不支持的输入参数")
-		listCommandHandler()
-		return
+	if gen == nil {
+		gen = &ebook.Mobi{}
 	}
 
 	for _, h := range novelSiteHandlers {
 		for _, pattern := range h.MatchPatterns {
 			r, _ := regexp.Compile(pattern)
-			if r.MatchString(os.Args[1]) {
-				h.Download(os.Args[1])
+			if r.MatchString(novelURL) {
+				gen.Info()
+				h.Download(novelURL)
 				return
 			}
 		}

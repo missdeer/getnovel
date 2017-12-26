@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/dfordsoft/golib/ebook"
 	"github.com/dfordsoft/golib/httputil"
 	"github.com/dfordsoft/golib/ic"
 )
@@ -81,8 +80,8 @@ func init() {
 
 			b = ic.Convert("gbk", "utf-8", b)
 			b = bytes.Replace(b, []byte("</a></dd><dd><a"), []byte("</a></dd>\n<dd><a"), -1)
-			mobi := &ebook.Mobi{}
-			mobi.Begin()
+
+			gen.Begin()
 
 			var title string
 			r, _ := regexp.Compile(`<dd><a\shref="([0-9]+\.html)">([^<]+)</a></dd>$`)
@@ -96,7 +95,7 @@ func init() {
 					if len(ss) > 0 && len(ss[0]) > 0 {
 						s := ss[0]
 						title = s[1]
-						mobi.SetTitle(title)
+						gen.SetTitle(title)
 						continue
 					}
 				}
@@ -105,11 +104,11 @@ func init() {
 					s := ss[0]
 					finalURL := fmt.Sprintf("%s%s", tocURL, s[1])
 					c := dlPage(finalURL)
-					mobi.AppendContent(s[2], finalURL, string(c))
+					gen.AppendContent(s[2], finalURL, string(c))
 					fmt.Println(s[2], finalURL, len(c), "bytes")
 				}
 			}
-			mobi.End()
+			gen.End()
 		},
 	})
 }

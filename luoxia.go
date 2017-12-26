@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dfordsoft/golib/ebook"
 	"github.com/dfordsoft/golib/httputil"
 )
 
@@ -93,8 +92,8 @@ func init() {
 			}
 
 			b = bytes.Replace(b, []byte("</li><li>"), []byte("</li>\n<li>"), -1)
-			mobi := &ebook.Mobi{}
-			mobi.Begin()
+
+			gen.Begin()
 
 			var title string
 			// <li><a target="_blank" title="第二章&nbsp;破釜沉舟" href="http://www.luoxia.com/jingzhou/32741.htm">第二章&nbsp;破釜沉舟</a></li>
@@ -110,7 +109,7 @@ func init() {
 					if len(ss) > 0 && len(ss[0]) > 0 {
 						s := ss[0]
 						title = s[1]
-						mobi.SetTitle(title)
+						gen.SetTitle(title)
 						continue
 					}
 				}
@@ -121,12 +120,12 @@ func init() {
 					c := dlPage(finalURL)
 					if len(c) > 0 {
 						title := strings.Replace(s[2], `&nbsp;`, ` `, -1)
-						mobi.AppendContent(title, finalURL, string(c))
+						gen.AppendContent(title, finalURL, string(c))
 						fmt.Println(title, finalURL, len(c), "bytes")
 					}
 				}
 			}
-			mobi.End()
+			gen.End()
 		},
 	})
 }

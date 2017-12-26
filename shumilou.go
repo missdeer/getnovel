@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dfordsoft/golib/ebook"
 	"github.com/dfordsoft/golib/httputil"
 	"github.com/dfordsoft/golib/ic"
 )
@@ -65,8 +64,7 @@ func init() {
 
 			b = bytes.Replace(b, []byte("</li><li class=\"zl\">"), []byte("</li>\n<li class=\"zl\">"), -1)
 
-			mobi := &ebook.Mobi{}
-			mobi.Begin()
+			gen.Begin()
 
 			var title string
 			// 	<li class="zl"><a href="12954102.html">阅读指南（重要，必读）</a></li>
@@ -88,7 +86,7 @@ func init() {
 						if idx > 0 {
 							title = title[:idx]
 						}
-						mobi.SetTitle(title)
+						gen.SetTitle(title)
 						continue
 					}
 				}
@@ -97,11 +95,11 @@ func init() {
 					s := ss[0]
 					finalURL := fmt.Sprintf("%s%s", u, s[1])
 					c := dlPage(finalURL)
-					mobi.AppendContent(s[2], finalURL, string(c))
+					gen.AppendContent(s[2], finalURL, string(c))
 					fmt.Println(s[2], finalURL, len(c), "bytes")
 				}
 			}
-			mobi.End()
+			gen.End()
 		},
 	})
 }

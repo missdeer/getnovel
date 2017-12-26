@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/dfordsoft/golib/ebook"
 	"github.com/dfordsoft/golib/httputil"
 	"github.com/dfordsoft/golib/ic"
 )
@@ -67,8 +66,8 @@ func init() {
 			b = ic.Convert("gbk", "utf-8", b)
 			b = bytes.Replace(b, []byte("<tr><td class=\"L\">"), []byte("<tr>\n<td class=\"L\">"), -1)
 			b = bytes.Replace(b, []byte("</td><td class=\"L\">"), []byte("</td>\n<td class=\"L\">"), -1)
-			mobi := &ebook.Mobi{}
-			mobi.Begin()
+
+			gen.Begin()
 
 			var title string
 			// <td class="L"><a href="43118588.html">1、我会对你负责的</a></td>
@@ -83,7 +82,7 @@ func init() {
 					if len(ss) > 0 && len(ss[0]) > 0 {
 						s := ss[0]
 						title = s[1]
-						mobi.SetTitle(title)
+						gen.SetTitle(title)
 						continue
 					}
 				}
@@ -92,11 +91,11 @@ func init() {
 					s := ss[0]
 					finalURL := fmt.Sprintf("%s%s", tocURL, s[1])
 					c := dlPage(finalURL)
-					mobi.AppendContent(s[2], finalURL, string(c))
+					gen.AppendContent(s[2], finalURL, string(c))
 					fmt.Println(s[2], finalURL, len(c), "bytes")
 				}
 			}
-			mobi.End()
+			gen.End()
 		},
 	})
 }

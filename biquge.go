@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dfordsoft/golib/ebook"
 	"github.com/dfordsoft/golib/httputil"
 	"github.com/dfordsoft/golib/ic"
 )
@@ -77,8 +76,7 @@ func init() {
 			b = ic.Convert("gbk", "utf-8", b)
 		}
 
-		mobi := &ebook.Mobi{}
-		mobi.Begin()
+		gen.Begin()
 
 		var title string
 		var lines []string
@@ -101,7 +99,7 @@ func init() {
 				if len(ss) > 0 && len(ss[0]) > 0 {
 					s := ss[0]
 					title = s[p.bookTitlePos]
-					mobi.SetTitle(title)
+					gen.SetTitle(title)
 					continue
 				}
 			}
@@ -125,10 +123,10 @@ func init() {
 				finalURL = articleURL
 			}
 			c := dlPage(finalURL)
-			mobi.AppendContent(s[p.articleTitlePos], finalURL, string(c))
+			gen.AppendContent(s[p.articleTitlePos], finalURL, string(c))
 			fmt.Println(s[p.articleTitlePos], finalURL, len(c), "bytes")
 		}
-		mobi.End()
+		gen.End()
 	}
 
 	registerNovelSiteHandler(&novelSiteHandler{
