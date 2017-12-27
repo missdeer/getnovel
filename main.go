@@ -70,6 +70,8 @@ type Options struct {
 	PageType        string  `long:"pageType" description:"set page type for PDF format, candidate values: a0, a1, a2, a3, a4, a5, a6, b0, b1, b2, b3, b4, b5, b6, c0, c1, c2, c3, c4, c5, c6, dxg(=a4), 6inch(90mm x 117mm), 7inch, 10inch(=a4)"`
 	TitleFontSize   int     `long:"titleFontSize" description:"set title font point size for PDF format"`
 	ContentFontSize int     `long:"contentFontSize" description:"set content font point size for PDF format"`
+	FontFamily      string  `long:"fontFamily" description:"set font family name for PDF format"`
+	FontFile        string  `long:"fontFile" description:"set TTF font file path for PDF format"`
 }
 
 func main() {
@@ -87,6 +89,8 @@ func main() {
 		PageType:        "a4",
 		TitleFontSize:   24,
 		ContentFontSize: 18,
+		FontFamily:      "CustomFont",
+		FontFile:        "fonts/CustomFont.ttf",
 	}
 
 	args, err := flags.Parse(&opts)
@@ -124,6 +128,8 @@ func main() {
 	default:
 		gen = &ebook.Mobi{}
 	}
+	gen.SetFontFamily(opts.FontFamily)
+	gen.SetFontFile(opts.FontFile)
 
 	for _, h := range novelSiteHandlers {
 		for _, pattern := range h.MatchPatterns {
