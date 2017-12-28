@@ -119,18 +119,11 @@ func main() {
 		return
 	}
 
-	switch opts.Format {
-	case "mobi":
-		gen = &ebook.Mobi{}
-	case "pdf":
-		gen = &ebook.Pdf{}
-		gen.SetFontSize(opts.TitleFontSize, opts.ContentFontSize)
-		gen.SetLineSpacing(opts.LineSpacing)
-		gen.SetMargins(opts.LeftMargin, opts.TopMargin)
-		gen.SetPageType(opts.PageType)
-	default:
-		gen = &ebook.Mobi{}
-	}
+	gen = ebook.NewBook(opts.Format)
+	gen.SetFontSize(opts.TitleFontSize, opts.ContentFontSize)
+	gen.SetLineSpacing(opts.LineSpacing)
+	gen.SetMargins(opts.LeftMargin, opts.TopMargin)
+	gen.SetPageType(opts.PageType)
 	gen.SetFontFamily(opts.FontFamily)
 	gen.SetFontFile(opts.FontFile)
 
