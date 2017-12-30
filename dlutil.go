@@ -27,11 +27,15 @@ type downloadUtil struct {
 	semaphore   *semaphore.Weighted
 }
 
-func (du *downloadUtil) init() {
-	du.quit = make(chan bool)
-	du.ctx = context.TODO()
-	du.semaphore = semaphore.NewWeighted(opts.ParallelCount)
-	du.content = make(chan contentUtil, 10000)
+func newDownloadUtil(dl func(string) []byte, generator ebook.IBook) *downloadUtil {
+	return &downloadUtil{
+		downloader: dl,
+		generator:  generator,
+		quit:       make(chan bool),
+		ctx:        context.TODO(),
+		semaphore:  semaphore.NewWeighted(opts.ParallelCount),
+		content:    make(chan contentUtil, 10000),
+	}
 }
 
 func (du *downloadUtil) wait() {

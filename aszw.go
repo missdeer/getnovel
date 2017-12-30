@@ -69,11 +69,7 @@ func init() {
 
 			gen.Begin()
 
-			dlutil := &downloadUtil{
-				downloader: dlPage,
-				generator:  gen,
-			}
-			dlutil.init()
+			dlutil := newDownloadUtil(dlPage, gen)
 			dlutil.process()
 
 			var title string
