@@ -25,6 +25,7 @@ type Options struct {
 	FontFile        string  `long:"fontFile" description:"set TTF font file path"`
 	RetryCount      int     `short:"r" long:"retries" description:"download retry count"`
 	Timeout         int     `short:"t" long:"timeout" description:"download timeout seconds"`
+	ParallelCount   int64   `short:"p" long:"parallel" description:"parallel count for downloading"`
 }
 
 type tocPattern struct {
@@ -98,6 +99,7 @@ func main() {
 		FontFile:        "fonts/CustomFont.ttf",
 		RetryCount:      3,
 		Timeout:         60,
+		ParallelCount:   10,
 	}
 
 	args, err := flags.Parse(&opts)

@@ -30,7 +30,7 @@ type downloadUtil struct {
 func (du *downloadUtil) init() {
 	du.quit = make(chan bool)
 	du.ctx = context.TODO()
-	du.semaphore = semaphore.NewWeighted(10)
+	du.semaphore = semaphore.NewWeighted(opts.ParallelCount)
 	du.content = make(chan contentUtil, 10000)
 }
 
