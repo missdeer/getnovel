@@ -62,39 +62,33 @@ func (du *downloadUtil) process() {
 			select {
 			case cu := <-du.content:
 				fmt.Println(cu.title, cu.link)
-				if cu.index == du.currentPage+1 {
-					du.generator.AppendContent(cu.title, cu.link, cu.content)
-					du.currentPage++
-				} else {
-					// insert into local buffer
-					if len(du.buffer) == 0 || du.buffer[0].index > cu.index {
-						// push front
-						du.buffer = append([]contentUtil{cu}, du.buffer...)
-						break
+				// insert into local buffer
+				if len(du.buffer) == 0 || du.buffer[0].index > cu.index {
+					// push front
+					du.buffer = append([]contentUtil{cu}, du.buffer...)
+
+					// check local buffer to pick items to generator
+					for ; len(du.buffer) > 0 && du.buffer[0].index == du.currentPage+1; du.buffer = du.buffer[1:] {
+						du.generator.AppendContent(du.buffer[0].title, du.buffer[0].link, du.buffer[0].content)
+						du.currentPage++
 					}
-					if du.buffer[len(du.buffer)-1].index < cu.index {
-						// push back
-						du.buffer = append(du.buffer, cu)
-						break
-					}
-					for i := 0; i < len(du.buffer)-1; i++ {
-						if du.buffer[i].index < cu.index && du.buffer[i+1].index > cu.index {
-							// insert at i+1
-							du.buffer = append(du.buffer[:i+1], append([]contentUtil{cu}, du.buffer[i+1:]...)...)
-							break
-						}
+					if du.currentPage == du.maxPage {
+						du.quit <- true
+						return
 					}
 					break
 				}
-
-				// check local buffer to pick items to generator
-				for ; len(du.buffer) > 0 && du.buffer[0].index == du.currentPage+1; du.buffer = du.buffer[1:] {
-					du.generator.AppendContent(du.buffer[0].title, du.buffer[0].link, du.buffer[0].content)
-					du.currentPage++
+				if du.buffer[len(du.buffer)-1].index < cu.index {
+					// push back
+					du.buffer = append(du.buffer, cu)
+					break
 				}
-				if du.currentPage == du.maxPage {
-					du.quit <- true
-					return
+				for i := 0; i < len(du.buffer)-1; i++ {
+					if du.buffer[i].index < cu.index && du.buffer[i+1].index > cu.index {
+						// insert at i+1
+						du.buffer = append(du.buffer[:i+1], append([]contentUtil{cu}, du.buffer[i+1:]...)...)
+						break
+					}
 				}
 			}
 		}
