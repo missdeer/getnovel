@@ -61,6 +61,13 @@ func init() {
 
 			gen.Begin()
 
+			dlutil := &downloadUtil{
+				downloader: dlPage,
+				generator:  gen,
+			}
+			dlutil.init()
+			dlutil.process()
+
 			var title string
 			r, _ := regexp.Compile(`<dd>\s<a\sstyle=""=style=""\shref="([0-9]+\.html)">([^<]+)</a></dd>$`)
 			re, _ := regexp.Compile(`<h1>([^<]+)</h1>$`)
@@ -81,11 +88,11 @@ func init() {
 					ss := r.FindAllStringSubmatch(l, -1)
 					s := ss[0]
 					finalURL := fmt.Sprintf("%s%s", tocURL, s[1])
-					c := dlPage(finalURL)
-					gen.AppendContent(s[2], finalURL, string(c))
-					fmt.Println(s[2], finalURL, len(c), "bytes")
+					dlutil.maxPage++
+					dlutil.addURL(dlutil.maxPage, s[2], finalURL)
 				}
 			}
+			dlutil.wait()
 			gen.End()
 		},
 	})

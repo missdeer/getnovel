@@ -64,6 +64,13 @@ func init() {
 
 			gen.Begin()
 
+			dlutil := &downloadUtil{
+				downloader: dlPage,
+				generator:  gen,
+			}
+			dlutil.init()
+			dlutil.process()
+
 			var title string
 			// 	<td class="L"><a href="/html/7/7542/5843860.html">第一章.超级网吧系统</a></td>
 			r, _ := regexp.Compile(`<td class="L"><a\shref="(/html/[0-9]+/[0-9]+/[0-9]+\.html)">([^<]+)</a></td>$`)
@@ -88,11 +95,11 @@ func init() {
 					ss := r.FindAllStringSubmatch(l, -1)
 					s := ss[0]
 					finalURL := fmt.Sprintf("http://www.wutuxs.com%s", s[1])
-					c := dlPage(finalURL)
-					gen.AppendContent(s[2], finalURL, string(c))
-					fmt.Println(s[2], finalURL, len(c), "bytes")
+					dlutil.maxPage++
+					dlutil.addURL(dlutil.maxPage, s[2], finalURL)
 				}
 			}
+			dlutil.wait()
 			gen.End()
 		},
 	})

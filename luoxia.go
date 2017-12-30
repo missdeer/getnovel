@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -95,6 +94,13 @@ func init() {
 
 			gen.Begin()
 
+			dlutil := &downloadUtil{
+				downloader: dlPage,
+				generator:  gen,
+			}
+			dlutil.init()
+			dlutil.process()
+
 			var title string
 			// <li><a target="_blank" title="第二章&nbsp;破釜沉舟" href="http://www.luoxia.com/jingzhou/32741.htm">第二章&nbsp;破釜沉舟</a></li>
 			r, _ := regexp.Compile(`<li><a\starget="_blank"\stitle="[^"]+"\shref="([^"]+)">([^<]+)</a></li>$`)
@@ -117,14 +123,12 @@ func init() {
 					ss := r.FindAllStringSubmatch(l, -1)
 					s := ss[0]
 					finalURL := s[1]
-					c := dlPage(finalURL)
-					if len(c) > 0 {
-						title := strings.Replace(s[2], `&nbsp;`, ` `, -1)
-						gen.AppendContent(title, finalURL, string(c))
-						fmt.Println(title, finalURL, len(c), "bytes")
-					}
+					title := strings.Replace(s[2], `&nbsp;`, ` `, -1)
+					dlutil.maxPage++
+					dlutil.addURL(dlutil.maxPage, title, finalURL)
 				}
 			}
+			dlutil.wait()
 			gen.End()
 		},
 	})

@@ -78,6 +78,13 @@ func init() {
 
 		gen.Begin()
 
+		dlutil := &downloadUtil{
+			downloader: dlPage,
+			generator:  gen,
+		}
+		dlutil.init()
+		dlutil.process()
+
 		var title string
 		var lines []string
 
@@ -122,10 +129,10 @@ func init() {
 			if strings.HasPrefix(articleURL, "http") {
 				finalURL = articleURL
 			}
-			c := dlPage(finalURL)
-			gen.AppendContent(s[p.articleTitlePos], finalURL, string(c))
-			fmt.Println(s[p.articleTitlePos], finalURL, len(c), "bytes")
+			dlutil.maxPage++
+			dlutil.addURL(dlutil.maxPage, s[p.articleTitlePos], finalURL)
 		}
+		dlutil.wait()
 		gen.End()
 	}
 

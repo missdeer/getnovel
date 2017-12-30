@@ -74,6 +74,13 @@ func init() {
 
 			gen.Begin()
 
+			dlutil := &downloadUtil{
+				downloader: dlPage,
+				generator:  gen,
+			}
+			dlutil.init()
+			dlutil.process()
+
 			var title string
 			var lines []string
 			// 	<li><a href="/b/2816/52791.html" title="调教初唐 第一千零八十五章 调教完毕……" target="_blank">第一千零八十五章 调教完毕……</a></li>
@@ -108,10 +115,10 @@ func init() {
 				ss := r.FindAllStringSubmatch(l, -1)
 				s := ss[0]
 				finalURL := fmt.Sprintf("%s%s", u, s[1])
-				c := dlPage(finalURL)
-				gen.AppendContent(s[2], finalURL, string(c))
-				fmt.Println(s[2], finalURL, len(c), "bytes")
+				dlutil.maxPage++
+				dlutil.addURL(dlutil.maxPage, s[2], finalURL)
 			}
+			dlutil.wait()
 			gen.End()
 		},
 	})
