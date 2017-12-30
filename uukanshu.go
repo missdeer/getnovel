@@ -26,7 +26,7 @@ func init() {
 					"Accept-Language":           `en-US,en;q=0.8`,
 					"Upgrade-Insecure-Requests": "1",
 				}
-				c, err = httputil.GetBytes(u, headers, 60*time.Second, 3)
+				c, err = httputil.GetBytes(u, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
 				if err != nil {
 					return
 				}
@@ -67,7 +67,7 @@ func init() {
 				"Accept-Language":           `en-US,en;q=0.8`,
 				"Upgrade-Insecure-Requests": "1",
 			}
-			b, err := httputil.GetBytes(u, headers, 60*time.Second, 3)
+			b, err := httputil.GetBytes(u, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
 			if err != nil {
 				return
 			}
