@@ -21,6 +21,7 @@ type Options struct {
 	TitleFontSize   int     `long:"titleFontSize" description:"set title font point size for PDF format"`
 	ContentFontSize int     `long:"contentFontSize" description:"set content font point size for PDF format"`
 	LineSpacing     float64 `long:"lineSpacing" description:"set line spacing rate for PDF format"`
+	PagesPerFile    int     `long:"pagesPerFile" description:"split the big single PDF file to several smaller PDF files, how many pages should be included in a file, 0 means don't split"`
 	FontFamily      string  `long:"fontFamily" description:"set font family name"`
 	FontFile        string  `long:"fontFile" description:"set TTF font file path"`
 	RetryCount      int     `short:"r" long:"retries" description:"download retry count"`
@@ -95,6 +96,7 @@ func main() {
 		TitleFontSize:   24,
 		ContentFontSize: 18,
 		LineSpacing:     1.2,
+		PagesPerFile:    0,
 		FontFamily:      "CustomFont",
 		FontFile:        "fonts/CustomFont.ttf",
 		RetryCount:      3,
@@ -126,6 +128,7 @@ func main() {
 					gen = ebook.NewBook(opts.Format)
 					gen.SetFontSize(opts.TitleFontSize, opts.ContentFontSize)
 					gen.SetLineSpacing(opts.LineSpacing)
+					gen.PagesPerFile(opts.PagesPerFile)
 					gen.SetMargins(opts.LeftMargin, opts.TopMargin)
 					gen.SetPageType(opts.PageType)
 					gen.SetFontFamily(opts.FontFamily)
