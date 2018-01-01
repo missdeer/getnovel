@@ -34,7 +34,7 @@ func newDownloadUtil(dl func(string) []byte, generator ebook.IBook) *downloadUti
 		quit:       make(chan bool),
 		ctx:        context.TODO(),
 		semaphore:  semaphore.NewWeighted(opts.ParallelCount),
-		content:    make(chan contentUtil, 10000),
+		content:    make(chan contentUtil),
 	}
 }
 
