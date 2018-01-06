@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/url"
 	"os"
 	"regexp"
@@ -28,6 +31,7 @@ type Options struct {
 	RetryCount      int     `short:"r" long:"retries" description:"download retry count"`
 	Timeout         int     `short:"t" long:"timeout" description:"download timeout seconds"`
 	ParallelCount   int64   `short:"p" long:"parallel" description:"parallel count for downloading"`
+	ConfigFile      string  `short:"c" long:"config" description:"read configurations from local file"`
 }
 
 type tocPattern struct {
@@ -81,6 +85,102 @@ func listCommandHandler() {
 	}
 }
 
+func readConfigFile(opts *Options) bool {
+	if opts.ConfigFile != "" {
+		contentFd, err := os.OpenFile(opts.ConfigFile, os.O_RDONLY, 0644)
+		if err != nil {
+			log.Println("opening config file ", opts.ConfigFile, " for reading failed ", err)
+			return false
+		}
+
+		contentC, err := ioutil.ReadAll(contentFd)
+		if err != nil {
+			log.Println("reading config file ", opts.ConfigFile, " failed ", err)
+			return false
+		}
+		contentFd.Close()
+
+		var options map[string]interface{}
+		if err = json.Unmarshal(contentC, &options); err != nil {
+			log.Println("unmarshall configurations failed", err)
+			return false
+		}
+
+		if f, ok := options["format"]; ok {
+			if v := f.(string); len(v) > 0 {
+				opts.Format = v
+			}
+		}
+		if f, ok := options["pageType"]; ok {
+			if v := f.(string); len(v) > 0 {
+				opts.PageType = v
+			}
+		}
+		if f, ok := options["fontFamily"]; ok {
+			if v := f.(string); len(v) > 0 {
+				opts.FontFamily = v
+			}
+		}
+		if f, ok := options["fontFile"]; ok {
+			if v := f.(string); len(v) > 0 {
+				opts.FontFile = v
+			}
+		}
+
+		if f, ok := options["leftMargin"]; ok {
+			if v := f.(float64); v > 0 {
+				opts.LeftMargin = v
+			}
+		}
+		if f, ok := options["topMargin"]; ok {
+			if v := f.(float64); v > 0 {
+				opts.TopMargin = v
+			}
+		}
+		if f, ok := options["lineSpacing"]; ok {
+			if v := f.(float64); v > 0 {
+				opts.LineSpacing = v
+			}
+		}
+		if f, ok := options["titleFontSize"]; ok {
+			if v := f.(int); v > 0 {
+				opts.TitleFontSize = v
+			}
+		}
+		if f, ok := options["contentFontSize"]; ok {
+			if v := f.(int); v > 0 {
+				opts.ContentFontSize = v
+			}
+		}
+		if f, ok := options["pagesPerFile"]; ok {
+			if v := f.(int); v > 0 {
+				opts.PagesPerFile = v
+			}
+		}
+		if f, ok := options["chaptersPerFile"]; ok {
+			if v := f.(int); v > 0 {
+				opts.ChaptersPerFile = v
+			}
+		}
+		if f, ok := options["retries"]; ok {
+			if v := f.(int); v > 0 {
+				opts.RetryCount = v
+			}
+		}
+		if f, ok := options["timeout"]; ok {
+			if v := f.(int); v > 0 {
+				opts.Timeout = v
+			}
+		}
+		if f, ok := options["parallel"]; ok {
+			if v := f.(int64); v > 0 {
+				opts.ParallelCount = v
+			}
+		}
+	}
+	return true
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("使用方法：\n\tgetnovel 小说目录网址")
@@ -113,6 +213,10 @@ func main() {
 
 	if opts.List {
 		listCommandHandler()
+		return
+	}
+
+	if !readConfigFile(&opts) {
 		return
 	}
 
