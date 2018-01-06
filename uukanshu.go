@@ -15,12 +15,12 @@ import (
 func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `UU看书`,
-		MatchPatterns: []string{`http://www\.uukanshu\.net/b/[0-9]+/`},
+		MatchPatterns: []string{`https://www\.uukanshu\.com/b/[0-9]+/`},
 		Download: func(u string) {
 			dlPage := func(u string) (c []byte) {
 				var err error
 				headers := map[string]string{
-					"Referer":                   "http://www.uukanshu.net/",
+					"Referer":                   "https://www.uukanshu.com/",
 					"User-Agent":                "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0",
 					"Accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
 					"Accept-Language":           `en-US,en;q=0.8`,
@@ -57,11 +57,11 @@ func init() {
 				}
 				c = bytes.Replace(c, []byte("<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;"), []byte("</p><p>"), -1)
 				c = bytes.Replace(c, []byte("&nbsp;&nbsp;&nbsp;&nbsp;"), []byte(""), -1)
-				c = bytes.Replace(c, []byte("<p>　　"), []byte("<p>"), -1)
+				c = bytes.Replace(c, []byte("<p>　　"), []byte("</p><p>"), -1)
 				return
 			}
 			headers := map[string]string{
-				"Referer":                   "http://www.uukanshu.net/",
+				"Referer":                   "https://www.uukanshu.com/",
 				"User-Agent":                "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0",
 				"Accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
 				"Accept-Language":           `en-US,en;q=0.8`,
