@@ -55,9 +55,13 @@ func init() {
 				if idx > 1 {
 					c = c[:idx]
 				}
-				c = bytes.Replace(c, []byte("<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;"), []byte("</p><p>"), -1)
-				c = bytes.Replace(c, []byte("&nbsp;&nbsp;&nbsp;&nbsp;"), []byte(""), -1)
-				c = bytes.Replace(c, []byte("<p>　　"), []byte("</p><p>"), -1)
+
+				c = bytes.Replace(c, []byte(`</p><p>`), []byte(`<p>`), -1)
+				c = bytes.Replace(c, []byte(`<br/>　　`), []byte(`<br/>`), -1)
+				c = bytes.Replace(c, []byte(`<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;`), []byte(`<p>`), -1)
+				c = bytes.Replace(c, []byte(`&nbsp;&nbsp;&nbsp;&nbsp;`), []byte(""), -1)
+				c = bytes.Replace(c, []byte(`<p>　　`), []byte(`<p>`), -1)
+				c = bytes.Replace(c, []byte(`<p>`), []byte(`</p><p>`), -1)
 				return
 			}
 			headers := map[string]string{
