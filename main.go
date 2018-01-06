@@ -17,11 +17,12 @@ type Options struct {
 	List            bool    `short:"l" long:"list" description:"list supported novel websites"`
 	LeftMargin      float64 `long:"leftMargin" description:"set left margin for PDF format"`
 	TopMargin       float64 `long:"topMargin" description:"set top margin for PDF format"`
-	PageType        string  `long:"pageType" description:"set page type for PDF format, candidate values: a0, a1, a2, a3, a4, a5, a6, b0, b1, b2, b3, b4, b5, b6, c0, c1, c2, c3, c4, c5, c6, dxg(=a4), 6inch(90mm x 117mm), 7inch, 10inch(=a4)"`
+	PageType        string  `long:"pageType" description:"set page type for PDF format, candidate values: a0, a1, a2, a3, a4, a5, a6, b0, b1, b2, b3, b4, b5, b6, c0, c1, c2, c3, c4, c5, c6, dxg(=a4), 6inch(90mm x 117mm), 7inch, 10inch(=a4), pc(=a4 & 25.4mm left margin & 31.7mm top margin & 16 point title font size & 12 point content font size)"`
 	TitleFontSize   int     `long:"titleFontSize" description:"set title font point size for PDF format"`
 	ContentFontSize int     `long:"contentFontSize" description:"set content font point size for PDF format"`
 	LineSpacing     float64 `long:"lineSpacing" description:"set line spacing rate for PDF format"`
 	PagesPerFile    int     `long:"pagesPerFile" description:"split the big single PDF file to several smaller PDF files, how many pages should be included in a file, 0 means don't split"`
+	ChaptersPerFile int     `long:"chaptersPerFile" description:"split the big signle PDF file to several smaller PDF files, how many chapters should be included in a file, 0 means don't split"`
 	FontFamily      string  `long:"fontFamily" description:"set font family name"`
 	FontFile        string  `long:"fontFile" description:"set TTF font file path"`
 	RetryCount      int     `short:"r" long:"retries" description:"download retry count"`
@@ -97,6 +98,7 @@ func main() {
 		ContentFontSize: 18,
 		LineSpacing:     1.2,
 		PagesPerFile:    0,
+		ChaptersPerFile: 0,
 		FontFamily:      "CustomFont",
 		FontFile:        "fonts/CustomFont.ttf",
 		RetryCount:      3,
@@ -129,6 +131,7 @@ func main() {
 					gen.SetFontSize(opts.TitleFontSize, opts.ContentFontSize)
 					gen.SetLineSpacing(opts.LineSpacing)
 					gen.PagesPerFile(opts.PagesPerFile)
+					gen.ChaptersPerFile(opts.ChaptersPerFile)
 					gen.SetMargins(opts.LeftMargin, opts.TopMargin)
 					gen.SetPageType(opts.PageType)
 					gen.SetFontFamily(opts.FontFamily)

@@ -3,8 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
 
 	"github.com/dfordsoft/golib/ebook"
+	"github.com/satori/go.uuid"
 	"golang.org/x/sync/semaphore"
 )
 
@@ -15,9 +19,9 @@ type contentUtil struct {
 	content string
 }
 type downloadUtil struct {
-	downloader func(string) []byte
-	generator  ebook.IBook
-
+	downloader  func(string) []byte
+	generator   ebook.IBook
+	tempDir     string
 	currentPage int
 	maxPage     int
 	quit        chan bool
@@ -27,8 +31,8 @@ type downloadUtil struct {
 	semaphore   *semaphore.Weighted
 }
 
-func newDownloadUtil(dl func(string) []byte, generator ebook.IBook) *downloadUtil {
-	return &downloadUtil{
+func newDownloadUtil(dl func(string) []byte, generator ebook.IBook) (du *downloadUtil) {
+	du = &downloadUtil{
 		downloader: dl,
 		generator:  generator,
 		quit:       make(chan bool),
@@ -36,21 +40,37 @@ func newDownloadUtil(dl func(string) []byte, generator ebook.IBook) *downloadUti
 		semaphore:  semaphore.NewWeighted(opts.ParallelCount),
 		content:    make(chan contentUtil),
 	}
+	var err error
+	du.tempDir, err = ioutil.TempDir("", uuid.Must(uuid.NewV4()).String())
+	if err != nil {
+		log.Fatal("creating temporary directory failed", err)
+	}
+	return
 }
 
 func (du *downloadUtil) wait() {
 	<-du.quit
+	os.RemoveAll(du.tempDir)
 }
 
 func (du *downloadUtil) addURL(index int, title string, link string) {
 	// semaphore
 	du.semaphore.Acquire(du.ctx, 1)
 	go func() {
+		filePath := fmt.Sprintf("%s/%d.txt", du.tempDir, index)
+		contentFd, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+		if err != nil {
+			log.Println("opening file", filePath, "for writing failed ", err)
+			return
+		}
+		contentFd.Write(du.downloader(link))
+		contentFd.Close()
+
 		du.content <- contentUtil{
 			index:   index,
 			title:   title,
 			link:    link,
-			content: string(du.downloader(link)),
+			content: filePath,
 		}
 		du.semaphore.Release(1)
 	}()
@@ -69,7 +89,21 @@ func (du *downloadUtil) process() {
 
 					// check local buffer to pick items to generator
 					for ; len(du.buffer) > 0 && du.buffer[0].index == du.currentPage+1; du.buffer = du.buffer[1:] {
-						du.generator.AppendContent(du.buffer[0].title, du.buffer[0].link, du.buffer[0].content)
+						contentFd, err := os.OpenFile(du.buffer[0].content, os.O_RDONLY, 0644)
+						if err != nil {
+							log.Println("opening file ", du.buffer[0].content, " for reading failed ", err)
+							continue
+						}
+
+						contentC, err := ioutil.ReadAll(contentFd)
+						if err != nil {
+							log.Println("reading file ", du.buffer[0].content, " failed ", err)
+							continue
+						}
+						contentFd.Close()
+						os.Remove(du.buffer[0].content)
+
+						du.generator.AppendContent(du.buffer[0].title, du.buffer[0].link, string(contentC))
 						du.currentPage++
 					}
 					if du.currentPage == du.maxPage {
