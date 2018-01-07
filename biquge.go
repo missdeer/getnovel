@@ -53,6 +53,7 @@ func init() {
 			}
 
 			c = bytes.Replace(c, []byte("<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;"), []byte("</p><p>"), -1)
+			c = bytes.Replace(c, []byte("<br />&nbsp;&nbsp;&nbsp;&nbsp;"), []byte("</p><p>"), -1)
 			c = bytes.Replace(c, []byte("<br/><br/>"), []byte("</p><p>"), -1)
 			c = bytes.Replace(c, []byte(`　　`), []byte(""), -1)
 			return
@@ -133,6 +134,31 @@ func init() {
 		dlutil.wait()
 		gen.End()
 	}
+	registerNovelSiteHandler(&novelSiteHandler{
+		Title:         `八一中文网`,
+		MatchPatterns: []string{`https://www\.zwdu\.com/book/[0-9]+/`},
+		Download: func(u string) {
+			tocPatterns := []tocPattern{
+				{
+					host:            "www.zwdu.com",
+					bookTitle:       `<h1>([^<]+)</h1>$`,
+					bookTitlePos:    1,
+					item:            `<dd>\s*<a\s+href="([^"]+)"(\sclass="empty")?>([^<]+)</a></dd>$`,
+					articleURLPos:   1,
+					articleTitlePos: 3,
+					isAbsoluteURL:   true,
+				},
+			}
+			pageContentMarkers := []pageContentMarker{
+				{
+					host:  "www.zwdu.com",
+					start: []byte(`<div id="content">`),
+					end:   []byte(`</div>`),
+				},
+			}
+			dl(u, tocPatterns, pageContentMarkers)
+		},
+	})
 
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `少年文学网`,
