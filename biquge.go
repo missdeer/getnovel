@@ -71,6 +71,7 @@ func init() {
 			return
 		}
 
+		b = bytes.Replace(b, []byte("<dd>"), []byte("\n<dd>"), -1)
 		b = bytes.Replace(b, []byte("</dd>"), []byte("</dd>\n"), -1)
 		if bytes.Index(b, []byte("charset=gbk")) > 0 {
 			b = ic.Convert("gbk", "utf-8", b)
@@ -110,6 +111,7 @@ func init() {
 				lines = append(lines, line)
 			}
 		}
+
 		for i := len(lines) - 1; i >= 0 && i < len(lines) && lines[0] == lines[i]; i -= 2 {
 			lines = lines[1:]
 		}
@@ -240,6 +242,7 @@ func init() {
 			`http://www\.biquge\.lu/book/[0-9]+/`,
 			`http://www\.biquge5200\.com/[0-9]+_[0-9]+/`,
 			`http://www\.xxbiquge\.com/[0-9]+_[0-9]+/`,
+			`http://www\.biqugev\.com/[0-9]+_[0-9]+/`,
 		},
 		Download: func(u string) {
 			tocPatterns := []tocPattern{
@@ -309,6 +312,14 @@ func init() {
 					articleTitlePos: 3,
 					isAbsoluteURL:   true,
 				},
+				{
+					host:            "www.biqugev.com",
+					bookTitle:       `^<h1>([^<]+)</h1>$`,
+					bookTitlePos:    1,
+					item:            `<dd>\s*<a\s*href="([^"]+)"(\sclass="empty")?>([^<]+)</a></dd>$`,
+					articleURLPos:   1,
+					articleTitlePos: 3,
+				},
 			}
 			pageContentMarkers := []pageContentMarker{
 				{
@@ -348,6 +359,11 @@ func init() {
 				},
 				{
 					host:  "www.xxbiquge.com",
+					start: []byte(`<div id="content">`),
+					end:   []byte(`</div>`),
+				},
+				{
+					host:  "www.biqugev.com",
 					start: []byte(`<div id="content">`),
 					end:   []byte(`</div>`),
 				},
