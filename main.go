@@ -32,6 +32,7 @@ type Options struct {
 	Timeout         int     `short:"t" long:"timeout" description:"download timeout seconds"`
 	ParallelCount   int64   `long:"parallel" description:"parallel count for downloading"`
 	ConfigFile      string  `short:"c" long:"config" description:"read configurations from local file"`
+	OutputFile      string  `short:"o" long:"output" description:"output file path"`
 }
 
 type tocPattern struct {
