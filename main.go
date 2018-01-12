@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/dfordsoft/golib/ebook"
-	"github.com/golang/freetype/truetype"
 	flags "github.com/jessevdk/go-flags"
 )
 
@@ -33,7 +32,6 @@ type Options struct {
 	ParallelCount   int64   `long:"parallel" description:"parallel count for downloading"`
 	ConfigFile      string  `short:"c" long:"config" description:"read configurations from local file"`
 	OutputFile      string  `short:"o" long:"output" description:"output file path"`
-	FontFamily      string
 }
 
 type tocPattern struct {
@@ -116,11 +114,6 @@ func readConfigFile(opts *Options) bool {
 		if f, ok := options["pageType"]; ok {
 			if v := f.(string); len(v) > 0 {
 				opts.PageType = v
-			}
-		}
-		if f, ok := options["fontFamily"]; ok {
-			if v := f.(string); len(v) > 0 {
-				opts.FontFamily = v
 			}
 		}
 		if f, ok := options["fontFile"]; ok {
@@ -221,27 +214,6 @@ func main() {
 		return
 	}
 
-	// check font files
-	fontFd, err := os.OpenFile(opts.FontFile, os.O_RDONLY, 0644)
-	if err != nil {
-		log.Fatalln("can't find font file", opts.FontFile, err)
-		return
-	}
-	defer fontFd.Close()
-
-	fontContent, err := ioutil.ReadAll(fontFd)
-	if err != nil {
-		log.Fatalln("can't read font file", err)
-		return
-	}
-
-	font, err := truetype.Parse(fontContent)
-	if err != nil {
-		log.Fatalln("can't parse TTF font", err)
-		return
-	}
-	opts.FontFamily = font.Name(truetype.NameIDFontFamily)
-
 	downloaded := false
 	for _, novelURL := range args {
 		_, e := url.Parse(novelURL)
@@ -260,7 +232,6 @@ func main() {
 					gen.ChaptersPerFile(opts.ChaptersPerFile)
 					gen.SetMargins(opts.LeftMargin, opts.TopMargin)
 					gen.SetPageType(opts.PageType)
-					gen.SetFontFamily(opts.FontFamily)
 					gen.SetFontFile(opts.FontFile)
 					gen.Info()
 					h.Download(novelURL)
