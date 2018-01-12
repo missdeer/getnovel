@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/dfordsoft/golib/ebook"
+	"github.com/golang/freetype/truetype"
 	flags "github.com/jessevdk/go-flags"
 )
 
@@ -26,13 +27,13 @@ type Options struct {
 	LineSpacing     float64 `long:"lineSpacing" description:"set line spacing rate for PDF format"`
 	PagesPerFile    int     `long:"pagesPerFile" description:"split the big single PDF file to several smaller PDF files, how many pages should be included in a file, 0 means don't split"`
 	ChaptersPerFile int     `long:"chaptersPerFile" description:"split the big signle PDF file to several smaller PDF files, how many chapters should be included in a file, 0 means don't split"`
-	FontFamily      string  `long:"fontFamily" description:"set font family name"`
 	FontFile        string  `long:"fontFile" description:"set TTF font file path"`
 	RetryCount      int     `short:"r" long:"retries" description:"download retry count"`
 	Timeout         int     `short:"t" long:"timeout" description:"download timeout seconds"`
 	ParallelCount   int64   `long:"parallel" description:"parallel count for downloading"`
 	ConfigFile      string  `short:"c" long:"config" description:"read configurations from local file"`
 	OutputFile      string  `short:"o" long:"output" description:"output file path"`
+	FontFamily      string
 }
 
 type tocPattern struct {
@@ -219,6 +220,30 @@ func main() {
 
 	if !readConfigFile(&opts) {
 		return
+	}
+
+	// check font files
+	fontFd, err := os.OpenFile(opts.FontFile, os.O_RDONLY, 0644)
+	if err != nil {
+		log.Fatalln("can't find font file", opts.FontFile, err)
+		return
+	}
+	defer fontFd.Close()
+
+	fontContent, err := ioutil.ReadAll(fontFd)
+	if err != nil {
+		log.Fatalln("can't read font file", err)
+		return
+	}
+
+	font, err := truetype.Parse(fontContent)
+	if err != nil {
+		log.Fatalln("can't parse TTF font", err)
+		return
+	}
+	opts.FontFamily = font.Name(truetype.NameIDFontFamily)
+	for i := 0; i <= 19; i++ {
+		fmt.Println(font.Name(truetype.NameID(i)))
 	}
 
 	downloaded := false
