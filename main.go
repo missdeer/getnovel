@@ -201,7 +201,6 @@ func main() {
 		LineSpacing:     1.2,
 		PagesPerFile:    0,
 		ChaptersPerFile: 0,
-		FontFamily:      "CustomFont",
 		FontFile:        "fonts/CustomFont.ttf",
 		RetryCount:      3,
 		Timeout:         60,
@@ -242,9 +241,6 @@ func main() {
 		return
 	}
 	opts.FontFamily = font.Name(truetype.NameIDFontFamily)
-	for i := 0; i <= 19; i++ {
-		fmt.Println(font.Name(truetype.NameID(i)))
-	}
 
 	downloaded := false
 	for _, novelURL := range args {
