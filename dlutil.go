@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"sync"
+	"sync/atomic"
 
 	"github.com/dfordsoft/golib/ebook"
 	"github.com/satori/go.uuid"
@@ -20,12 +20,11 @@ type contentUtil struct {
 	content string
 }
 type downloadUtil struct {
-	sync.Mutex
 	downloader   func(string) []byte
 	generator    ebook.IBook
 	tempDir      string
-	currentPage  int
-	maxPage      int
+	currentPage  int32
+	maxPage      int32
 	quit         chan bool
 	content      chan contentUtil
 	buffer       []contentUtil
@@ -70,19 +69,17 @@ func (du *downloadUtil) wait() {
 }
 
 func (du *downloadUtil) preprocessURL(index int, title string, link string) (returnImmediately bool) {
-	du.Lock()
-	defer du.Unlock()
-	du.maxPage = index
+	atomic.StoreInt32(&du.maxPage, int32(index))
 	if du.startContent != nil {
 		if du.startContent.index == index {
 			du.startContent.title = title
 			du.startContent.link = link
-			du.currentPage = index - 1
+			atomic.StoreInt32(&du.currentPage, int32(index-1))
 		}
 		if du.startContent.title == title {
 			du.startContent.index = index
 			du.startContent.link = link
-			du.currentPage = index - 1
+			atomic.StoreInt32(&du.currentPage, int32(index-1))
 		}
 
 		if du.startContent.index > index {
@@ -98,8 +95,7 @@ func (du *downloadUtil) preprocessURL(index int, title string, link string) (ret
 			du.endContent.index = index
 			du.endContent.link = link
 		}
-
-		du.maxPage = du.endContent.index
+		atomic.StoreInt32(&du.maxPage, int32(du.endContent.index))
 
 		if index > du.endContent.index && du.endContent.index != 0 {
 			return true
@@ -136,14 +132,12 @@ func (du *downloadUtil) addURL(index int, title string, link string) {
 
 func (du *downloadUtil) bufferHandler(cu contentUtil) (exit bool) {
 	fmt.Println(cu.title, cu.link)
-	du.Lock()
-	defer du.Unlock()
 	// insert into local buffer
 	if len(du.buffer) == 0 || du.buffer[0].index > cu.index {
 		// push front
 		du.buffer = append([]contentUtil{cu}, du.buffer...)
 		// check local buffer to pick items to generator
-		for ; len(du.buffer) > 0 && du.buffer[0].index == du.currentPage+1; du.buffer = du.buffer[1:] {
+		for ; len(du.buffer) > 0 && int32(du.buffer[0].index) == atomic.LoadInt32(&du.currentPage)+1; du.buffer = du.buffer[1:] {
 			contentFd, err := os.OpenFile(du.buffer[0].content, os.O_RDONLY, 0644)
 			if err != nil {
 				log.Println("opening file ", du.buffer[0].content, " for reading failed ", err)
@@ -159,10 +153,10 @@ func (du *downloadUtil) bufferHandler(cu contentUtil) (exit bool) {
 			os.Remove(du.buffer[0].content)
 
 			du.generator.AppendContent(du.buffer[0].title, du.buffer[0].link, string(contentC))
-			du.currentPage++
+			atomic.AddInt32(&du.currentPage, 1)
 		}
 
-		if du.currentPage == du.maxPage {
+		if atomic.LoadInt32(&du.currentPage) == atomic.LoadInt32(&du.maxPage) {
 			du.quit <- true
 			return true
 		}
