@@ -39,10 +39,12 @@ func init() {
 				c = bytes.Replace(c, []byte("\n"), []byte(""), -1)
 				c = bytes.Replace(c, []byte(`更多更快章节请到。`), []byte(""), -1)
 				c = bytes.Replace(c, []byte(`第一时间更新`), []byte(""), -1)
-				idx := bytes.Index(c, []byte("</tr></table><br>&nbsp;&nbsp;&nbsp;&nbsp;"))
+				c = bytes.Replace(c, []byte(`手机用户请访问http://m.piaotian.net`), []byte(""), -1)
+				idx := bytes.Index(c, []byte(`&nbsp;&nbsp;&nbsp;&nbsp;`))
 				if idx > 1 {
-					c = c[idx+17:]
+					c = c[idx:]
 				}
+
 				idx = bytes.Index(c, []byte("</div>"))
 				if idx > 1 {
 					c = c[:idx]
