@@ -32,6 +32,10 @@ type Options struct {
 	ParallelCount   int64   `long:"parallel" description:"parallel count for downloading"`
 	ConfigFile      string  `short:"c" long:"config" description:"read configurations from local file"`
 	OutputFile      string  `short:"o" long:"output" description:"output file path"`
+	FromChapter     int     `long:"fromChapter" description:"from chapter"`
+	FromTitle       string  `long:"fromTitle" description:"from title"`
+	ToChapter       int     `long:"toChapter" description:"to chapter"`
+	ToTitle         string  `long:"toTitle" description:"to title"`
 }
 
 type tocPattern struct {
@@ -119,6 +123,26 @@ func readConfigFile(opts *Options) bool {
 		if f, ok := options["fontFile"]; ok {
 			if v := f.(string); len(v) > 0 {
 				opts.FontFile = v
+			}
+		}
+		if f, ok := options["fromChapter"]; ok {
+			if v := f.(int); v > 0 {
+				opts.FromChapter = v
+			}
+		}
+		if f, ok := options["fromTitle"]; ok {
+			if v := f.(string); len(v) > 0 {
+				opts.FromTitle = v
+			}
+		}
+		if f, ok := options["toChapter"]; ok {
+			if v := f.(int); v > 0 {
+				opts.ToChapter = v
+			}
+		}
+		if f, ok := options["toTitle"]; ok {
+			if v := f.(string); len(v) > 0 {
+				opts.ToTitle = v
 			}
 		}
 
@@ -234,6 +258,10 @@ func main() {
 					gen.SetPageType(opts.PageType)
 					gen.SetFontFile(opts.FontFile)
 					gen.Output(opts.OutputFile)
+					gen.FromTitle(opts.FromTitle)
+					gen.FromChapter(opts.FromChapter)
+					gen.ToTitle(opts.ToTitle)
+					gen.ToChapter(opts.ToChapter)
 					gen.Info()
 					h.Download(novelURL)
 					downloaded = true
