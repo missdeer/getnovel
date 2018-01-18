@@ -39,6 +39,7 @@ func init() {
 				c = bytes.Replace(c, []byte("\n"), []byte(""), -1)
 				c = bytes.Replace(c, []byte(`更多更快章节请到。`), []byte(""), -1)
 				c = bytes.Replace(c, []byte(`第一时间更新`), []byte(""), -1)
+				c = bytes.Replace(c, []byte(`本书首发来自17K小说网，第一时间看正版内容！`), []byte(""), -1)
 				c = bytes.Replace(c, []byte(`手机用户请访问http://m.piaotian.net`), []byte(""), -1)
 				idx := bytes.Index(c, []byte(`&nbsp;&nbsp;&nbsp;&nbsp;`))
 				if idx > 1 {
