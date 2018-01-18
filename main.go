@@ -233,6 +233,7 @@ func main() {
 					gen.SetMargins(opts.LeftMargin, opts.TopMargin)
 					gen.SetPageType(opts.PageType)
 					gen.SetFontFile(opts.FontFile)
+					gen.Output(opts.OutputFile)
 					gen.Info()
 					h.Download(novelURL)
 					downloaded = true
