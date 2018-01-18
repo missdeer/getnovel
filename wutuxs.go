@@ -68,6 +68,7 @@ func init() {
 			dlutil.process()
 
 			var title string
+			index := 0
 			// 	<td class="L"><a href="/html/7/7542/5843860.html">第一章.超级网吧系统</a></td>
 			r, _ := regexp.Compile(`<td class="L"><a\shref="(/html/[0-9]+/[0-9]+/[0-9]+\.html)">([^<]+)</a></td>$`)
 			// <h1>系统的黑科技网吧</h1>
@@ -91,8 +92,7 @@ func init() {
 					ss := r.FindAllStringSubmatch(l, -1)
 					s := ss[0]
 					finalURL := fmt.Sprintf("http://www.wutuxs.com%s", s[1])
-					dlutil.maxPage++
-					dlutil.addURL(dlutil.maxPage, s[2], finalURL)
+					dlutil.addURL(index, s[2], finalURL)
 				}
 			}
 			dlutil.wait()

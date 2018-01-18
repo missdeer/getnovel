@@ -117,7 +117,7 @@ func init() {
 			lines = lines[1:]
 		}
 
-		for _, line := range lines {
+		for index, line := range lines {
 			ss := r.FindAllStringSubmatch(line, -1)
 			s := ss[0]
 			articleURL := s[p.articleURLPos]
@@ -128,8 +128,8 @@ func init() {
 			if strings.HasPrefix(articleURL, "http") {
 				finalURL = articleURL
 			}
-			dlutil.maxPage++
-			dlutil.addURL(dlutil.maxPage, s[p.articleTitlePos], finalURL)
+
+			dlutil.addURL(index+1, s[p.articleTitlePos], finalURL)
 		}
 		dlutil.wait()
 		gen.End()

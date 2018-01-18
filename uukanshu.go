@@ -111,12 +111,11 @@ func init() {
 				}
 			}
 			lines = lines[:len(lines)-1]
-			for _, l := range lines {
+			for index, l := range lines {
 				ss := r.FindAllStringSubmatch(l, -1)
 				s := ss[0]
 				finalURL := fmt.Sprintf("%s%s", u, s[1])
-				dlutil.maxPage++
-				dlutil.addURL(dlutil.maxPage, s[2], finalURL)
+				dlutil.addURL(index+1, s[2], finalURL)
 			}
 			dlutil.wait()
 			gen.End()

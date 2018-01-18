@@ -98,6 +98,7 @@ func init() {
 			dlutil.process()
 
 			var title string
+			index := 0
 			// <li><a target="_blank" title="第二章&nbsp;破釜沉舟" href="http://www.luoxia.com/jingzhou/32741.htm">第二章&nbsp;破釜沉舟</a></li>
 			r, _ := regexp.Compile(`<li><a\starget="_blank"\stitle="[^"]+"\shref="([^"]+)">([^<]+)</a></li>$`)
 			// <h1>巴州往事</h1>
@@ -120,8 +121,8 @@ func init() {
 					s := ss[0]
 					finalURL := s[1]
 					title := strings.Replace(s[2], `&nbsp;`, ` `, -1)
-					dlutil.maxPage++
-					dlutil.addURL(dlutil.maxPage, title, finalURL)
+					index++
+					dlutil.addURL(index, title, finalURL)
 				}
 			}
 			dlutil.wait()

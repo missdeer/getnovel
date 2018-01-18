@@ -87,6 +87,7 @@ func init() {
 			dlutil.process()
 
 			var title string
+			index := 0
 			r, _ := regexp.Compile(`<dd><a\shref="([0-9]+\.html)">([^<]+)</a></dd>$`)
 			re, _ := regexp.Compile(`<h1>([^<]+)</h1>$`)
 			scanner := bufio.NewScanner(bytes.NewReader(b))
@@ -106,8 +107,8 @@ func init() {
 					ss := r.FindAllStringSubmatch(l, -1)
 					s := ss[0]
 					finalURL := fmt.Sprintf("%s%s", tocURL, s[1])
-					dlutil.maxPage++
-					dlutil.addURL(dlutil.maxPage, s[2], finalURL)
+					index++
+					dlutil.addURL(index, s[2], finalURL)
 				}
 			}
 			dlutil.wait()

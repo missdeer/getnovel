@@ -258,10 +258,6 @@ func main() {
 					gen.SetPageType(opts.PageType)
 					gen.SetFontFile(opts.FontFile)
 					gen.Output(opts.OutputFile)
-					gen.FromTitle(opts.FromTitle)
-					gen.FromChapter(opts.FromChapter)
-					gen.ToTitle(opts.ToTitle)
-					gen.ToChapter(opts.ToChapter)
 					gen.Info()
 					h.Download(novelURL)
 					downloaded = true

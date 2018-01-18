@@ -73,6 +73,7 @@ func init() {
 			dlutil.process()
 
 			var title string
+			index := 0
 			// <td class="L"><a href="43118588.html">1、我会对你负责的</a></td>
 			r, _ := regexp.Compile(`<td\sclass="L"><a\shref="([0-9]+\.html)">([^<]+)</a></td>$`)
 			re, _ := regexp.Compile(`<h1>([^<]+)</h1>`)
@@ -93,8 +94,8 @@ func init() {
 					ss := r.FindAllStringSubmatch(l, -1)
 					s := ss[0]
 					finalURL := fmt.Sprintf("%s%s", tocURL, s[1])
-					dlutil.maxPage++
-					dlutil.addURL(dlutil.maxPage, s[2], finalURL)
+					index++
+					dlutil.addURL(index, s[2], finalURL)
 				}
 			}
 			dlutil.wait()
