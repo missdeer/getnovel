@@ -19,8 +19,8 @@ go get github.com/dfordsoft/getnovel
 #### 常用用法
 
 * 输出适合在电脑上看的PDF格式：`getnovel -f pdf -p pc https://www.aszw.org/book/192/192150/`
-* 输出适合在电脑上看的PDF格式，但只要其中第11章~第20章内容：`getnovel -f pdf -p pc --fromChapter=11 --toChapter=20https://www.aszw.org/book/192/192150/`
-* 输出适合在电脑上看的PDF格式，但以每100章为一个文件：`getnovel -f pdf -p pc --chaptersPerFile=100https://www.aszw.org/book/192/192150/`
+* 输出适合在电脑上看的PDF格式，但只要其中第11章~第20章内容：`getnovel -f pdf -p pc --fromChapter=11 --toChapter=20 https://www.aszw.org/book/192/192150/`
+* 输出适合在电脑上看的PDF格式，但以每100章为一个文件：`getnovel -f pdf -p pc --chaptersPerFile=100 https://www.aszw.org/book/192/192150/`
 * 输出适合在Kindle DXG上看的PDF格式：`getnovel -f pdf -p dxg https://www.aszw.org/book/192/192150/`
 * 输出适合在6寸或7寸Kindle上看的mobi格式：`getnovel -f mobi https://www.aszw.org/book/192/192150/`，之后需要运行`kindlegen`工具，参考上面第3步
 
