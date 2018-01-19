@@ -129,7 +129,9 @@ func init() {
 				finalURL = articleURL
 			}
 
-			dlutil.addURL(index+1, s[p.articleTitlePos], finalURL)
+			if dlutil.addURL(index+1, s[p.articleTitlePos], finalURL) {
+				break
+			}
 		}
 		dlutil.wait()
 		gen.End()

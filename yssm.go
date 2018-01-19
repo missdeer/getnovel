@@ -85,7 +85,9 @@ func init() {
 					ss := r.FindAllStringSubmatch(l, -1)
 					s := ss[0]
 					finalURL := fmt.Sprintf("%s%s", tocURL, s[1])
-					dlutil.addURL(index, s[2], finalURL)
+					if dlutil.addURL(index, s[2], finalURL) {
+						break
+					}
 				}
 			}
 			dlutil.wait()

@@ -122,7 +122,9 @@ func init() {
 					finalURL := s[1]
 					title := strings.Replace(s[2], `&nbsp;`, ` `, -1)
 					index++
-					dlutil.addURL(index, title, finalURL)
+					if dlutil.addURL(index, title, finalURL) {
+						break
+					}
 				}
 			}
 			dlutil.wait()

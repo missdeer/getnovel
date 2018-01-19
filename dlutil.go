@@ -68,7 +68,7 @@ func (du *downloadUtil) wait() {
 	os.RemoveAll(du.tempDir)
 }
 
-func (du *downloadUtil) preprocessURL(index int, title string, link string) (returnImmediately bool) {
+func (du *downloadUtil) preprocessURL(index int, title string, link string) (returnImmediately bool, reachEnd bool) {
 	atomic.StoreInt32(&du.maxPage, int32(index))
 	if du.startContent != nil {
 		if du.startContent.index == index {
@@ -83,7 +83,7 @@ func (du *downloadUtil) preprocessURL(index int, title string, link string) (ret
 		}
 
 		if du.startContent.index > index {
-			return true
+			return true, false
 		}
 	}
 	if du.endContent != nil {
@@ -98,15 +98,15 @@ func (du *downloadUtil) preprocessURL(index int, title string, link string) (ret
 		atomic.StoreInt32(&du.maxPage, int32(du.endContent.index))
 
 		if index > du.endContent.index && du.endContent.index != 0 {
-			return true
+			return true, true
 		}
 	}
-	return false
+	return false, false
 }
 
-func (du *downloadUtil) addURL(index int, title string, link string) {
-	if du.preprocessURL(index, title, link) {
-		return
+func (du *downloadUtil) addURL(index int, title string, link string) (reachEnd bool) {
+	if r, e := du.preprocessURL(index, title, link); r == true {
+		return e
 	}
 	// semaphore
 	du.semaphore.Acquire(du.ctx, 1)
@@ -128,6 +128,7 @@ func (du *downloadUtil) addURL(index int, title string, link string) {
 		}
 		du.semaphore.Release(1)
 	}()
+	return false
 }
 
 func (du *downloadUtil) bufferHandler(cu contentUtil) (exit bool) {

@@ -115,7 +115,9 @@ func init() {
 				ss := r.FindAllStringSubmatch(l, -1)
 				s := ss[0]
 				finalURL := fmt.Sprintf("%s%s", u, s[1])
-				dlutil.addURL(index+1, s[2], finalURL)
+				if dlutil.addURL(index+1, s[2], finalURL) {
+					break
+				}
 			}
 			dlutil.wait()
 			gen.End()

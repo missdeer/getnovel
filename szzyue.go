@@ -98,7 +98,9 @@ func init() {
 					s := ss[0]
 					finalURL := strings.Replace(u, "index.html", s[1], -1)
 					index++
-					dlutil.addURL(index, s[2], finalURL)
+					if dlutil.addURL(index, s[2], finalURL) {
+						break
+					}
 				}
 			}
 			dlutil.wait()
