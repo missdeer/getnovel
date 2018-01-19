@@ -44,6 +44,12 @@ func init() {
 				idx := bytes.Index(c, []byte(`&nbsp;&nbsp;&nbsp;&nbsp;`))
 				if idx > 1 {
 					c = c[idx:]
+				} else {
+					leadingStr := `</tr></table><br>`
+					idx = bytes.Index(c, []byte(leadingStr))
+					if idx > 1 {
+						c = c[idx+len(leadingStr):]
+					}
 				}
 
 				idx = bytes.Index(c, []byte("</div>"))
