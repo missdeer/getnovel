@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"os"
 	"sync/atomic"
 
@@ -47,7 +48,7 @@ func newDownloadUtil(dl func(string) []byte, generator ebook.IBook) (du *downloa
 		du.startContent = &contentUtil{index: opts.FromChapter}
 	}
 	if opts.FromTitle != "" {
-		du.startContent = &contentUtil{title: opts.FromTitle}
+		du.startContent = &contentUtil{title: opts.FromTitle, index: math.MaxInt32}
 	}
 	if opts.ToChapter != 0 {
 		du.endContent = &contentUtil{index: opts.ToChapter}
