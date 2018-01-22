@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dfordsoft/golib/ebook"
 	"github.com/dfordsoft/golib/httputil"
 	"github.com/dfordsoft/golib/ic"
 )
@@ -16,7 +17,7 @@ func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `新顶点笔趣阁小说网`,
 		MatchPatterns: []string{`http://www.szzyue.com/dushu/[0-9]+/[0-9]+/index.html`},
-		Download: func(u string) {
+		Download: func(u string, gen ebook.IBook) {
 			dlPage := func(u string) (c []byte) {
 				var err error
 				headers := http.Header{

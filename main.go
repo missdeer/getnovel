@@ -57,13 +57,13 @@ type pageContentMarker struct {
 type novelSiteHandler struct {
 	Title         string
 	MatchPatterns []string
-	Download      func(string)
+	Download      func(string, ebook.IBook)
 }
 
 var (
 	novelSiteHandlers []*novelSiteHandler
-	gen               ebook.IBook
-	opts              Options
+
+	opts Options
 )
 
 func registerNovelSiteHandler(h *novelSiteHandler) {
@@ -200,6 +200,32 @@ func readConfigFile(opts *Options) bool {
 	return true
 }
 
+func downloadBook(novelURL string, ch chan bool) {
+	for _, h := range novelSiteHandlers {
+		for _, pattern := range h.MatchPatterns {
+			r, _ := regexp.Compile(pattern)
+			if r.MatchString(novelURL) {
+				gen := ebook.NewBook(opts.Format)
+				gen.SetFontSize(opts.TitleFontSize, opts.ContentFontSize)
+				gen.SetLineSpacing(opts.LineSpacing)
+				gen.PagesPerFile(opts.PagesPerFile)
+				gen.ChaptersPerFile(opts.ChaptersPerFile)
+				gen.SetMargins(opts.LeftMargin, opts.TopMargin)
+				gen.SetPageType(opts.PageType)
+				gen.SetFontFile(opts.FontFile)
+				gen.Output(opts.OutputFile)
+				gen.Info()
+				h.Download(novelURL, gen)
+				fmt.Println("downloaded", novelURL)
+				ch <- true
+				return
+			}
+		}
+	}
+	fmt.Println("not downloaded", novelURL)
+	ch <- false
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("使用方法：\n\tgetnovel 小说目录网址")
@@ -238,33 +264,24 @@ func main() {
 		return
 	}
 
-	downloaded := false
+	downloadedChannel := make(chan bool)
+	donwloadCount := 0
 	for _, novelURL := range args {
 		_, e := url.Parse(novelURL)
 		if e != nil {
 			fmt.Println("invalid URL", novelURL)
 			continue
 		}
-		for _, h := range novelSiteHandlers {
-			for _, pattern := range h.MatchPatterns {
-				r, _ := regexp.Compile(pattern)
-				if r.MatchString(novelURL) {
-					gen = ebook.NewBook(opts.Format)
-					gen.SetFontSize(opts.TitleFontSize, opts.ContentFontSize)
-					gen.SetLineSpacing(opts.LineSpacing)
-					gen.PagesPerFile(opts.PagesPerFile)
-					gen.ChaptersPerFile(opts.ChaptersPerFile)
-					gen.SetMargins(opts.LeftMargin, opts.TopMargin)
-					gen.SetPageType(opts.PageType)
-					gen.SetFontFile(opts.FontFile)
-					gen.Output(opts.OutputFile)
-					gen.Info()
-					h.Download(novelURL)
-					downloaded = true
-				}
-			}
-		}
+		donwloadCount++
+		go downloadBook(novelURL, downloadedChannel)
 	}
+
+	downloaded := false
+	for i := 0; i < donwloadCount; i++ {
+		ch := <-downloadedChannel
+		downloaded = (downloaded || ch)
+	}
+
 	if !downloaded {
 		fmt.Println("使用方法：\n\tgetnovel 小说目录网址")
 		listCommandHandler()

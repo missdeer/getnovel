@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dfordsoft/golib/ebook"
 	"github.com/dfordsoft/golib/httputil"
 )
 
@@ -17,7 +18,7 @@ func init() {
 		MatchPatterns: []string{
 			`http://www\.luoxia\.com/[a-zA-Z0-9\-]+/([a-zA-Z0-9/\-]+)?`,
 		},
-		Download: func(u string) {
+		Download: func(u string, gen ebook.IBook) {
 			dlPage := func(u string) (c []byte) {
 				var err error
 				headers := http.Header{

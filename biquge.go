@@ -10,12 +10,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dfordsoft/golib/ebook"
 	"github.com/dfordsoft/golib/httputil"
 	"github.com/dfordsoft/golib/ic"
 )
 
 func init() {
-	dl := func(u string, tocPatterns []tocPattern, pageContentMarkers []pageContentMarker) {
+	dl := func(u string, gen ebook.IBook, tocPatterns []tocPattern, pageContentMarkers []pageContentMarker) {
 		dlPage := func(u string) (c []byte) {
 			var err error
 			theURL, _ := url.Parse(u)
@@ -140,7 +141,7 @@ func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `八一中文网`,
 		MatchPatterns: []string{`https://www\.zwdu\.com/book/[0-9]+/`},
-		Download: func(u string) {
+		Download: func(u string, gen ebook.IBook) {
 			tocPatterns := []tocPattern{
 				{
 					host:            "www.zwdu.com",
@@ -159,14 +160,14 @@ func init() {
 					end:   []byte(`</div>`),
 				},
 			}
-			dl(u, tocPatterns, pageContentMarkers)
+			dl(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `少年文学网`,
 		MatchPatterns: []string{`https://www\.snwx8\.com/book/[0-9]+/[0-9]+/`},
-		Download: func(u string) {
+		Download: func(u string, gen ebook.IBook) {
 			tocPatterns := []tocPattern{
 				{
 					host:            "www.snwx8.com",
@@ -184,13 +185,13 @@ func init() {
 					end:   []byte(`</div>`),
 				},
 			}
-			dl(u, tocPatterns, pageContentMarkers)
+			dl(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `大海中文`,
 		MatchPatterns: []string{`https://www\.dhzw\.org/book/[0-9]+/[0-9]+/`},
-		Download: func(u string) {
+		Download: func(u string, gen ebook.IBook) {
 			tocPatterns := []tocPattern{
 				{
 					host:            "www.dhzw.org",
@@ -208,13 +209,13 @@ func init() {
 					end:   []byte(`</div>`),
 				},
 			}
-			dl(u, tocPatterns, pageContentMarkers)
+			dl(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `手牵手`,
 		MatchPatterns: []string{`https://www\.sqsxs\.com/book/[0-9]+/[0-9]+/`},
-		Download: func(u string) {
+		Download: func(u string, gen ebook.IBook) {
 			tocPatterns := []tocPattern{
 				{
 					host:            "www.sqsxs.com",
@@ -232,13 +233,13 @@ func init() {
 					end:   []byte(`</div>`),
 				},
 			}
-			dl(u, tocPatterns, pageContentMarkers)
+			dl(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `燃文小说`,
 		MatchPatterns: []string{`http://www\.ranwena\.com/files/article/[0-9]+/[0-9]+/`},
-		Download: func(u string) {
+		Download: func(u string, gen ebook.IBook) {
 			tocPatterns := []tocPattern{
 				{
 					host:            "www.ranwena.com",
@@ -257,7 +258,7 @@ func init() {
 					end:   []byte(`</div>`),
 				},
 			}
-			dl(u, tocPatterns, pageContentMarkers)
+			dl(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 	registerNovelSiteHandler(&novelSiteHandler{
@@ -273,7 +274,7 @@ func init() {
 			`http://www\.xxbiquge\.com/[0-9]+_[0-9]+/`,
 			`http://www\.biqugev\.com/[0-9]+_[0-9]+/`,
 		},
-		Download: func(u string) {
+		Download: func(u string, gen ebook.IBook) {
 			tocPatterns := []tocPattern{
 				{
 					host:            "www.biqudu.com",
@@ -397,7 +398,7 @@ func init() {
 					end:   []byte(`</div>`),
 				},
 			}
-			dl(u, tocPatterns, pageContentMarkers)
+			dl(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 }

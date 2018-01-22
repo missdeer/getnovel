@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dfordsoft/golib/ebook"
 	"github.com/dfordsoft/golib/httputil"
 	"github.com/dfordsoft/golib/ic"
 )
@@ -20,7 +21,7 @@ func init() {
 			`http://www\.piaotian\.com/html/[0-9]/[0-9]+/`,
 			`http://www\.piaotian\.com/bookinfo/[0-9]/[0-9]+\.html`,
 		},
-		Download: func(u string) {
+		Download: func(u string, gen ebook.IBook) {
 			dlPage := func(u string) (c []byte) {
 				var err error
 				headers := http.Header{

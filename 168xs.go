@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/dfordsoft/golib/ebook"
 	"github.com/dfordsoft/golib/httputil"
 	"github.com/dfordsoft/golib/ic"
 )
@@ -18,7 +19,7 @@ func init() {
 		MatchPatterns: []string{
 			`http://www\.168xs\.com/du/[0-9]+/`,
 		},
-		Download: func(u string) {
+		Download: func(u string, gen ebook.IBook) {
 			dlPage := func(u string) (c []byte) {
 				var err error
 				headers := http.Header{
