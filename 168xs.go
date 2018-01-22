@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"net/http"
 	"regexp"
 	"time"
 
@@ -20,12 +21,12 @@ func init() {
 		Download: func(u string) {
 			dlPage := func(u string) (c []byte) {
 				var err error
-				headers := map[string]string{
-					"Referer":                   "http://www.168xs.com/",
-					"User-Agent":                "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0",
-					"Accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-					"Accept-Language":           `en-US,en;q=0.8`,
-					"Upgrade-Insecure-Requests": "1",
+				headers := http.Header{
+					"Referer":                   []string{"http://www.168xs.com/"},
+					"User-Agent":                []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"},
+					"Accept":                    []string{"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
+					"Accept-Language":           []string{`en-US,en;q=0.8`},
+					"Upgrade-Insecure-Requests": []string{"1"},
 				}
 				c, err = httputil.GetBytes(u, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
 				if err != nil {
@@ -66,12 +67,12 @@ func init() {
 				return
 			}
 			tocURL := u
-			headers := map[string]string{
-				"Referer":                   "http://www.168xs.com/",
-				"User-Agent":                "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0",
-				"Accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-				"Accept-Language":           `en-US,en;q=0.8`,
-				"Upgrade-Insecure-Requests": "1",
+			headers := http.Header{
+				"Referer":                   []string{"http://www.168xs.com/"},
+				"User-Agent":                []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"},
+				"Accept":                    []string{"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
+				"Accept-Language":           []string{`en-US,en;q=0.8`},
+				"Upgrade-Insecure-Requests": []string{"1"},
 			}
 			b, err := httputil.GetBytes(tocURL, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
 			if err != nil {
