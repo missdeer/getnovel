@@ -147,11 +147,11 @@ func (du *downloadUtil) bufferHandler(cu contentUtil) (exit bool) {
 			}
 
 			contentC, err := ioutil.ReadAll(contentFd)
+			contentFd.Close()
 			if err != nil {
 				log.Println("reading file ", du.buffer[0].content, " failed ", err)
 				continue
 			}
-			contentFd.Close()
 			os.Remove(du.buffer[0].content)
 
 			du.generator.AppendContent(du.buffer[0].title, du.buffer[0].link, string(contentC))

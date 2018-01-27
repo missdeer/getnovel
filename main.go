@@ -98,11 +98,11 @@ func readConfigFile(opts *Options) bool {
 		}
 
 		contentC, err := ioutil.ReadAll(contentFd)
+		contentFd.Close()
 		if err != nil {
 			log.Println("reading config file ", opts.ConfigFile, " failed ", err)
 			return false
 		}
-		contentFd.Close()
 
 		var options map[string]interface{}
 		if err = json.Unmarshal(contentC, &options); err != nil {
