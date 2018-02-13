@@ -62,8 +62,9 @@ type novelSiteHandler struct {
 
 var (
 	novelSiteHandlers []*novelSiteHandler
-
-	opts Options
+	opts              Options
+	sha1ver           string // sha1 revision used to build the program
+	buildTime         string // when the executable was built
 )
 
 func registerNovelSiteHandler(h *novelSiteHandler) {
@@ -227,6 +228,7 @@ func downloadBook(novelURL string, ch chan bool) {
 }
 
 func main() {
+	fmt.Println("getnovel SHA1:", sha1ver, "build at", buildTime)
 	if len(os.Args) < 2 {
 		fmt.Println("使用方法：\n\tgetnovel 小说目录网址")
 		listCommandHandler()
