@@ -14,7 +14,7 @@ go get github.com/dfordsoft/getnovel
 
 1. 首先，在当前目录创建名为fonts的目录，并将你喜欢的字体文件改名为CustomFont.ttf后放入该目录；
 2. 然后，在当前目录执行命令获取小说内容：`getnovel 小说目录网址`，如`getnovel https://www.aszw.org/book/192/192150/`，可以通过命令行参数对程序行为进行设置，比如指定输出文件格式为PDF或epub等等；
-3. 最后，如果需要得到mobi文件，则继续执行命令打包成mobi文件：`kindlegen -c2 -o xxxx.mobi content.opf`, [kindlegen工具](https://www.amazon.com/gp/feature.html?docId=1000765211)可在Amazon官网[下载](https://www.amazon.com/gp/feature.html?docId=1000765211)。
+3. 最后，如果需要得到mobi文件，则继续执行命令打包成mobi文件：`kindlegen -c2 -o xxxx.mobi content.opf`, [kindlegen工具](https://www.amazon.com/gp/feature.html?docId=1000765211)可在Amazon官网[下载](https://www.amazon.com/gp/feature.html?docId=1000765211)。可以将`kindlegen`的路径设置到环境变量`KINDLEGEN_PATH`中，或者将`kindlegen`所在目录路径添加到环境变量`PATH`中，则`getnovel`会自动调用`kindlegen`生成mobi文件，省去手动输入命令的步骤。
 
 #### 常用用法
 
