@@ -266,7 +266,7 @@ func init() {
 		MatchPatterns: []string{
 			`http://www\.biqudu\.com/[0-9]+_[0-9]+/`,
 			`http://www\.biquge\.cm/[0-9]+/[0-9]+/`,
-			`http://www\.qu\.la/book/[0-9]+/`,
+			`https://www\.qu\.la/book/[0-9]+/`,
 			`http://www\.biqugezw\.com/[0-9]+_[0-9]+/`,
 			`http://www\.630zw\.com/[0-9]+_[0-9]+/`,
 			`http://www\.biquge\.lu/book/[0-9]+/`,
