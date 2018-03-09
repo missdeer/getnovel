@@ -273,6 +273,7 @@ func init() {
 			`http://www\.biquge5200\.com/[0-9]+_[0-9]+/`,
 			`http://www\.xxbiquge\.com/[0-9]+_[0-9]+/`,
 			`http://www\.biqugev\.com/[0-9]+_[0-9]+/`,
+			`https://www\.bqg5200\.com/xiaoshuo/[0-9]+/[0-9]+/`,
 		},
 		Download: func(u string, gen ebook.IBook) {
 			tocPatterns := []tocPattern{
@@ -350,6 +351,14 @@ func init() {
 					articleURLPos:   1,
 					articleTitlePos: 3,
 				},
+				{
+					host:            "www.bqg5200.com",
+					bookTitle:       `<h1>([^<]+)</h1>`,
+					bookTitlePos:    1,
+					item:            `<li>\s*<a\s*href="([^"]+)"(\sclass="empty")?>([^<]+)</a></li>$`,
+					articleURLPos:   1,
+					articleTitlePos: 3,
+				},
 			}
 			pageContentMarkers := []pageContentMarker{
 				{
@@ -395,6 +404,11 @@ func init() {
 				{
 					host:  "www.biqugev.com",
 					start: []byte(`<div id="content">`),
+					end:   []byte(`</div>`),
+				},
+				{
+					host:  "www.bqg5200.com",
+					start: []byte(`<div class="ad250left"><script>ads_yuedu_txt();</script></div>`),
 					end:   []byte(`</div>`),
 				},
 			}
