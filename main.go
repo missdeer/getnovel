@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -16,6 +18,7 @@ import (
 
 // Options for all command line options
 type Options struct {
+	ListenAndServe  string  `long:"httpServe" description:"set http listen and serve address, example: :8080"`
 	Format          string  `short:"f" long:"format" description:"set generated file format, candidate values: mobi, epub, pdf"`
 	List            bool    `short:"l" long:"list" description:"list supported novel websites"`
 	LeftMargin      float64 `long:"leftMargin" description:"set left margin for PDF format"`
@@ -259,6 +262,16 @@ func main() {
 
 	if opts.List {
 		listCommandHandler()
+		return
+	}
+
+	if opts.ListenAndServe != "" {
+		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("starting http server on", opts.ListenAndServe)
+		log.Fatal(http.ListenAndServe(opts.ListenAndServe, http.FileServer(http.Dir(dir))))
 		return
 	}
 
