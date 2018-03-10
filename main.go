@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -270,6 +271,32 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		ifaces, err := net.Interfaces()
+		var ips []string
+		for _, i := range ifaces {
+
+			addrs, err := i.Addrs()
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			for _, addr := range addrs {
+				switch v := addr.(type) {
+				case *net.IPNet:
+					if v.IP.IsLoopback() || v.IP.IsLinkLocalMulticast() || v.IP.IsLinkLocalUnicast() {
+						break
+					}
+					ips = append(ips, "\t"+v.IP.String())
+				case *net.IPAddr:
+					if v.IP.IsLoopback() || v.IP.IsLinkLocalMulticast() || v.IP.IsLinkLocalUnicast() {
+						break
+					}
+					ips = append(ips, "\t"+v.IP.String())
+				}
+			}
+		}
+		fmt.Println("Local IP:")
+		fmt.Println(strings.Join(ips, "\n"))
 		fmt.Println("starting http server on", opts.ListenAndServe)
 		log.Fatal(http.ListenAndServe(opts.ListenAndServe, http.FileServer(http.Dir(dir))))
 		return
