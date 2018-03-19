@@ -18,14 +18,14 @@ func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title: `飘天`,
 		MatchPatterns: []string{
-			`http://www\.piaotian\.com/html/[0-9]/[0-9]+/`,
-			`http://www\.piaotian\.com/bookinfo/[0-9]/[0-9]+\.html`,
+			`https://www\.piaotian\.com/html/[0-9]/[0-9]+/`,
+			`https://www\.piaotian\.com/bookinfo/[0-9]/[0-9]+\.html`,
 		},
 		Download: func(u string, gen ebook.IBook) {
 			dlPage := func(u string) (c []byte) {
 				var err error
 				headers := http.Header{
-					"Referer":                   []string{"http://www.piaotian.com/"},
+					"Referer":                   []string{"https://www.piaotian.com/"},
 					"User-Agent":                []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"},
 					"Accept":                    []string{"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
 					"Accept-Language":           []string{`en-US,en;q=0.8`},
@@ -63,16 +63,16 @@ func init() {
 				return
 			}
 			tocURL := u
-			r, _ := regexp.Compile(`http://www\.piaotian\.com/bookinfo/([0-9])/([0-9]+)\.html`)
+			r, _ := regexp.Compile(`https://www\.piaotian\.com/bookinfo/([0-9])/([0-9]+)\.html`)
 			if r.MatchString(u) {
 				ss := r.FindAllStringSubmatch(u, -1)
 				s := ss[0]
-				tocURL = fmt.Sprintf("http://www.piaotian.com/html/%s/%s/", s[1], s[2])
+				tocURL = fmt.Sprintf("https://www.piaotian.com/html/%s/%s/", s[1], s[2])
 			}
 			fmt.Println("download book from", tocURL)
 
 			headers := http.Header{
-				"Referer":                   []string{"http://www.piaotian.com/"},
+				"Referer":                   []string{"https://www.piaotian.com/"},
 				"User-Agent":                []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"},
 				"Accept":                    []string{"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
 				"Accept-Language":           []string{`en-US,en;q=0.8`},
