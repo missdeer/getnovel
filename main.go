@@ -250,7 +250,7 @@ func main() {
 		LineSpacing:     1.2,
 		PagesPerFile:    0,
 		ChaptersPerFile: 0,
-		FontFile:        "fonts/CustomFont.ttf",
+		FontFile:        filepath.Join("fonts", "CustomFont.ttf"),
 		RetryCount:      3,
 		Timeout:         60,
 		ParallelCount:   10,
