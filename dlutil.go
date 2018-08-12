@@ -10,7 +10,7 @@ import (
 	"sync/atomic"
 
 	"github.com/dfordsoft/golib/ebook"
-	"github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"golang.org/x/sync/semaphore"
 )
 
@@ -57,7 +57,7 @@ func newDownloadUtil(dl func(string) []byte, generator ebook.IBook) (du *downloa
 		du.endContent = &contentUtil{title: opts.ToTitle}
 	}
 	var err error
-	du.tempDir, err = ioutil.TempDir("", uuid.Must(uuid.NewV4()).String())
+	du.tempDir, err = ioutil.TempDir("", uuid.New().String())
 	if err != nil {
 		log.Fatal("creating temporary directory failed", err)
 	}
