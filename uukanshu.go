@@ -36,21 +36,14 @@ func init() {
 				c = bytes.Replace(c, []byte("\r\n"), []byte(""), -1)
 				c = bytes.Replace(c, []byte("\r"), []byte(""), -1)
 				c = bytes.Replace(c, []byte("\n"), []byte(""), -1)
-				idx := bytes.Index(c, []byte("<!-- 桌面内容顶部 -->"))
-				if idx > 1 {
-					c = c[idx:]
-				}
-				idx = bytes.Index(c, []byte(`</div>`))
-				if idx > 1 {
-					c = c[idx+6:]
-				}
+
 				startStr := []byte("<div class=\"ad_content\">")
-				idx = bytes.Index(c, startStr)
+				idx := bytes.Index(c, startStr)
 				if idx > 1 {
 					idxEnd := bytes.Index(c[idx:], []byte("</div>"))
 					if idxEnd > 1 {
 						b := c[idx:]
-						c = append(c[:idx], b[idxEnd+6:]...)
+						c = b[idxEnd+6:]
 					}
 				}
 				idx = bytes.Index(c, []byte("</div>"))
