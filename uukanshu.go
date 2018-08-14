@@ -46,6 +46,17 @@ func init() {
 						c = b[idxEnd+6:]
 					}
 				}
+
+				adStr := []byte(`<div class="ad_content"><!-- 桌面内容中间2 -->`)
+				idx = bytes.Index(c, adStr)
+				if idx > 1 {
+					idxEnd := bytes.Index(c[idx:], []byte("</div>"))
+					if idxEnd > 1 {
+						b := c[:idx]
+						c = append(b, c[idx+idxEnd+6:]...float32)
+					}
+				}
+
 				idx = bytes.Index(c, []byte("</div>"))
 				if idx > 1 {
 					c = c[:idx]
