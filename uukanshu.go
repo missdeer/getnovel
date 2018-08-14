@@ -53,7 +53,7 @@ func init() {
 					idxEnd := bytes.Index(c[idx:], []byte("</div>"))
 					if idxEnd > 1 {
 						b := c[:idx]
-						c = append(b, c[idx+idxEnd+6:]...float32)
+						c = append(b, c[idx+idxEnd+6:]...)
 					}
 				}
 
