@@ -64,6 +64,7 @@ func init() {
 
 				c = bytes.Replace(c, []byte(`</p><p>`), []byte(`<p>`), -1)
 				c = bytes.Replace(c, []byte(`<br /><br />　　`), []byte(`<br/>`), -1)
+				c = bytes.Replace(c, []byte(`<br /><br />`), []byte(`<br/>`), -1)
 				c = bytes.Replace(c, []byte(`<br/>　　`), []byte(`<br/>`), -1)
 				c = bytes.Replace(c, []byte(`<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;`), []byte(`<p>`), -1)
 				c = bytes.Replace(c, []byte(`&nbsp;&nbsp;&nbsp;&nbsp;`), []byte(""), -1)
