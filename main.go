@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/dfordsoft/golib/ebook"
 	flags "github.com/jessevdk/go-flags"
@@ -67,8 +68,8 @@ type novelSiteHandler struct {
 var (
 	novelSiteHandlers []*novelSiteHandler
 	opts              Options
-	sha1ver           string // sha1 revision used to build the program
-	buildTime         string // when the executable was built
+	sha1ver           string                // sha1 revision used to build the program
+	buildTime         = time.Now().String() // when the executable was built
 )
 
 func registerNovelSiteHandler(h *novelSiteHandler) {
