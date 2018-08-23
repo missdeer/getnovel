@@ -206,9 +206,9 @@ func readConfigFile(opts *Options) bool {
 }
 
 func downloadBook(novelURL string, ch chan bool) {
-	for _, h := range novelSiteHandlers {
-		for _, pattern := range h.MatchPatterns {
-			r, _ := regexp.Compile(pattern)
+	for _, h := range novelSiteConfigurations {
+		for _, site := range h.Sites {
+			r, _ := regexp.Compile(site.TOCURLPattern)
 			if r.MatchString(novelURL) {
 				gen := ebook.NewBook(opts.Format)
 				gen.SetFontSize(opts.TitleFontSize, opts.ContentFontSize)
@@ -301,6 +301,8 @@ func main() {
 		log.Fatal(http.ListenAndServe(opts.ListenAndServe, http.FileServer(http.Dir(dir))))
 		return
 	}
+
+	readNovelSiteConfigurations()
 
 	if !readConfigFile(&opts) {
 		return
