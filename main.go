@@ -92,6 +92,21 @@ func listCommandHandler() {
 		}
 		fmt.Println("\t" + h.Title + ": " + strings.Join(urls, ", "))
 	}
+	for _, h := range novelSiteConfigurations {
+		urlMap := make(map[string]struct{})
+		for _, p := range h.Sites {
+			u := strings.Replace(p.TOCURLPattern, `\`, ``, -1)
+			idxStart := strings.Index(u, `www.`)
+			idxEnd := strings.Index(u[idxStart:], `/`)
+			u = u[:idxStart+idxEnd]
+			urlMap[u] = struct{}{}
+		}
+		var urls []string
+		for u := range urlMap {
+			urls = append(urls, u)
+		}
+		fmt.Println("\t" + h.Title + ": " + strings.Join(urls, ", "))
+	}
 }
 
 func readConfigFile(opts *Options) bool {
@@ -206,6 +221,27 @@ func readConfigFile(opts *Options) bool {
 }
 
 func downloadBook(novelURL string, ch chan bool) {
+	for _, h := range novelSiteHandlers {
+		for _, pattern := range h.MatchPatterns {
+			r, _ := regexp.Compile(pattern)
+			if r.MatchString(novelURL) {
+				gen := ebook.NewBook(opts.Format)
+				gen.SetFontSize(opts.TitleFontSize, opts.ContentFontSize)
+				gen.SetLineSpacing(opts.LineSpacing)
+				gen.PagesPerFile(opts.PagesPerFile)
+				gen.ChaptersPerFile(opts.ChaptersPerFile)
+				gen.SetMargins(opts.LeftMargin, opts.TopMargin)
+				gen.SetPageType(opts.PageType)
+				gen.SetFontFile(opts.FontFile)
+				gen.Output(opts.OutputFile)
+				gen.Info()
+				h.Download(novelURL, gen)
+				fmt.Println("downloaded", novelURL)
+				ch <- true
+				return
+			}
+		}
+	}
 	for _, h := range novelSiteConfigurations {
 		for _, site := range h.Sites {
 			r, _ := regexp.Compile(site.TOCURLPattern)

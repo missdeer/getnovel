@@ -27,6 +27,7 @@ type NovelSiteConfig struct {
 		Name          string `json:"name"`
 		TOCURLPattern string `json:"tocURLPattern"`
 	} `json:"sites"`
+	Title              string `json:"title"`
 	BookTitlePattern   string `json:"bookTitlePattern"`
 	BookTitlePos       int    `json:"bookTitlePos"`
 	ArticlePattern     string `json:"articlePattern"`
