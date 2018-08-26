@@ -1,0 +1,232 @@
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ .title }}</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <meta name="description" content="{{ .title }}">
+    <style>
+        body {
+            text-align: center;
+        }
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 80%;
+        }
+
+        #input_parameters td {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        #historyItems td, th {
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        #historyItems tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+
+        #app, #history{
+            margin: 0 auto
+        }
+
+        h2 {
+            padding-top: 3%
+        }
+
+        input, select {
+            margin: 1%;
+            width: 100%
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <h2>{{ .title }}</h2>
+    <div>        
+        <table id="input_parameters" align="center">
+        <tr>
+            <td>小说目录页面URL</td>
+            <td><input type="url" v-model="tocurl" required></td>
+        </tr>
+        <tr>
+            <td>格式</td>
+            <td><select v-model="format" required>
+                    <option value="mobi" selected>Mobi</option>
+                    <option value="pdf">PDF</option>
+                    <option value="epub">EPub</option>
+                </select> </td>
+        </tr>
+        <tr>
+            <td>版式(*)</td>
+            <td><select v-model="pageType" required>
+                    <option value="a0">A0</option>
+                    <option value="a1">A1</option>
+                    <option value="a2">A2</option>
+                    <option value="a3">A3</option>
+                    <option value="a4" selected>A4</option>
+                    <option value="a5">A5</option>
+                    <option value="a6">A6</option>
+                    <option value="b0">B0</option>
+                    <option value="b1">B1</option>
+                    <option value="b2">B2</option>
+                    <option value="b3">B3</option>
+                    <option value="b4">B4</option>
+                    <option value="b5">B5</option>
+                    <option value="b6">B6</option>
+                    <option value="c0">C0</option>
+                    <option value="c1">C1</option>
+                    <option value="c2">C2</option>
+                    <option value="c3">C3</option>
+                    <option value="c4">C4</option>
+                    <option value="c5">C5</option>
+                    <option value="c6">C6</option>
+                    <option value="dxg">DXG(=A4)</option>
+                    <option value="6inch">6 Inch(90mm x 117mm)</option>
+                    <option value="7inch">7 Inch</option>
+                    <option value="10inch">10 Inch(=A4)</option>
+                    <option value="pc">PC(=A4 & 25.4mm 左留空 & 31.7mm 顶部留空 & 16pt标题字号 & 12pt正文字号)</option>
+                </select></td>
+        </tr>
+        <tr>
+            <td>左边留白(*)</td>
+            <td><input type="number" v-model.number="leftMargin" placeholder="10"></td>
+        </tr>
+        <tr>
+            <td>顶部留白(*)</td>
+            <td><input type="number" v-model.number="topMargin" placeholder="10"></td>
+        </tr>
+        <tr>
+            <td>标题字号(*)</td>
+            <td><input type="number" v-model.number="titleFontSize" min="8" max="120" placeholder="24"></td>
+        </tr>
+        <tr>
+            <td>正文字号(*)</td>
+            <td><input type="number" v-model.number="contentFontSize" min="8" max="32" placeholder="18"></td>
+        </tr>
+        <tr>
+            <td>行间距(*)</td>
+            <td><input type="number" v-model.number="lineSpacing" step="0.1" placeholder="1.2"></td>
+        </tr>
+        <tr>
+            <td>每个文件页面数(*)</td>
+            <td><input type="number" v-model.number="pagesPerFile"></td>
+        </tr>
+        <tr>
+            <td>每个文件章节数(*)</td>
+            <td><input type="number" v-model.number="chaptersPerFile"></td>
+        </tr>
+        <tr>
+            <td>字体文件</td>
+            <td><select v-model="fontFile">
+                {{ range $font := .fontFiles }}
+                    <option value="{{ $font }}">{{ $font }}</option>
+                {{ end }}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>起始章节名</td>
+            <td><input v-model="fromTitle"></td>
+        </tr>
+        <tr>
+            <td>结束章节名</td>
+            <td><input v-model="toTitle"></td>
+        </tr>
+        <tr>
+            <td>起始章节序号</td>
+            <td><input type="number" v-model.number="fromChapter"></td>
+        </tr>
+        <tr>
+            <td>结束章节序号</td>
+            <td><input type="number" v-model.number="toChapter"></td>
+        </tr>
+        </table>
+        <p>(*) - 仅针对PDF格式有效</p>
+        <button v-on:click="generate">开始制书</button>
+    </div>
+</div>
+<div id="history">
+    <h2>书籍制作历史记录</h2>
+    <div id="books">        
+        <table id="historyItems" align="center">
+            <tr>
+                <th>书名</th>
+                <th>状态</th>
+                <th>下载</th>
+            </tr>
+            {{range $item := .items}}
+            <tr>
+                <td>{{ $item.BookName }}</td>
+                <td>{{ $item.Status }}</td>
+                <td><a href="{{ $item.DownloadLink }}">下载</a></td>
+            </tr>
+            {{end}}
+        </table>
+    </div>
+</div>
+</body>
+
+<script src="//cdn.bootcss.com/vue/2.5.16/vue.min.js"></script>
+<script src="//cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script>
+var app = new Vue({
+    el: "#app",
+    data: {
+        tocurl: "",
+        format: "mobi",
+        pageType: "a4",
+        leftMargin: 10,
+        topMargin: 10,
+        titleFontSize: 24,
+        contentFontSize: 18,
+        lineSpacing: 1.2,
+        pagesPerFile: 0,
+        chaptersPerFile: 0,
+        fontFile: "CustomFont.ttf",
+        fromTitle: "",
+        toTitle: "",
+        fromChapter: 0,
+        toChapter: 0
+    },
+	methods:{
+		generate:function(){
+            if (this.tocurl == "") {
+                alert("小说目录页面URL是必须的")
+                return
+            }
+            if (this.fromChapter > this.toChapter) {
+                alert("结束章节序号必须>=起始章节序号")
+                return
+            }
+            axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8';
+			axios.post("/makeebook",JSON.stringify({
+				tocurl:this.tocurl,
+                format:this.format,
+				pageType:this.pageType,
+				leftMargin:this.leftMargin,
+				topMargin:this.topMargin,
+				titleFontSize:this.titleFontSize,
+				contentFontSize:this.contentFontSize,
+				lineSpacing:this.lineSpacing,
+				pagesPerFile:this.pagesPerFile,
+				chaptersPerFile:this.chaptersPerFile,
+				fontFile:"fonts/" + this.fontFile,
+				fromTitle:this.fromTitle,
+				toTitle:this.toTitle,
+				fromChapter:this.fromChapter,
+				toChapter:this.toChapter
+			})
+            ).then(function(response){
+                window.location.reload(false); 
+            }).catch(function(error){
+				alert("出错了："+error);
+			});
+		}
+	}
+});
+</script>
+</html>
