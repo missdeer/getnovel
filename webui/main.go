@@ -147,11 +147,12 @@ func makeEbook(c *gin.Context) {
 			log.Println(err)
 		}
 
-		err = watcher.Add(dir)
-		if err != nil {
-			log.Println(err)
-		}
 		go func() {
+			err := watcher.Add(dir)
+			if err != nil {
+				log.Println(err)
+				return
+			}
 			defer watcher.Close()
 			for {
 				select {
@@ -171,11 +172,11 @@ func makeEbook(c *gin.Context) {
 							return
 						}
 						if b, e := fsutil.IsDir(event.Name); e == nil && b {
-							watcher.Remove(dir)
 							err = watcher.Add(event.Name)
 							if err != nil {
 								log.Println(err)
 							}
+							watcher.Remove(dir)
 						}
 					}
 				case err := <-watcher.Errors:
