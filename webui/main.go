@@ -116,11 +116,20 @@ func makeEbook(c *gin.Context) {
 	args = append(args, gnargs.TOCURL)
 
 	cmd := exec.Command(getnovel, args...)
+	kindlegen, _ := exec.LookPath(`kindlegen`)
+	if b, e := fsutil.FileExists(kindlegen); e != nil || !b {
+		if dir, err := filepath.Abs(filepath.Dir(os.Args[0])); err == nil {
+			kindlegen = filepath.Join(dir, `kindlegen`)
+		}
+	}
+	cmd.Env = append(os.Environ(),
+		"KINDLEGEN_PATH="+kindlegen, // ignored
+	)
 	go func() {
 		item := &HistoryItem{
 			TOCURL:   gnargs.TOCURL,
 			BookName: gnargs.TOCURL,
-			Status:   "等待",
+			Status:   "等待制作",
 		}
 		mutexBooks.Lock()
 		books = append(books, item)
@@ -177,12 +186,12 @@ func makeEbook(c *gin.Context) {
 			}
 		}()
 
-		item.Status = "进行"
+		item.Status = "制作中"
 		err = cmd.Run()
 		mutexMaking.Unlock()
 
 		if err != nil {
-			item.Status = "失败"
+			item.Status = "制作失败"
 		} else {
 			item.Status = "有效"
 		}
