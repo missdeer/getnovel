@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 
@@ -116,14 +116,22 @@ func makeEbook(c *gin.Context) {
 	args = append(args, gnargs.TOCURL)
 
 	cmd := exec.Command(getnovel, args...)
-	kindlegen, _ := exec.LookPath(`kindlegen`)
-	if b, e := fsutil.FileExists(kindlegen); e != nil || !b {
+
+	kindlegenName := `kindlegen`
+	if runtime.GOOS == "windows" {
+		kindlegenName = `kindlegen.exe`
+	}
+	kindlegenPath, _ := exec.LookPath(kindlegenName)
+	if b, e := fsutil.FileExists(kindlegenPath); e != nil || !b {
 		if dir, err := filepath.Abs(filepath.Dir(os.Args[0])); err == nil {
-			kindlegen = filepath.Join(dir, `kindlegen`)
+			kindlegenPath = filepath.Join(dir, kindlegenName)
 		}
 	}
+	if !filepath.IsAbs(kindlegenPath) {
+		kindlegenPath, _ = filepath.Abs(kindlegenPath)
+	}
 	cmd.Env = append(os.Environ(),
-		"KINDLEGEN_PATH="+kindlegen, // ignored
+		"KINDLEGEN_PATH="+kindlegenPath, // ignored
 	)
 	go func() {
 		item := &HistoryItem{
@@ -159,16 +167,18 @@ func makeEbook(c *gin.Context) {
 				case event := <-watcher.Events:
 					if event.Op&fsnotify.Write == fsnotify.Write {
 						if strings.ToLower(filepath.Ext(event.Name)) == ".pdf" {
-							item.BookName = filepath.Base(event.Name)
-							item.DownloadLink = "/download/pdf/" + filepath.Base(event.Name)
-							item.DeleteLink = "/delete/pdf/" + filepath.Base(event.Name)
+							baseName := filepath.Base(event.Name)
+							item.BookName = baseName
+							item.DownloadLink = "/download/pdf/" + baseName
+							item.DeleteLink = "/delete/pdf/" + baseName
 							return
 						}
 						if strings.ToLower(filepath.Ext(event.Name)) == ".mobi" ||
 							strings.ToLower(filepath.Ext(event.Name)) == ".epub" {
-							item.BookName = filepath.Base(event.Name)
-							item.DownloadLink = "/download/" + filepath.Base(path.Dir(event.Name)) + "/" + filepath.Base(event.Name)
-							item.DeleteLink = "/delete/" + filepath.Base(path.Dir(event.Name)) + "/" + filepath.Base(event.Name)
+							baseName := filepath.Base(event.Name)
+							item.BookName = baseName
+							item.DownloadLink = "/download/" + baseName[:len(baseName)-5] + "/" + baseName
+							item.DeleteLink = "/delete/" + baseName[:len(baseName)-5] + "/" + baseName
 							return
 						}
 						if b, e := fsutil.IsDir(event.Name); e == nil && b {
