@@ -21,6 +21,8 @@ var (
 	mutexBooks  sync.Mutex
 	mutexMaking sync.Mutex
 	books       []*HistoryItem
+	sha1ver     string // sha1 revision used to build the program
+	buildTime   string // when the executable was built
 )
 
 // HistoryItem - 书籍记录，有4种状态，分别是有效，失败，进行，等待
