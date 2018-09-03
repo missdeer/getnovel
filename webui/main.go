@@ -229,7 +229,7 @@ func deleteBook(c *gin.Context) {
 	os.Remove(filepath.Join(path, name))
 	mutexBooks.Lock()
 	for i, book := range books {
-		if book.BookName == strings.Replace(filepath.Join(path, name), "\\", "/", -1) {
+		if book.BookName == name {
 			books = append(books[:i], books[i+1:]...)
 			break
 		}
