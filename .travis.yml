@@ -40,7 +40,7 @@ deploy:
     tags: true
   skip_cleanup: true
 install:
-  - go get github.com/dfordsoft/getnovel/webui
+  - go get github.com/dfordsoft/getnovel && go get github.com/dfordsoft/getnovel/webui
 script:
   - pwd && ls -l
   - env GOARCH=amd64       GOOS=linux     go build -ldflags="-s -w -X main.sha1ver=`git rev-parse HEAD` -X main.buildTime=$(date +'%Y-%m-%d_%T')" -o getnovel     && cd webui && env GOARCH=amd64       GOOS=linux     go build -ldflags="-s -w -X main.sha1ver=`git rev-parse HEAD` -X main.buildTime=$(date +'%Y-%m-%d_%T')" -o ../getnovel-webui     && cd .. && cp -r webui/templates ./ && tar czvf getnovel-linux-amd64.tar.gz        templates getnovel-webui     getnovel
