@@ -17,7 +17,6 @@
 
         #input_parameters td {
             text-align: right;
-            white-space: nowrap;
         }
 
         #historyItems td, th {
@@ -48,21 +47,23 @@
     <h2>{{ .title }}</h2>
     <div>        
         <table id="input_parameters" align="center">
+        <col style="width:150px;">
         <tr>
             <td>小说目录页面URL</td>
             <td><input type="url" v-model="tocurl" required></td>
         </tr>
         <tr>
             <td>格式</td>
-            <td><select v-model="format" required>
-                    <option value="mobi" selected>Mobi</option>
-                    <option value="pdf">PDF</option>
+            <td><select v-model="format" required id="format" onchange="formatChanged()">
+                    <option value="mobi">Mobi</option>
+                    <option value="pdf" selected>PDF</option>
                     <option value="epub">EPub</option>
-                </select> </td>
+                </select> 
+            </td>
         </tr>
-        <tr>
+        <tr class="pdfonly" style="display: none">
             <td>版式(*)</td>
-            <td><select v-model="pageType" required>
+            <td><select v-model="pageType">
                     <option value="a0">A0</option>
                     <option value="a1">A1</option>
                     <option value="a2">A2</option>
@@ -88,34 +89,34 @@
                     <option value="6inch">6 Inch(90mm x 117mm)</option>
                     <option value="7inch">7 Inch</option>
                     <option value="10inch">10 Inch(=A4)</option>
-                    <option value="pc">PC(=A4 & 25.4mm 左留空 & 31.7mm 顶部留空 & 16pt标题字号 & 12pt正文字号)</option>
+                    <option value="pc">PC(=A4)</option>
                 </select></td>
         </tr>
-        <tr>
+        <tr class="pdfonly" style="display: none">
             <td>左边留白(*)</td>
             <td><input type="number" v-model.number="leftMargin" placeholder="10"></td>
         </tr>
-        <tr>
+        <tr class="pdfonly" style="display: none">
             <td>顶部留白(*)</td>
             <td><input type="number" v-model.number="topMargin" placeholder="10"></td>
         </tr>
-        <tr>
+        <tr class="pdfonly" style="display: none">
             <td>标题字号(*)</td>
             <td><input type="number" v-model.number="titleFontSize" min="8" max="120" placeholder="24"></td>
         </tr>
-        <tr>
+        <tr class="pdfonly" style="display: none">
             <td>正文字号(*)</td>
             <td><input type="number" v-model.number="contentFontSize" min="8" max="32" placeholder="18"></td>
         </tr>
-        <tr>
+        <tr class="pdfonly" style="display: none">
             <td>行间距(*)</td>
             <td><input type="number" v-model.number="lineSpacing" step="0.1" placeholder="1.2"></td>
         </tr>
-        <tr>
+        <tr class="pdfonly" style="display: none">
             <td>每个文件页面数(*)</td>
             <td><input type="number" v-model.number="pagesPerFile"></td>
         </tr>
-        <tr>
+        <tr class="pdfonly" style="display: none">
             <td>每个文件章节数(*)</td>
             <td><input type="number" v-model.number="chaptersPerFile"></td>
         </tr>
@@ -145,7 +146,7 @@
             <td><input type="number" v-model.number="toChapter"></td>
         </tr>
         </table>
-        <p>(*) - 仅针对PDF格式有效</p>
+        <p class="pdfonly" style="display: none">(*) - 仅针对PDF格式有效</p>
         <button v-on:click="generate">开始制书</button>
     </div>
 </div>
@@ -173,6 +174,19 @@
 <script src="//cdn.bootcss.com/vue/2.5.16/vue.min.js"></script>
 <script src="//cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
 <script>
+function formatChanged() {
+    var x = document.getElementById("format").value;
+    var lst = document.getElementsByClassName("pdfonly");
+    if (x == "pdf") {
+        for(var i = 0; i < lst.length; ++i) {
+            lst[i].style.display = '';
+        }
+    } else {
+        for(var i = 0; i < lst.length; ++i) {
+            lst[i].style.display = 'none';
+        }
+    }
+}
 var app = new Vue({
     el: "#app",
     data: {
