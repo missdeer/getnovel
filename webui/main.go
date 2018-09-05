@@ -64,7 +64,7 @@ func homePage(c *gin.Context) {
 	c.HTML(http.StatusOK, "home.tmpl", gin.H{
 		"title":     "GetNovel",
 		"fontFiles": fontFiles,
-		"items":     books,
+		"items":     books.items,
 	})
 }
 
