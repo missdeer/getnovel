@@ -16,12 +16,40 @@ import (
 
 var (
 	fontFiles   []string
-	mutexBooks  sync.Mutex
 	mutexMaking sync.Mutex
-	books       []*HistoryItem
+	books       = Books{}
 	sha1ver     string // sha1 revision used to build the program
 	buildTime   string // when the executable was built
 )
+
+// Books book collect
+type Books struct {
+	sync.Mutex
+	items []*HistoryItem
+}
+
+func (books *Books) append(item *HistoryItem) {
+	books.Lock()
+	books.items = append(books.items, item)
+	books.Unlock()
+}
+
+func (books *Books) clear() {
+	books.Lock()
+	books.items = []*HistoryItem{}
+	books.Unlock()
+}
+
+func (books *Books) delete(name string) {
+	books.Lock()
+	for i, book := range books.items {
+		if book.BookName == name {
+			books.items = append(books.items[:i], books.items[i+1:]...)
+			break
+		}
+	}
+	books.Unlock()
+}
 
 // HistoryItem - 书籍记录，有4种状态，分别是有效，失败，进行，等待
 type HistoryItem struct {
@@ -139,10 +167,9 @@ func makeEbook(c *gin.Context) {
 			BookName: gnargs.TOCURL,
 			Status:   "等待制作",
 		}
-		mutexBooks.Lock()
-		books = append(books, item)
-		mutexMaking.Lock()
+		books.append(item)
 
+		mutexMaking.Lock()
 		item.Status = "制作中"
 		if err := cmd.Run(); err != nil {
 			item.Status = "制作失败"
@@ -151,10 +178,8 @@ func makeEbook(c *gin.Context) {
 		}
 		mutexMaking.Unlock()
 
-		mutexBooks.Lock()
-		books = []*HistoryItem{}
+		books.clear()
 		scanEbooks()
-		mutexBooks.Unlock()
 	}()
 
 	c.JSON(http.StatusOK, gin.H{})
@@ -176,14 +201,7 @@ func deleteBook(c *gin.Context) {
 	}
 	name := c.Param("name")
 	os.Remove(filepath.Join(path, name))
-	mutexBooks.Lock()
-	for i, book := range books {
-		if book.BookName == name {
-			books = append(books[:i], books[i+1:]...)
-			break
-		}
-	}
-	mutexBooks.Unlock()
+	books.delete(name)
 	c.Redirect(http.StatusFound, "/")
 }
 
@@ -191,7 +209,7 @@ func scanEbooks() {
 	matches, err := filepath.Glob("*.pdf")
 	if err == nil {
 		for _, v := range matches {
-			books = append(books, &HistoryItem{
+			books.append(&HistoryItem{
 				BookName:     v,
 				Status:       "有效",
 				DownloadLink: "/download/pdf/" + v,
@@ -203,7 +221,7 @@ func scanEbooks() {
 	matches, err = filepath.Glob("**/*.mobi")
 	if err == nil {
 		for _, v := range matches {
-			books = append(books, &HistoryItem{
+			books.append(&HistoryItem{
 				BookName:     filepath.Base(v),
 				Status:       "有效",
 				DownloadLink: "/download/" + strings.Replace(v, "\\", "/", -1),
@@ -214,7 +232,7 @@ func scanEbooks() {
 	matches, err = filepath.Glob("**/*.epub")
 	if err == nil {
 		for _, v := range matches {
-			books = append(books, &HistoryItem{
+			books.append(&HistoryItem{
 				BookName:     filepath.Base(v),
 				Status:       "有效",
 				DownloadLink: "/download/" + strings.Replace(v, "\\", "/", -1),
