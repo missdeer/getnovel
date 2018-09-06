@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -11,6 +12,7 @@ import (
 	"sync"
 
 	"github.com/dfordsoft/golib/fsutil"
+	"github.com/fsnotify/fsnotify"
 	"github.com/gin-gonic/gin"
 )
 
@@ -170,16 +172,70 @@ func makeEbook(c *gin.Context) {
 		books.append(item)
 
 		mutexMaking.Lock()
+
+		// monitor current directory
+		watcher, err := fsnotify.NewWatcher()
+		if err != nil {
+			log.Println(err)
+		}
+		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+		if err != nil {
+			log.Println(err)
+		}
+		go func() {
+			err := watcher.Add(dir)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			defer watcher.Close()
+			for {
+				select {
+				case event := <-watcher.Events:
+					if event.Op&fsnotify.Write == fsnotify.Write {
+						if strings.ToLower(filepath.Ext(event.Name)) == ".pdf" {
+							baseName := filepath.Base(event.Name)
+							item.BookName = baseName
+							item.DownloadLink = "/download/pdf/" + baseName
+							item.DeleteLink = "/delete/pdf/" + baseName
+							return
+						}
+						if b, e := fsutil.IsDir(event.Name); e == nil && b {
+							watcher.Remove(dir)
+							baseName := filepath.Base(event.Name)
+							item.BookName = baseName
+							return
+						}
+					}
+				case err := <-watcher.Errors:
+					if err != nil {
+						log.Println("error:", err)
+					}
+				}
+			}
+		}()
+
 		item.Status = "制作中"
 		if err := cmd.Run(); err != nil {
 			item.Status = "制作失败"
 		} else {
 			item.Status = "有效"
+
+			bookPath := fmt.Sprintf("%s/%s.mobi", item.BookName)
+			if b, e := fsutil.FileExists(bookPath); e != nil || !b {
+				bookPath = fmt.Sprintf("%s/%s.epub", item.BookName)
+			}
+			if b, e := fsutil.FileExists(bookPath); e == nil && b {
+				baseName := filepath.Base(bookPath)
+				item.BookName = baseName
+				item.DownloadLink = "/download/" + baseName[:len(baseName)-5] + "/" + baseName
+				item.DeleteLink = "/delete/" + baseName[:len(baseName)-5] + "/" + baseName
+			}
 		}
 		mutexMaking.Unlock()
 
-		books.clear()
-		scanEbooks()
+		// books.clear()
+		// scanEbooks()
 	}()
 
 	c.JSON(http.StatusOK, gin.H{})
