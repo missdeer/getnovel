@@ -221,9 +221,9 @@ func makeEbook(c *gin.Context) {
 		} else {
 			item.Status = "有效"
 
-			bookPath := fmt.Sprintf("%s/%s.mobi", item.BookName)
+			bookPath := fmt.Sprintf("%s/%s.mobi", item.BookName, item.BookName)
 			if b, e := fsutil.FileExists(bookPath); e != nil || !b {
-				bookPath = fmt.Sprintf("%s/%s.epub", item.BookName)
+				bookPath = fmt.Sprintf("%s/%s.epub", item.BookName, item.BookName)
 			}
 			if b, e := fsutil.FileExists(bookPath); e == nil && b {
 				baseName := filepath.Base(bookPath)
