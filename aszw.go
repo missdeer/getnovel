@@ -68,6 +68,7 @@ func init() {
 			b = ic.Convert("gbk", "utf-8", b)
 			b = bytes.Replace(b, []byte("<tr><td class=\"L\">"), []byte("<tr>\n<td class=\"L\">"), -1)
 			b = bytes.Replace(b, []byte("</td><td class=\"L\">"), []byte("</td>\n<td class=\"L\">"), -1)
+			b = bytes.Replace(b, []byte("</a></td></tr>"), []byte("</a></td>\n</tr>"), -1)
 
 			gen.Begin()
 
