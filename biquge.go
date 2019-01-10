@@ -35,6 +35,9 @@ func init() {
 			if bytes.Index(c, []byte("charset=gbk")) > 0 {
 				c = ic.Convert("gbk", "utf-8", c)
 			}
+			if bytes.Index(c, []byte("charset=gb2312")) > 0 {
+				c = ic.Convert("gbk", "utf-8", c)
+			}
 			c = bytes.Replace(c, []byte("\r\n"), []byte(""), -1)
 			c = bytes.Replace(c, []byte("\r"), []byte(""), -1)
 			c = bytes.Replace(c, []byte("\n"), []byte(""), -1)
@@ -76,7 +79,11 @@ func init() {
 
 		b = bytes.Replace(b, []byte("<dd>"), []byte("\n<dd>"), -1)
 		b = bytes.Replace(b, []byte("</dd>"), []byte("</dd>\n"), -1)
+		b = bytes.Replace(b, []byte("</li><li>"), []byte("</li>\n<li>"), -1)
 		if bytes.Index(b, []byte("charset=gbk")) > 0 {
+			b = ic.Convert("gbk", "utf-8", b)
+		}
+		if bytes.Index(b, []byte("charset=gb2312")) > 0 {
 			b = ic.Convert("gbk", "utf-8", b)
 		}
 
@@ -138,6 +145,31 @@ func init() {
 		dlutil.wait()
 		gen.End()
 	}
+	registerNovelSiteHandler(&novelSiteHandler{
+		Title:         `斋书苑`,
+		MatchPatterns: []string{`https://www\.zhaishuyuan\.com/read/[0-9]+`},
+		Download: func(u string, gen ebook.IBook) {
+			tocPatterns := []tocPattern{
+				{
+					host:            "www.zhaishuyuan.com",
+					bookTitle:       `<h1>([^<]+)</h1>$`,
+					bookTitlePos:    1,
+					item:            `<li>\s*<a\s+href="([^"]+)"(\starget="_blank")?>([^<]+)</a>\s[0-9\-]+</li>$`,
+					articleURLPos:   1,
+					articleTitlePos: 3,
+					isAbsoluteURL:   true,
+				},
+			}
+			pageContentMarkers := []pageContentMarker{
+				{
+					host:  "www.zhaishuyuan.com",
+					start: []byte(`<div id="content"><p>`),
+					end:   []byte(`</p></div>`),
+				},
+			}
+			dl(u, gen, tocPatterns, pageContentMarkers)
+		},
+	})
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `八一中文网`,
 		MatchPatterns: []string{`https://www\.zwdu\.com/book/[0-9]+/`},
