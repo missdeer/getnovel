@@ -197,6 +197,31 @@ func init() {
 	})
 
 	registerNovelSiteHandler(&novelSiteHandler{
+		Title:         `看书啦`,
+		MatchPatterns: []string{`https://www\.kanshula\.com/book/[0-9a-zA-Z]+/`},
+		Download: func(u string, gen ebook.IBook) {
+			tocPatterns := []tocPattern{
+				{
+					host:            "www.kanshula.com",
+					bookTitle:       `<h1>([^<]+)</h1>$`,
+					bookTitlePos:    1,
+					item:            `<dd>\s*<a\s+href="([^"]+)"(\sclass="empty")?>([^<]+)</a></dd>$`,
+					articleURLPos:   1,
+					articleTitlePos: 3,
+					isAbsoluteURL:   true,
+				},
+			}
+			pageContentMarkers := []pageContentMarker{
+				{
+					host:  "www.kanshula.com",
+					start: []byte(`<div id="content">`),
+					end:   []byte(`</div>`),
+				},
+			}
+			dl(u, gen, tocPatterns, pageContentMarkers)
+		},
+	})
+	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `少年文学网`,
 		MatchPatterns: []string{`https://www\.snwx8\.com/book/[0-9]+/[0-9]+/`},
 		Download: func(u string, gen ebook.IBook) {
