@@ -1,0 +1,44 @@
+[
+    {
+        "sites": [
+            {
+            "host": "www.kanshula.com",
+            "name": "看书啦",
+            "tocURLPattern": "https://www.kanshula.com/book/[0-9a-zA-Z]+/"
+            }
+        ],
+        "title": "看书啦",
+        "bookTitlePattern": "<h1>([^<]+)</h1>$",
+        "bookTitlePos": 1,
+        "articlePattern": "<dd>\\s*<a\\s+href=\"([^\"]+)\"(\\sclass=\"empty\")?>([^<]+)</a></dd>$",
+        "articleTitlePos": 3,
+        "articleURLPos": 1,
+        "isAbsoluteURL": true,
+        "encoding": "utf-8",
+        "tocPreprocessor": [
+            {"from": "<dd>", "to": "\n<dd>"},
+            {"from": "</dd>", "to": "</dd>\n"},
+            {"from": "</li><li>", "to": "</li>\n<li>"}
+        ],
+        "tocStyle": "from-begin-to-end",
+        "cookies": "",
+        "pageContentMarkers": [
+            {
+                "host": "www.kanshula.com",
+                "start": "<div id=\"content\">",
+                "end": "</div>"
+            }
+        ],
+        "pagePreprocessor": [
+            {"from": "\r\n", "to": ""},
+            {"from": "\r", "to": ""},
+            {"from": "\n", "to": ""}
+        ],
+        "pagePostprocessor": [
+            {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+            {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+            {"from": "<br/><br/>", "to": "</p><p>"},
+            {"from": "　　", "to": ""}
+        ]
+    }
+]

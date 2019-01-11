@@ -36,7 +36,7 @@ type NovelSiteConfig struct {
 	IsAbsoluteURL      bool   `json:"isAbsoluteURL"`
 	Encoding           string `json:"encoding"`
 	TOCStyle           string `json:"tocStyle"`
-	UserAgent          string `json:"userAgent"`
+	Cookies            string `json:"cookies"`
 	PageContentMarkers []struct {
 		Host  string `json:"host"`
 		Start string `json:"start"`
@@ -49,7 +49,7 @@ var (
 )
 
 func readNovelSiteConfigurations() {
-	matches, err := filepath.Glob("config/*.cfg")
+	matches, err := filepath.Glob("config/*.json")
 	if err != nil {
 		panic(err)
 	}
@@ -83,7 +83,7 @@ func (nsc *NovelSiteConfig) Download(u string, gen ebook.IBook) {
 	theURL, _ := url.Parse(u)
 	headers := http.Header{
 		"Referer":                   []string{fmt.Sprintf("%s://%s", theURL.Scheme, theURL.Host)},
-		"User-Agent":                []string{nsc.UserAgent},
+		"User-Agent":                []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"},
 		"Accept":                    []string{"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
 		"Accept-Language":           []string{`en-US,en;q=0.8`},
 		"Upgrade-Insecure-Requests": []string{"1"},

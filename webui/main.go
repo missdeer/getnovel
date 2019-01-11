@@ -172,18 +172,19 @@ func makeEbook(c *gin.Context) {
 		books.append(item)
 
 		mutexMaking.Lock()
-
-		// monitor current directory
-		watcher, err := fsnotify.NewWatcher()
-		if err != nil {
-			log.Println(err)
-		}
-		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-		if err != nil {
-			log.Println(err)
-		}
 		go func() {
-			err := watcher.Add(dir)
+			// monitor current directory
+			watcher, err := fsnotify.NewWatcher()
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			err = watcher.Add(dir)
 			if err != nil {
 				log.Println(err)
 				return
