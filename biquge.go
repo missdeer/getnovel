@@ -146,6 +146,31 @@ func init() {
 		gen.End()
 	}
 	registerNovelSiteHandler(&novelSiteHandler{
+		Title:         `书呆子`,
+		MatchPatterns: []string{`http://www\.shudaizi\.org/book/[0-9]+`},
+		Download: func(u string, gen ebook.IBook) {
+			tocPatterns := []tocPattern{
+				{
+					host:            "www.shudaizi.org",
+					bookTitle:       `<h1>([^<]+)</h1>$`,
+					bookTitlePos:    1,
+					item:            `<dd>\s*<a\s+href="([^"]+)"(\sclass="empty")?>([^<]+)<span></span></a></dd>$`,
+					articleURLPos:   1,
+					articleTitlePos: 3,
+					isAbsoluteURL:   true,
+				},
+			}
+			pageContentMarkers := []pageContentMarker{
+				{
+					host:  "www.shudaizi.org",
+					start: []byte(`<div id="content"><p>`),
+					end:   []byte(`</p></div>`),
+				},
+			}
+			dl(u, gen, tocPatterns, pageContentMarkers)
+		},
+	})
+	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `斋书苑`,
 		MatchPatterns: []string{`https://www\.zhaishuyuan\.com/read/[0-9]+`},
 		Download: func(u string, gen ebook.IBook) {
@@ -321,7 +346,9 @@ func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title: `笔趣阁系列`,
 		MatchPatterns: []string{
+			`http://www\.xbiquge\.cc/book/[0-9]+/`,
 			`http://www\.biqudu\.com/[0-9]+_[0-9]+/`,
+			`https://www\.biduo\.cc/biquge/[0-9]+_[0-9]+/`,
 			`http://www\.biquge\.cm/[0-9]+/[0-9]+/`,
 			`https://www\.qu\.la/book/[0-9]+/`,
 			`http://www\.biqugezw\.com/[0-9]+_[0-9]+/`,
@@ -331,11 +358,28 @@ func init() {
 			`http://www\.xxbiquge\.com/[0-9]+_[0-9]+/`,
 			`http://www\.biqugev\.com/[0-9]+_[0-9]+/`,
 			`https://www\.bqg5200\.com/xiaoshuo/[0-9]+/[0-9]+/`,
+			`http://www\.biqujia\.com/book/[0-9]+/[0-9]+/`,
 		},
 		Download: func(u string, gen ebook.IBook) {
 			tocPatterns := []tocPattern{
 				{
+					host:            "www.xbiquge.cc",
+					bookTitle:       `<h1>([^<]+)</h1>$`,
+					bookTitlePos:    1,
+					item:            `<dd>\s*<a\s*href="([^"]+)">([^<]+)</a></dd>$`,
+					articleURLPos:   1,
+					articleTitlePos: 2,
+				},
+				{
 					host:            "www.biqudu.com",
+					bookTitle:       `<h1>([^<]+)</h1>$`,
+					bookTitlePos:    1,
+					item:            `<dd>\s*<a\s*href="([^"]+)">([^<]+)</a></dd>$`,
+					articleURLPos:   1,
+					articleTitlePos: 2,
+				},
+				{
+					host:            "www.biduo.cc",
 					bookTitle:       `<h1>([^<]+)</h1>$`,
 					bookTitlePos:    1,
 					item:            `<dd>\s*<a\s*href="([^"]+)">([^<]+)</a></dd>$`,
@@ -416,12 +460,30 @@ func init() {
 					articleURLPos:   1,
 					articleTitlePos: 3,
 				},
+				{
+					host:            "www.biqujia.com",
+					bookTitle:       `<h1>([^<]+)</h1>`,
+					bookTitlePos:    1,
+					item:            `<dd>\s*<a\s*href="([^"]+)"(\sclass="empty")?>([^<]+)</a></dd>$`,
+					articleURLPos:   1,
+					articleTitlePos: 3,
+				},
 			}
 			pageContentMarkers := []pageContentMarker{
+				{
+					host:  "www.xbiquge.cc",
+					start: []byte(`<div id="content" name="content">`),
+					end:   []byte(`</div>`),
+				},
 				{
 					host:  "www.biqudu.com",
 					start: []byte(`<div id="content"><script>readx();</script>`),
 					end:   []byte(`<script>chaptererror();</script>`),
+				},
+				{
+					host:  "www.biduo.cc",
+					start: []byte(`<div id="content">`),
+					end:   []byte(`</div>`),
 				},
 				{
 					host:  "www.biquge.cm",
@@ -466,6 +528,11 @@ func init() {
 				{
 					host:  "www.bqg5200.com",
 					start: []byte(`<div class="ad250left"><script>ads_yuedu_txt();</script></div>`),
+					end:   []byte(`</div>`),
+				},
+				{
+					host:  "www.biqujia.com",
+					start: []byte(`<div id="content">`),
 					end:   []byte(`</div>`),
 				},
 			}
