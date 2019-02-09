@@ -163,8 +163,8 @@ func init() {
 			pageContentMarkers := []pageContentMarker{
 				{
 					host:  "www.shudaizi.org",
-					start: []byte(`<div id="content"><p>`),
-					end:   []byte(`</p></div>`),
+					start: []byte(`<div id="content">`),
+					end:   []byte(`<div class="wz-page"></div></div>`),
 				},
 			}
 			dl(u, gen, tocPatterns, pageContentMarkers)
