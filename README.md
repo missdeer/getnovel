@@ -34,7 +34,7 @@ go get github.com/dfordsoft/getnovel
 * 燃文小说: http://www.ranwena.com
 * 笔趣阁系列: http://www.biqugezw.com, http://www.630zw.com, http://www.biquge.lu, http://www.biquge5200.com, http://www.biqudu.com, http://www.biquge.cm, http://www.qu.la, http://www.xxbiquge.com, https://www.biqugev.com
 * 落霞: http://www.luoxia.com
-* 飘天: http://www.piaotian.com
+* 飘天: http://www.ptwxz.com
 * 书迷楼: http://www.shumil.com
 * UU看书: http://www.uukanshu.net
 * 无图小说: http://www.wutuxs.com
