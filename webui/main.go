@@ -274,6 +274,10 @@ func main() {
 	for _, v := range matches {
 		fontFiles = append(fontFiles, filepath.Base(v))
 	}
+	matches, err = filepath.Glob("fonts/**/*.ttf")
+	for _, v := range matches {
+		fontFiles = append(fontFiles, filepath.Base(v))
+	}
 	scanEbooks()
 	r.Run(addr)
 }
