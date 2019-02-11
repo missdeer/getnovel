@@ -2,17 +2,16 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 
 	"github.com/dfordsoft/golib/fsutil"
-	"github.com/fsnotify/fsnotify"
 	"github.com/gin-gonic/gin"
 )
 
@@ -116,32 +115,32 @@ func makeEbook(c *gin.Context) {
 		gnargs.Format,
 		"-p",
 		gnargs.PageType,
-		fmt.Sprintf("--fontFile=%s", gnargs.FontFile),
+		"--fontFile",
+		gnargs.FontFile,
 	}
 
 	if gnargs.Format == "pdf" {
 		args = append(args,
-			[]string{
-				fmt.Sprintf("--leftMargin=%d", gnargs.LeftMargin),
-				fmt.Sprintf("--topMargin=%d", gnargs.TopMargin),
-				fmt.Sprintf("--titleFontSize=%d", gnargs.TitleFontSize),
-				fmt.Sprintf("--contentFontSize=%d", gnargs.ContentFontSize),
-				fmt.Sprintf("--lineSpacing=%f", gnargs.LineSpacing),
-				fmt.Sprintf("--pagesPerFile=%d", gnargs.PagesPerFile),
-				fmt.Sprintf("--chaptersPerFile=%d", gnargs.ChaptersPerFile),
-			}...)
+			fmt.Sprintf("--leftMargin=%d", gnargs.LeftMargin),
+			fmt.Sprintf("--topMargin=%d", gnargs.TopMargin),
+			fmt.Sprintf("--titleFontSize=%d", gnargs.TitleFontSize),
+			fmt.Sprintf("--contentFontSize=%d", gnargs.ContentFontSize),
+			fmt.Sprintf("--lineSpacing=%f", gnargs.LineSpacing),
+			fmt.Sprintf("--pagesPerFile=%d", gnargs.PagesPerFile),
+			fmt.Sprintf("--chaptersPerFile=%d", gnargs.ChaptersPerFile),
+		)
 	}
 	if gnargs.FromTitle != "" {
-		args = append(args, fmt.Sprintf("--fromTitle=%s", gnargs.FromTitle))
+		args = append(args, "--fromTitl", gnargs.FromTitle)
 	}
 	if gnargs.ToTitle != "" {
-		args = append(args, fmt.Sprintf("--toTitle=%s", gnargs.ToTitle))
+		args = append(args, "--toTitle", gnargs.ToTitle)
 	}
 	if gnargs.FromChapter != 0 {
-		args = append(args, fmt.Sprintf("--fromChapter=%d", gnargs.FromChapter))
+		args = append(args, "--fromChapter", strconv.Itoa(gnargs.FromChapter))
 	}
 	if gnargs.ToChapter != 0 {
-		args = append(args, fmt.Sprintf("--toChapter=%d", gnargs.ToChapter))
+		args = append(args, "--toChapter", strconv.Itoa(gnargs.ToChapter))
 	}
 	args = append(args, gnargs.TOCURL)
 
@@ -172,49 +171,6 @@ func makeEbook(c *gin.Context) {
 		books.append(item)
 
 		mutexMaking.Lock()
-		go func() {
-			// monitor current directory
-			watcher, err := fsnotify.NewWatcher()
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			err = watcher.Add(dir)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			defer watcher.Close()
-			for {
-				select {
-				case event := <-watcher.Events:
-					if event.Op&fsnotify.Write == fsnotify.Write {
-						if strings.ToLower(filepath.Ext(event.Name)) == ".pdf" {
-							baseName := filepath.Base(event.Name)
-							item.BookName = baseName
-							item.DownloadLink = "/download/pdf/" + baseName
-							item.DeleteLink = "/delete/pdf/" + baseName
-							return
-						}
-						if b, e := fsutil.IsDir(event.Name); e == nil && b {
-							watcher.Remove(dir)
-							baseName := filepath.Base(event.Name)
-							item.BookName = baseName
-							return
-						}
-					}
-				case err := <-watcher.Errors:
-					if err != nil {
-						log.Println("error:", err)
-					}
-				}
-			}
-		}()
 
 		item.Status = "制作中"
 		if err := cmd.Run(); err != nil {
@@ -235,8 +191,8 @@ func makeEbook(c *gin.Context) {
 		}
 		mutexMaking.Unlock()
 
-		// books.clear()
-		// scanEbooks()
+		books.clear()
+		scanEbooks()
 	}()
 
 	c.JSON(http.StatusOK, gin.H{})
