@@ -13,6 +13,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/dfordsoft/golib/fsutil"
+
 	"github.com/dfordsoft/golib/ebook"
 	flags "github.com/jessevdk/go-flags"
 )
@@ -24,7 +26,9 @@ type Options struct {
 	List            bool    `short:"l" long:"list" description:"list supported novel websites"`
 	LeftMargin      float64 `long:"leftMargin" description:"set left margin for PDF format"`
 	TopMargin       float64 `long:"topMargin" description:"set top margin for PDF format"`
-	PageType        string  `short:"p" long:"pageType" description:"set page type for PDF format, candidate values: a0, a1, a2, a3, a4, a5, a6, b0, b1, b2, b3, b4, b5, b6, c0, c1, c2, c3, c4, c5, c6, dxg(=a4), 6inch(90mm x 117mm), 7inch, 10inch(=a4), mobile(=a4 & 32 point title font size & 28 point content font size), pc(=a4 & 25.4mm left margin & 31.7mm top margin & 16 point title font size & 12 point content font size)"`
+	PageWidth       float64 `long:"pageWidth" description:"set page width for PDF format(unit: mm)"`
+	PageHeight      float64 `long:"pageHeight" description:"set page height for PDF format(unit: mm)"`
+	PageType        string  `short:"p" long:"pageType" description:"set page type for PDF format, add suffix to output file name"`
 	TitleFontSize   int     `long:"titleFontSize" description:"set title font point size for PDF format"`
 	ContentFontSize int     `long:"contentFontSize" description:"set content font point size for PDF format"`
 	LineSpacing     float64 `long:"lineSpacing" description:"set line spacing rate for PDF format"`
@@ -110,111 +114,134 @@ func listCommandHandler() {
 }
 
 func readConfigFile(opts *Options) bool {
-	if opts.ConfigFile != "" {
-		contentFd, err := os.OpenFile(opts.ConfigFile, os.O_RDONLY, 0644)
-		if err != nil {
-			log.Println("opening config file ", opts.ConfigFile, " for reading failed ", err)
-			return false
+	configFile := opts.ConfigFile
+	if b, e := fsutil.FileExists(configFile); e != nil || !b {
+		configFile = filepath.Join("preset", opts.ConfigFile)
+		if b, e = fsutil.FileExists(configFile); e != nil || !b {
+			configFile = filepath.Join("preset", opts.ConfigFile+".conf")
+			if b, e = fsutil.FileExists(configFile); e != nil || !b {
+				configFile = filepath.Join("preset", opts.ConfigFile+".json")
+				if b, e = fsutil.FileExists(configFile); e != nil || !b {
+					log.Println("cannot find configuration file ", opts.ConfigFile)
+					return false
+				}
+			}
 		}
+	}
 
-		contentC, err := ioutil.ReadAll(contentFd)
-		contentFd.Close()
-		if err != nil {
-			log.Println("reading config file ", opts.ConfigFile, " failed ", err)
-			return false
-		}
+	contentFd, err := os.OpenFile(configFile, os.O_RDONLY, 0644)
+	if err != nil {
+		log.Println("opening config file ", configFile, " for reading failed ", err)
+		return false
+	}
 
-		var options map[string]interface{}
-		if err = json.Unmarshal(contentC, &options); err != nil {
-			log.Println("unmarshall configurations failed", err)
-			return false
-		}
+	contentC, err := ioutil.ReadAll(contentFd)
+	contentFd.Close()
+	if err != nil {
+		log.Println("reading config file ", configFile, " failed ", err)
+		return false
+	}
 
-		if f, ok := options["format"]; ok {
-			if v := f.(string); len(v) > 0 {
-				opts.Format = v
-			}
-		}
-		if f, ok := options["pageType"]; ok {
-			if v := f.(string); len(v) > 0 {
-				opts.PageType = v
-			}
-		}
-		if f, ok := options["fontFile"]; ok {
-			if v := f.(string); len(v) > 0 {
-				opts.FontFile = v
-			}
-		}
-		if f, ok := options["fromChapter"]; ok {
-			if v := f.(int); v > 0 {
-				opts.FromChapter = v
-			}
-		}
-		if f, ok := options["fromTitle"]; ok {
-			if v := f.(string); len(v) > 0 {
-				opts.FromTitle = v
-			}
-		}
-		if f, ok := options["toChapter"]; ok {
-			if v := f.(int); v > 0 {
-				opts.ToChapter = v
-			}
-		}
-		if f, ok := options["toTitle"]; ok {
-			if v := f.(string); len(v) > 0 {
-				opts.ToTitle = v
-			}
-		}
+	var options map[string]interface{}
+	if err = json.Unmarshal(contentC, &options); err != nil {
+		log.Println("unmarshall configurations failed", err)
+		return false
+	}
 
-		if f, ok := options["leftMargin"]; ok {
-			if v := f.(float64); v > 0 {
-				opts.LeftMargin = v
-			}
+	if f, ok := options["format"]; ok {
+		if v := f.(string); len(v) > 0 {
+			opts.Format = v
 		}
-		if f, ok := options["topMargin"]; ok {
-			if v := f.(float64); v > 0 {
-				opts.TopMargin = v
-			}
+	}
+	if f, ok := options["pageType"]; ok {
+		if v := f.(string); len(v) > 0 {
+			opts.PageType = v
 		}
-		if f, ok := options["lineSpacing"]; ok {
-			if v := f.(float64); v > 0 {
-				opts.LineSpacing = v
-			}
+	}
+	if f, ok := options["pageWidth"]; ok {
+		if v := f.(float64); v > 0 {
+			opts.PageWidth = v
 		}
-		if f, ok := options["titleFontSize"]; ok {
-			if v := f.(int); v > 0 {
-				opts.TitleFontSize = v
-			}
+	}
+	if f, ok := options["pageHeight"]; ok {
+		if v := f.(float64); v > 0 {
+			opts.PageHeight = v
 		}
-		if f, ok := options["contentFontSize"]; ok {
-			if v := f.(int); v > 0 {
-				opts.ContentFontSize = v
-			}
+	}
+	if f, ok := options["fontFile"]; ok {
+		if v := f.(string); len(v) > 0 {
+			opts.FontFile = v
 		}
-		if f, ok := options["pagesPerFile"]; ok {
-			if v := f.(int); v > 0 {
-				opts.PagesPerFile = v
-			}
+	}
+	if f, ok := options["fromChapter"]; ok {
+		if v := f.(int); v > 0 {
+			opts.FromChapter = v
 		}
-		if f, ok := options["chaptersPerFile"]; ok {
-			if v := f.(int); v > 0 {
-				opts.ChaptersPerFile = v
-			}
+	}
+	if f, ok := options["fromTitle"]; ok {
+		if v := f.(string); len(v) > 0 {
+			opts.FromTitle = v
 		}
-		if f, ok := options["retries"]; ok {
-			if v := f.(int); v > 0 {
-				opts.RetryCount = v
-			}
+	}
+	if f, ok := options["toChapter"]; ok {
+		if v := f.(int); v > 0 {
+			opts.ToChapter = v
 		}
-		if f, ok := options["timeout"]; ok {
-			if v := f.(int); v > 0 {
-				opts.Timeout = v
-			}
+	}
+	if f, ok := options["toTitle"]; ok {
+		if v := f.(string); len(v) > 0 {
+			opts.ToTitle = v
 		}
-		if f, ok := options["parallel"]; ok {
-			if v := f.(int64); v > 0 {
-				opts.ParallelCount = v
-			}
+	}
+
+	if f, ok := options["leftMargin"]; ok {
+		if v := f.(float64); v > 0 {
+			opts.LeftMargin = v
+		}
+	}
+	if f, ok := options["topMargin"]; ok {
+		if v := f.(float64); v > 0 {
+			opts.TopMargin = v
+		}
+	}
+	if f, ok := options["lineSpacing"]; ok {
+		if v := f.(float64); v > 0 {
+			opts.LineSpacing = v
+		}
+	}
+	if f, ok := options["titleFontSize"]; ok {
+		if v := f.(int); v > 0 {
+			opts.TitleFontSize = v
+		}
+	}
+	if f, ok := options["contentFontSize"]; ok {
+		if v := f.(int); v > 0 {
+			opts.ContentFontSize = v
+		}
+	}
+	if f, ok := options["pagesPerFile"]; ok {
+		if v := f.(int); v > 0 {
+			opts.PagesPerFile = v
+		}
+	}
+	if f, ok := options["chaptersPerFile"]; ok {
+		if v := f.(int); v > 0 {
+			opts.ChaptersPerFile = v
+		}
+	}
+	if f, ok := options["retries"]; ok {
+		if v := f.(int); v > 0 {
+			opts.RetryCount = v
+		}
+	}
+	if f, ok := options["timeout"]; ok {
+		if v := f.(int); v > 0 {
+			opts.Timeout = v
+		}
+	}
+	if f, ok := options["parallel"]; ok {
+		if v := f.(int64); v > 0 {
+			opts.ParallelCount = v
 		}
 	}
 	return true
@@ -232,6 +259,7 @@ func downloadBook(novelURL string, ch chan bool) {
 				gen.ChaptersPerFile(opts.ChaptersPerFile)
 				gen.SetMargins(opts.LeftMargin, opts.TopMargin)
 				gen.SetPageType(opts.PageType)
+				gen.SetPageSize(opts.PageWidth, opts.PageHeight)
 				gen.SetFontFile(opts.FontFile)
 				gen.Output(opts.OutputFile)
 				gen.Info()
@@ -253,6 +281,7 @@ func downloadBook(novelURL string, ch chan bool) {
 				gen.ChaptersPerFile(opts.ChaptersPerFile)
 				gen.SetMargins(opts.LeftMargin, opts.TopMargin)
 				gen.SetPageType(opts.PageType)
+				gen.SetPageSize(opts.PageWidth, opts.PageHeight)
 				gen.SetFontFile(opts.FontFile)
 				gen.Output(opts.OutputFile)
 				gen.Info()
@@ -280,7 +309,8 @@ func main() {
 		List:            false,
 		LeftMargin:      10,
 		TopMargin:       10,
-		PageType:        "a4",
+		PageHeight:      841.89,
+		PageWidth:       595.28,
 		TitleFontSize:   24,
 		ContentFontSize: 18,
 		LineSpacing:     1.2,
