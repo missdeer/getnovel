@@ -210,38 +210,38 @@ func readConfigFile(opts *Options) bool {
 		}
 	}
 	if f, ok := options["titleFontSize"]; ok {
-		if v := f.(int); v > 0 {
-			opts.TitleFontSize = v
+		if v := f.(float64); v > 0 {
+			opts.TitleFontSize = int(v)
 		}
 	}
 	if f, ok := options["contentFontSize"]; ok {
-		if v := f.(int); v > 0 {
-			opts.ContentFontSize = v
+		if v := f.(float64); v > 0 {
+			opts.ContentFontSize = int(v)
 		}
 	}
 	if f, ok := options["pagesPerFile"]; ok {
-		if v := f.(int); v > 0 {
-			opts.PagesPerFile = v
+		if v := f.(float64); v > 0 {
+			opts.PagesPerFile = int(v)
 		}
 	}
 	if f, ok := options["chaptersPerFile"]; ok {
-		if v := f.(int); v > 0 {
-			opts.ChaptersPerFile = v
+		if v := f.(float64); v > 0 {
+			opts.ChaptersPerFile = int(v)
 		}
 	}
 	if f, ok := options["retries"]; ok {
-		if v := f.(int); v > 0 {
-			opts.RetryCount = v
+		if v := f.(float64); v > 0 {
+			opts.RetryCount = int(v)
 		}
 	}
 	if f, ok := options["timeout"]; ok {
-		if v := f.(int); v > 0 {
-			opts.Timeout = v
+		if v := f.(float64); v > 0 {
+			opts.Timeout = int(v)
 		}
 	}
 	if f, ok := options["parallel"]; ok {
-		if v := f.(int64); v > 0 {
-			opts.ParallelCount = v
+		if v := f.(float64); v > 0 {
+			opts.ParallelCount = int64(v)
 		}
 	}
 	return true
