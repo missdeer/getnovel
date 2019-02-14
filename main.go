@@ -10,12 +10,12 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"reflect"
 	"regexp"
 	"strings"
 
-	"github.com/dfordsoft/golib/fsutil"
-
 	"github.com/dfordsoft/golib/ebook"
+	"github.com/dfordsoft/golib/fsutil"
 	flags "github.com/jessevdk/go-flags"
 )
 
@@ -114,6 +114,10 @@ func listCommandHandler() {
 }
 
 func readConfigFile(opts *Options) bool {
+	if opts.ConfigFile == "" {
+		// ignore this case
+		return true
+	}
 	configFile := opts.ConfigFile
 	if b, e := fsutil.FileExists(configFile); e != nil || !b {
 		configFile = filepath.Join("preset", opts.ConfigFile)
@@ -148,102 +152,54 @@ func readConfigFile(opts *Options) bool {
 		return false
 	}
 
-	if f, ok := options["format"]; ok {
-		if v := f.(string); len(v) > 0 {
-			opts.Format = v
-		}
+	ss := []struct {
+		jsonKey         string
+		structFieldName string
+		structFieldType string
+	}{
+		{jsonKey: "format", structFieldName: "Format", structFieldType: "string"},
+		{jsonKey: "pageType", structFieldName: "PageType", structFieldType: "string"},
+		{jsonKey: "pageWidth", structFieldName: "PageWidth", structFieldType: "float"},
+		{jsonKey: "pageHeight", structFieldName: "PageHeight", structFieldType: "float"},
+		{jsonKey: "fontFile", structFieldName: "FontFile", structFieldType: "string"},
+		{jsonKey: "fromChapter", structFieldName: "FromChapter", structFieldType: "int"},
+		{jsonKey: "fromTitle", structFieldName: "FromTitle", structFieldType: "string"},
+		{jsonKey: "toChapter", structFieldName: "ToChapter", structFieldType: "int"},
+		{jsonKey: "toTitle", structFieldName: "ToTitle", structFieldType: "string"},
+		{jsonKey: "leftMargin", structFieldName: "LeftMargin", structFieldType: "float"},
+		{jsonKey: "topMargin", structFieldName: "TopMargin", structFieldType: "float"},
+		{jsonKey: "lineSpacing", structFieldName: "LineSpacing", structFieldType: "float"},
+		{jsonKey: "titleFontSize", structFieldName: "TitleFontSize", structFieldType: "int"},
+		{jsonKey: "contentFontSize", structFieldName: "ContentFontSize", structFieldType: "int"},
+		{jsonKey: "pagesPerFile", structFieldName: "PagesPerFile", structFieldType: "int"},
+		{jsonKey: "chaptersPerFile", structFieldName: "ChaptersPerFile", structFieldType: "int"},
+		{jsonKey: "retries", structFieldName: "RetryCount", structFieldType: "int"},
+		{jsonKey: "timeout", structFieldName: "Timeout", structFieldType: "int"},
+		{jsonKey: "parallel", structFieldName: "ParallelCount", structFieldType: "int"},
 	}
-	if f, ok := options["pageType"]; ok {
-		if v := f.(string); len(v) > 0 {
-			opts.PageType = v
-		}
-	}
-	if f, ok := options["pageWidth"]; ok {
-		if v := f.(float64); v > 0 {
-			opts.PageWidth = v
-		}
-	}
-	if f, ok := options["pageHeight"]; ok {
-		if v := f.(float64); v > 0 {
-			opts.PageHeight = v
-		}
-	}
-	if f, ok := options["fontFile"]; ok {
-		if v := f.(string); len(v) > 0 {
-			opts.FontFile = v
-		}
-	}
-	if f, ok := options["fromChapter"]; ok {
-		if v := f.(float64); v > 0 {
-			opts.FromChapter = int(v)
-		}
-	}
-	if f, ok := options["fromTitle"]; ok {
-		if v := f.(string); len(v) > 0 {
-			opts.FromTitle = v
-		}
-	}
-	if f, ok := options["toChapter"]; ok {
-		if v := f.(float64); v > 0 {
-			opts.ToChapter = int(v)
-		}
-	}
-	if f, ok := options["toTitle"]; ok {
-		if v := f.(string); len(v) > 0 {
-			opts.ToTitle = v
+
+	ot := reflect.ValueOf(opts)
+	oe := ot.Elem()
+	for _, s := range ss {
+		of := oe.FieldByName(s.structFieldName)
+		if f, ok := options[s.jsonKey]; ok {
+			switch s.structFieldType {
+			case "string":
+				if v := f.(string); len(v) > 0 {
+					of.SetString(v)
+				}
+			case "float":
+				if v := f.(float64); v > 0 {
+					of.SetFloat(v)
+				}
+			case "int":
+				if v := f.(float64); v > 0 {
+					of.SetInt(int64(v))
+				}
+			}
 		}
 	}
 
-	if f, ok := options["leftMargin"]; ok {
-		if v := f.(float64); v > 0 {
-			opts.LeftMargin = v
-		}
-	}
-	if f, ok := options["topMargin"]; ok {
-		if v := f.(float64); v > 0 {
-			opts.TopMargin = v
-		}
-	}
-	if f, ok := options["lineSpacing"]; ok {
-		if v := f.(float64); v > 0 {
-			opts.LineSpacing = v
-		}
-	}
-	if f, ok := options["titleFontSize"]; ok {
-		if v := f.(float64); v > 0 {
-			opts.TitleFontSize = int(v)
-		}
-	}
-	if f, ok := options["contentFontSize"]; ok {
-		if v := f.(float64); v > 0 {
-			opts.ContentFontSize = int(v)
-		}
-	}
-	if f, ok := options["pagesPerFile"]; ok {
-		if v := f.(float64); v > 0 {
-			opts.PagesPerFile = int(v)
-		}
-	}
-	if f, ok := options["chaptersPerFile"]; ok {
-		if v := f.(float64); v > 0 {
-			opts.ChaptersPerFile = int(v)
-		}
-	}
-	if f, ok := options["retries"]; ok {
-		if v := f.(float64); v > 0 {
-			opts.RetryCount = int(v)
-		}
-	}
-	if f, ok := options["timeout"]; ok {
-		if v := f.(float64); v > 0 {
-			opts.Timeout = int(v)
-		}
-	}
-	if f, ok := options["parallel"]; ok {
-		if v := f.(float64); v > 0 {
-			opts.ParallelCount = int64(v)
-		}
-	}
 	return true
 }
 
