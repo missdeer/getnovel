@@ -174,8 +174,8 @@ func readConfigFile(opts *Options) bool {
 		}
 	}
 	if f, ok := options["fromChapter"]; ok {
-		if v := f.(int); v > 0 {
-			opts.FromChapter = v
+		if v := f.(float64); v > 0 {
+			opts.FromChapter = int(v)
 		}
 	}
 	if f, ok := options["fromTitle"]; ok {
@@ -184,8 +184,8 @@ func readConfigFile(opts *Options) bool {
 		}
 	}
 	if f, ok := options["toChapter"]; ok {
-		if v := f.(int); v > 0 {
-			opts.ToChapter = v
+		if v := f.(float64); v > 0 {
+			opts.ToChapter = int(v)
 		}
 	}
 	if f, ok := options["toTitle"]; ok {
