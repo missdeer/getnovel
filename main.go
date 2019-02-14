@@ -153,46 +153,45 @@ func readConfigFile(opts *Options) bool {
 	}
 
 	ss := []struct {
-		jsonKey         string
-		structFieldName string
-		structFieldType string
+		key   string
+		field string
 	}{
-		{jsonKey: "format", structFieldName: "Format", structFieldType: "string"},
-		{jsonKey: "pageType", structFieldName: "PageType", structFieldType: "string"},
-		{jsonKey: "pageWidth", structFieldName: "PageWidth", structFieldType: "float"},
-		{jsonKey: "pageHeight", structFieldName: "PageHeight", structFieldType: "float"},
-		{jsonKey: "fontFile", structFieldName: "FontFile", structFieldType: "string"},
-		{jsonKey: "fromChapter", structFieldName: "FromChapter", structFieldType: "int"},
-		{jsonKey: "fromTitle", structFieldName: "FromTitle", structFieldType: "string"},
-		{jsonKey: "toChapter", structFieldName: "ToChapter", structFieldType: "int"},
-		{jsonKey: "toTitle", structFieldName: "ToTitle", structFieldType: "string"},
-		{jsonKey: "leftMargin", structFieldName: "LeftMargin", structFieldType: "float"},
-		{jsonKey: "topMargin", structFieldName: "TopMargin", structFieldType: "float"},
-		{jsonKey: "lineSpacing", structFieldName: "LineSpacing", structFieldType: "float"},
-		{jsonKey: "titleFontSize", structFieldName: "TitleFontSize", structFieldType: "int"},
-		{jsonKey: "contentFontSize", structFieldName: "ContentFontSize", structFieldType: "int"},
-		{jsonKey: "pagesPerFile", structFieldName: "PagesPerFile", structFieldType: "int"},
-		{jsonKey: "chaptersPerFile", structFieldName: "ChaptersPerFile", structFieldType: "int"},
-		{jsonKey: "retries", structFieldName: "RetryCount", structFieldType: "int"},
-		{jsonKey: "timeout", structFieldName: "Timeout", structFieldType: "int"},
-		{jsonKey: "parallel", structFieldName: "ParallelCount", structFieldType: "int"},
+		{key: "format", field: "Format"},
+		{key: "pageType", field: "PageType"},
+		{key: "pageWidth", field: "PageWidth"},
+		{key: "pageHeight", field: "PageHeight"},
+		{key: "fontFile", field: "FontFile"},
+		{key: "fromChapter", field: "FromChapter"},
+		{key: "fromTitle", field: "FromTitle"},
+		{key: "toChapter", field: "ToChapter"},
+		{key: "toTitle", field: "ToTitle"},
+		{key: "leftMargin", field: "LeftMargin"},
+		{key: "topMargin", field: "TopMargin"},
+		{key: "lineSpacing", field: "LineSpacing"},
+		{key: "titleFontSize", field: "TitleFontSize"},
+		{key: "contentFontSize", field: "ContentFontSize"},
+		{key: "pagesPerFile", field: "PagesPerFile"},
+		{key: "chaptersPerFile", field: "ChaptersPerFile"},
+		{key: "retries", field: "RetryCount"},
+		{key: "timeout", field: "Timeout"},
+		{key: "parallel", field: "ParallelCount"},
 	}
 
 	ot := reflect.ValueOf(opts)
 	oe := ot.Elem()
 	for _, s := range ss {
-		of := oe.FieldByName(s.structFieldName)
-		if f, ok := options[s.jsonKey]; ok {
-			switch s.structFieldType {
-			case "string":
+		of := oe.FieldByName(s.field)
+		if f, ok := options[s.key]; ok {
+			switch of.Kind() {
+			case reflect.String:
 				if v := f.(string); len(v) > 0 {
 					of.SetString(v)
 				}
-			case "float":
+			case reflect.Float64:
 				if v := f.(float64); v > 0 {
 					of.SetFloat(v)
 				}
-			case "int":
+			case reflect.Int, reflect.Int64:
 				if v := f.(float64); v > 0 {
 					of.SetInt(int64(v))
 				}
