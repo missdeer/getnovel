@@ -80,7 +80,7 @@ func registerNovelSiteHandler(h *novelSiteHandler) {
 }
 
 func listCommandHandler() {
-	fmt.Println("支持小说网站：")
+	fmt.Println("内建支持小说网站：")
 	for _, h := range novelSiteHandlers {
 		urlMap := make(map[string]struct{})
 		for _, p := range h.MatchPatterns {
@@ -96,6 +96,7 @@ func listCommandHandler() {
 		}
 		fmt.Println("\t" + h.Title + ": " + strings.Join(urls, ", "))
 	}
+	fmt.Println("通过配置文件支持小说网站：")
 	for _, h := range novelSiteConfigurations {
 		fmt.Println("\t" + h.SiteName + ": " + h.Host)
 	}
@@ -269,6 +270,8 @@ func main() {
 		return
 	}
 
+	readNovelSiteConfigurations()
+
 	if opts.List {
 		listCommandHandler()
 		return
@@ -309,8 +312,6 @@ func main() {
 		log.Fatal(http.ListenAndServe(opts.ListenAndServe, http.FileServer(http.Dir(dir))))
 		return
 	}
-
-	readNovelSiteConfigurations()
 
 	if opts.ConfigFile != "" {
 		if !readLocalConfigFile(&opts) && !readRemotePreset(&opts) {

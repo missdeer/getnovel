@@ -59,21 +59,21 @@ func readNovelSiteConfigurations() {
 	}
 
 	for _, configFile := range matches {
-		contentFd, err := os.OpenFile(configFile, os.O_RDONLY, 0644)
+		fd, err := os.OpenFile(configFile, os.O_RDONLY, 0644)
 		if err != nil {
 			log.Println("opening config file ", configFile, " for reading failed ", err)
 			continue
 		}
 
-		contentC, err := ioutil.ReadAll(contentFd)
-		contentFd.Close()
+		c, err := ioutil.ReadAll(fd)
+		fd.Close()
 		if err != nil {
 			log.Println("reading config file ", configFile, " failed ", err)
 			continue
 		}
 
 		config := []NovelSiteConfig{}
-		if err = json.Unmarshal(contentC, config); err != nil {
+		if err = json.Unmarshal(c, &config); err != nil {
 			log.Println("unmarshall configurations failed", err)
 			continue
 		}
@@ -179,9 +179,19 @@ func (nsc *NovelSiteConfig) Download(u string, gen ebook.IBook) {
 		}
 		articles = append(articles, article)
 	}
+
 	// clean & sort articles
-	for i := len(articles) - 1; i >= 0 && i < len(articles) && articles[0].URL == articles[i].URL; i -= 2 {
-		articles = articles[1:]
+	switch nsc.TOCStyle {
+	case "from-begin-to-end":
+	case "from-end-to-begin":
+		for i := len(articles)/2 - 1; i >= 0; i-- {
+			opp := len(articles) - 1 - i
+			articles[i], articles[opp] = articles[opp], articles[i]
+		}
+	case "recent-at-begin":
+		for i := len(articles) - 1; i >= 0 && i < len(articles) && articles[0].URL == articles[i].URL; i -= 2 {
+			articles = articles[1:]
+		}
 	}
 
 	// download article content
