@@ -19,9 +19,9 @@ import (
 	flags "github.com/jessevdk/go-flags"
 )
 
-// Options for all command line options
+// Options for all command line options, long name must match field name
 type Options struct {
-	ListenAndServe  string  `long:"httpServe" description:"set http listen and serve address, example: :8080"`
+	ListenAndServe  string  `long:"listenAndServe" description:"set http listen and serve address, example: :8080"`
 	Format          string  `short:"f" long:"format" description:"set generated file format, candidate values: mobi, epub, pdf"`
 	List            bool    `short:"l" long:"list" description:"list supported novel websites"`
 	LeftMargin      float64 `long:"leftMargin" description:"set left margin for PDF format"`
@@ -35,11 +35,11 @@ type Options struct {
 	PagesPerFile    int     `long:"pagesPerFile" description:"split the big single PDF file to several smaller PDF files, how many pages should be included in a file, 0 means don't split"`
 	ChaptersPerFile int     `long:"chaptersPerFile" description:"split the big signle PDF file to several smaller PDF files, how many chapters should be included in a file, 0 means don't split"`
 	FontFile        string  `long:"fontFile" description:"set TTF font file path"`
-	RetryCount      int     `short:"r" long:"retries" description:"download retry count"`
+	RetryCount      int     `short:"r" long:"retryCount" description:"download retry count"`
 	Timeout         int     `short:"t" long:"timeout" description:"download timeout seconds"`
-	ParallelCount   int64   `long:"parallel" description:"parallel count for downloading"`
-	ConfigFile      string  `short:"c" long:"config" description:"read configurations from local file"`
-	OutputFile      string  `short:"o" long:"output" description:"output file path"`
+	ParallelCount   int64   `long:"parallelCount" description:"parallel count for downloading"`
+	ConfigFile      string  `short:"c" long:"configFile" description:"read configurations from local file"`
+	OutputFile      string  `short:"o" long:"outputFile" description:"output file path"`
 	FromChapter     int     `long:"fromChapter" description:"from chapter"`
 	FromTitle       string  `long:"fromTitle" description:"from title"`
 	ToChapter       int     `long:"toChapter" description:"to chapter"`
@@ -122,14 +122,8 @@ func readConfigFile(opts *Options) bool {
 	if b, e := fsutil.FileExists(configFile); e != nil || !b {
 		configFile = filepath.Join("preset", opts.ConfigFile)
 		if b, e = fsutil.FileExists(configFile); e != nil || !b {
-			configFile = filepath.Join("preset", opts.ConfigFile+".conf")
-			if b, e = fsutil.FileExists(configFile); e != nil || !b {
-				configFile = filepath.Join("preset", opts.ConfigFile+".json")
-				if b, e = fsutil.FileExists(configFile); e != nil || !b {
-					log.Println("cannot find configuration file ", opts.ConfigFile)
-					return false
-				}
-			}
+			log.Println("cannot find configuration file ", opts.ConfigFile)
+			return false
 		}
 	}
 
@@ -152,36 +146,12 @@ func readConfigFile(opts *Options) bool {
 		return false
 	}
 
-	ss := []struct {
-		key   string
-		field string
-	}{
-		{key: "format", field: "Format"},
-		{key: "pageType", field: "PageType"},
-		{key: "pageWidth", field: "PageWidth"},
-		{key: "pageHeight", field: "PageHeight"},
-		{key: "fontFile", field: "FontFile"},
-		{key: "fromChapter", field: "FromChapter"},
-		{key: "fromTitle", field: "FromTitle"},
-		{key: "toChapter", field: "ToChapter"},
-		{key: "toTitle", field: "ToTitle"},
-		{key: "leftMargin", field: "LeftMargin"},
-		{key: "topMargin", field: "TopMargin"},
-		{key: "lineSpacing", field: "LineSpacing"},
-		{key: "titleFontSize", field: "TitleFontSize"},
-		{key: "contentFontSize", field: "ContentFontSize"},
-		{key: "pagesPerFile", field: "PagesPerFile"},
-		{key: "chaptersPerFile", field: "ChaptersPerFile"},
-		{key: "retries", field: "RetryCount"},
-		{key: "timeout", field: "Timeout"},
-		{key: "parallel", field: "ParallelCount"},
-	}
-
-	ot := reflect.ValueOf(opts)
-	oe := ot.Elem()
-	for _, s := range ss {
-		of := oe.FieldByName(s.field)
-		if f, ok := options[s.key]; ok {
+	oe := reflect.ValueOf(opts).Elem()
+	for i := 0; i < oe.NumField(); i++ {
+		fieldName := oe.Type().Field(i).Name
+		key := strings.ToLower(fieldName[:1]) + fieldName[1:]
+		if f, ok := options[key]; ok {
+			of := oe.Field(i)
 			switch of.Kind() {
 			case reflect.String:
 				if v := f.(string); len(v) > 0 {
@@ -198,7 +168,6 @@ func readConfigFile(opts *Options) bool {
 			}
 		}
 	}
-
 	return true
 }
 
