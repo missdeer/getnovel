@@ -1,0 +1,1352 @@
+[
+    {
+      "siteName": "思路客①",
+      "host": "https://www.siluke.tw",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "class.box_con.0@id.info@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a.0@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "UC书盟②",
+      "host": "http://www.uctxt.com",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "class.l.1@tag.h1@text",
+      "articleListPattern": "class.chapter-list clrfix@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "笔趣宝③",
+      "host": "https://www.biqubao.com",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "class.box_con.0@id.info@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a.0@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "笔趣库④",
+      "host": "http://www.biquku.la",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "id.info@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "笔趣阁⑤",
+      "host": "http://www.b5200.net",
+      "articleContentPattern": "id.content@tag.p@text",
+      "bookTitlePattern": "id.info.0@tag.h1.0@text",
+      "articleListPattern": "class.box_con@tag.dd!0:1:2:3:4:5:6:7:8",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "梧州中文台⑥",
+      "host": "http://www.wzzw.la",
+      "articleContentPattern": "id.txtContent@textNodes",
+      "bookTitlePattern": "class.active.0@text",
+      "articleListPattern": "id.chapters-list@tag.a",
+      "articleTitlePattern": "text",
+      "articleURLPattern": "href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "幻月书院⑦",
+      "host": "http://www.huanyue123.com",
+      "articleContentPattern": "id.htmlContent@textNodes",
+      "bookTitlePattern": "id.info@tag.h1@text",
+      "articleListPattern": "class.book_list@tag.li",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "顶点小说⑧",
+      "host": "https://www.208xs.com",
+      "articleContentPattern": "id.book_text@tag.p@text",
+      "bookTitlePattern": "class.info@tag.h1.0@text",
+      "articleListPattern": "class.article@tag.li",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "酷小说⑨",
+      "host": "https://www.kuxiaoshuo.com",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "id.info@tag.h1@text",
+      "articleListPattern": "id.list@tag.dd!0:1:2:3:4:5:6:7:8",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "爱看TXT⑩",
+      "host": "http://www.aikantxt.la",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "id.info@tag.h1@text",
+      "articleListPattern": "id.list@tag.dd!0:1:2:3:4:5:6:7:8",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "UU小说⑪",
+      "host": "http://www.uuxs.la",
+      "articleContentPattern": "id.BookText@textNodes",
+      "bookTitlePattern": "class.fl.0@tag.h1.0@text",
+      "articleListPattern": "class.chapterlist@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "丹书铁卷⑫",
+      "host": "https://www.dstiejuan.com",
+      "articleContentPattern": "id.content@tag.p@text",
+      "bookTitlePattern": "",
+      "articleListPattern": "class.read@tag.dl.1@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "爱奇文学⑬",
+      "host": "https://www.i7wx.com",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "class.booktitle@tag.h1.0@text",
+      "articleListPattern": "id.readerlist@tag.li!0",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "云来阁小说⑭",
+      "host": "http://www.yunlaige.com",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "class.info@tag.h2.0@tag.a@text",
+      "articleListPattern": "id.contenttable@tag.td",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "热门小说⑮",
+      "host": "https://www.remenxs.com",
+      "articleContentPattern": "class.content@textNodes",
+      "bookTitlePattern": "",
+      "articleListPattern": "class.novel_list@tag.dd!0:1:2:3:4:5:6:7:8",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "起点中文网💯",
+      "host": "https://www.qidian.com",
+      "articleContentPattern": "class.read-content@tag.p@text",
+      "bookTitlePattern": "class.book-info@tag.h1@tag.em@text",
+      "articleListPattern": "class.volume-wrap@class.volume@tag.ul@tag.li",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "纵横中文网",
+      "host": "http://www.zongheng.com",
+      "articleContentPattern": "class.content@tag.p@text|class.book_con@tag.p@text",
+      "bookTitlePattern": "",
+      "articleListPattern": "class.chapter-list@tag.li|class.chapsiteName",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "追书神器💯",
+      "host": "http://www.zhuishushenqi1.com",
+      "articleContentPattern": "class.inner-text@textNodes",
+      "bookTitlePattern": "class.author@text",
+      "articleListPattern": "class.book-section.2@tag.a",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "风华居",
+      "host": "https://www.fenghuaju.cc",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "class.box_con.0@id.info@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd",
+      "articleTitlePattern": "tag.a@text#正文",
+      "articleURLPattern": "tag.a.0@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "笔趣阁",
+      "host": "https://www.biqugexsw.com",
+      "articleContentPattern": "class.showtxt@textNodes",
+      "bookTitlePattern": "class.covr@tag.h2@text",
+      "articleListPattern": "class.listmain@tag.dd@tag.a",
+      "articleTitlePattern": "text",
+      "articleURLPattern": "href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "八八读书网™",
+      "host": "https://www.88dus.com",
+      "articleContentPattern": "class.yd_text2@textNodes",
+      "bookTitlePattern": "class.rt@tag.h1.0@text",
+      "articleListPattern": "class.mulu@tag.li@tag.a",
+      "articleTitlePattern": "text",
+      "articleURLPattern": "href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "红袖添香",
+      "host": "https://www.hongxiu.com",
+      "articleContentPattern": "class.read-content j_readContent@tag.p@text",
+      "bookTitlePattern": "",
+      "articleListPattern": "class.volume-wrap@class.volume@tag.ul@tag.li@tag.a",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "晋江文学",
+      "host": "http://www.jjwxc.net",
+      "articleContentPattern": "class.novelbody@class.noveltext@textNodes",
+      "bookTitlePattern": "class.bigtext.0@tag.h1.0@tag.span.0@text",
+      "articleListPattern": "id.oneboolt@tag.tbody@tag.tr!0:1:2",
+      "articleTitlePattern": "tag.a.0@text",
+      "articleURLPattern": "tag.a.0@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "2K小说™",
+      "host": "https://www.2kxs.com",
+      "articleContentPattern": "class.Text@textNodes#2.小说阅读网",
+      "bookTitlePattern": "id.title.0@tag.h2.0@tag.a.0@text",
+      "articleListPattern": "class.book@tag.dd!0:1:2:3",
+      "articleTitlePattern": "tag.a.0@text",
+      "articleURLPattern": "tag.a.0@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "衍墨轩",
+      "host": "https://www.ymoxuan.com",
+      "articleContentPattern": "class.content@textNodes",
+      "bookTitlePattern": "class.line@tag.h1.0@text",
+      "articleListPattern": "class.col3@tag.a",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "优书网",
+      "host": "http://www.yousuu.com",
+      "articleContentPattern": "tag.p@text#使.*网|漫.*|.*商务合作请联系QQ：3323780180|.*合作邮箱：bd@广告合作请联系QQ：780282553|.*广告邮箱：|ad@商务合作请联系QQ：332378018|.*合作邮箱：|.*bd@广告合作请联系QQ：780282553|广告合作请联系QQ：780282553|bd@|ad@",
+      "bookTitlePattern": "",
+      "articleListPattern": "class.media-heading",
+      "articleTitlePattern": "class.media-heading@text",
+      "articleURLPattern": "href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "闪电追书",
+      "host": "http://www.shandianzhuishu.com",
+      "articleContentPattern": "id.nrbody@id.nr@textNodes",
+      "bookTitlePattern": "class.info2@tag.h1@text",
+      "articleListPattern": "tag.ul.3@tag.li@tag.a",
+      "articleTitlePattern": "text",
+      "articleURLPattern": "href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "顶点小说",
+      "host": "https://m.23us.cc",
+      "articleContentPattern": "id.chaptercontent@textNodes",
+      "bookTitlePattern": "",
+      "articleListPattern": "id.chapterlist@tag.p!0",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "名著阅读",
+      "host": "http://www.mzhu8.com",
+      "articleContentPattern": "$class.chapter_con@html",
+      "bookTitlePattern": "",
+      "articleListPattern": "tag.dd@tag.a",
+      "articleTitlePattern": "text",
+      "articleURLPattern": "href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "飘天文学网",
+      "host": "https://www.ptwxz.com",
+      "articleContentPattern": "tag.body@textNodes",
+      "bookTitlePattern": "class.title@tag.h1@text",
+      "articleListPattern": "class.centent@tag.li",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "无限小说网",
+      "host": "http://www.61ww.com",
+      "articleContentPattern": "class.articlecontent@textNodes",
+      "bookTitlePattern": "class.introduce@tag.h1@text",
+      "articleListPattern": "class.ml_list@tag.li",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "E小说™",
+      "host": "https://www.zwda.com",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "class.box_con.0@id.info@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "顶点小说™",
+      "host": "http://www.booktxt.com",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "class.box_con.0@id.info@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "梦书屋™",
+      "host": "http://www.mengshuwu.com",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "id.info@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd!0:1:2:3:4:5:6:7:8",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "书香阁™",
+      "host": "http://www.shuxiangge.cc",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "id.info@tag.h1.0@text",
+      "articleListPattern": "class.zjbox@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "海天中文™",
+      "host": "http://www.htzw.net",
+      "articleContentPattern": "id.content@tag.p.0@textNodes",
+      "bookTitlePattern": "id.info@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "ABC小说",
+      "host": "https://www.yb3.cc",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "class.box_con.0@id.info@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "文学迷",
+      "host": "https://www.wenxuemi.com",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "class.box_con.0@id.info@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a.0@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "全小说",
+      "host": "https://qxs.la",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "class.text t_c@tag.h1.0@tag.a.0@text",
+      "articleListPattern": "class.chapter@tag.a",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "笔趣阁①",
+      "host": "http://www.biquge.cm",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "id.info@tag.h1@text",
+      "articleListPattern": "id.list@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "笔趣阁②",
+      "host": "https://www.bqg5.cc",
+      "articleContentPattern": "id.content@tag.p@text",
+      "bookTitlePattern": "id.info@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd!0:1:2:3:4:5:6:7:8",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "笔趣阁③",
+      "host": "http://www.bbiquge.com",
+      "articleContentPattern": "id.content@textNodes#一.*读！",
+      "bookTitlePattern": "id.info.0@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd!-1",
+      "articleTitlePattern": "tag.a.0@text",
+      "articleURLPattern": "tag.a.0@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "笔趣阁④",
+      "host": "https://www.woquge.com",
+      "articleContentPattern": "id.content@tag.p@text",
+      "bookTitlePattern": "id.info@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd!0:1:2:3:4:5:6:7:8",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "笔趣阁⑤",
+      "host": "http://www.biquge5200.com",
+      "articleContentPattern": "tag.content@textNodes|id.content@textNodes",
+      "bookTitlePattern": "id.info@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd!0:1:2:3:4:5:6:7:8",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "笔下文学",
+      "host": "http://www.bxwx3.org",
+      "articleContentPattern": "id.zjneirong@text#",
+      "bookTitlePattern": "class.booksiteName.0@text",
+      "articleListPattern": "id.list@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "读一读啦",
+      "host": "https://www.du1du.la",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "class.text t_c@tag.h1.0@tag.a.0@text",
+      "articleListPattern": "class.chapter",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "顶点小说",
+      "host": "http://www.xs222.tw",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "class.box_con.0@id.info@tag.h1.0@text",
+      "articleListPattern": "id.list@tag.dd",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "顶点笔趣阁",
+      "host": "https://www.ddbiquge.com",
+      "articleContentPattern": "class.showtxt@textNodes",
+      "bookTitlePattern": "class.info@tag.h2@text",
+      "articleListPattern": "class.listmain@tag.dd!0:1:2:3:4:5:6:7:8",
+      "articleTitlePattern": "tag.a@text#.ddbiquge.com",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "爱下电子书",
+      "host": "https://www.ixdzs.com",
+      "articleContentPattern": "class.content@textNodes",
+      "bookTitlePattern": "class.fdl.0@text#txt.*",
+      "articleListPattern": "class.catalog.0@tag.ul.0@class.chapter@tag.a",
+      "articleTitlePattern": "text",
+      "articleURLPattern": "href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "绿色顶点小说",
+      "host": "http://www.lvsetxt.com",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "id.info@tag.h1.0@text",
+      "articleListPattern": "class.listmain@tag.dd!0:1:2:3:4:5",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "无弹窗小说网",
+      "host": "https://www.22ff.com",
+      "articleContentPattern": "id.chapter_content@tag.p@text",
+      "bookTitlePattern": "class.main.1@class.tsiteName@text",
+      "articleListPattern": "class.neirong@class.clc!0",
+      "articleTitlePattern": "tag.a.0@text",
+      "articleURLPattern": "tag.a.0@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "四库书小说网",
+      "host": "http://www.sikushu.org",
+      "articleContentPattern": "id.content@textNodes",
+      "bookTitlePattern": "id.info@tag.h1@text",
+      "articleListPattern": "id.list@tag.dd!0:1:2:3:4:5:6:7:8",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "读一读小说网①",
+      "host": "http://duyidu.net",
+      "articleContentPattern": "id.txtContent@textNodes",
+      "bookTitlePattern": "class.list-group@tag.li.0@tag.h1@textNodes",
+      "articleListPattern": "id.chapters-list@tag.li",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    },
+    {
+      "siteName": "读一读小说网②",
+      "host": "http://du1du.org",
+      "articleContentPattern": "id.txtContent@textNodes",
+      "bookTitlePattern": "class.col-xs-12 list-group-item no-border@tag.h1.0@text#作者：太元仙尊",
+      "articleListPattern": "class.list-group-item@tag.li",
+      "articleTitlePattern": "tag.a@text",
+      "articleURLPattern": "tag.a@href",
+      "isAbsoluteURL": true,
+      "encoding": "utf-8",
+      "tocStyle": "from-begin-to-end",
+      "cookies": "",
+      "userAgent": "",
+      "pagePreprocessor": [
+          {"from": "\r\n", "to": ""},
+          {"from": "\r", "to": ""},
+          {"from": "\n", "to": ""}
+      ],
+      "pagePostprocessor": [
+          {"from": "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br />&nbsp;&nbsp;&nbsp;&nbsp;", "to": "</p><p>"},
+          {"from": "<br/><br/>", "to": "</p><p>"},
+          {"from": "　　", "to": ""}
+      ]
+    }
+  ]

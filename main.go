@@ -97,19 +97,7 @@ func listCommandHandler() {
 		fmt.Println("\t" + h.Title + ": " + strings.Join(urls, ", "))
 	}
 	for _, h := range novelSiteConfigurations {
-		urlMap := make(map[string]struct{})
-		for _, p := range h.Sites {
-			u := strings.Replace(p.TOCURLPattern, `\`, ``, -1)
-			idxStart := strings.Index(u, `www.`)
-			idxEnd := strings.Index(u[idxStart:], `/`)
-			u = u[:idxStart+idxEnd]
-			urlMap[u] = struct{}{}
-		}
-		var urls []string
-		for u := range urlMap {
-			urls = append(urls, u)
-		}
-		fmt.Println("\t" + h.Title + ": " + strings.Join(urls, ", "))
+		fmt.Println("\t" + h.SiteName + ": " + h.Host)
 	}
 }
 
@@ -223,26 +211,26 @@ func downloadBook(novelURL string, ch chan bool) {
 			}
 		}
 	}
+
+	u, _ := url.Parse(novelURL)
 	for _, h := range novelSiteConfigurations {
-		for _, site := range h.Sites {
-			r, _ := regexp.Compile(site.TOCURLPattern)
-			if r.MatchString(novelURL) {
-				gen := ebook.NewBook(opts.Format)
-				gen.SetFontSize(opts.TitleFontSize, opts.ContentFontSize)
-				gen.SetLineSpacing(opts.LineSpacing)
-				gen.PagesPerFile(opts.PagesPerFile)
-				gen.ChaptersPerFile(opts.ChaptersPerFile)
-				gen.SetMargins(opts.LeftMargin, opts.TopMargin)
-				gen.SetPageType(opts.PageType)
-				gen.SetPageSize(opts.PageWidth, opts.PageHeight)
-				gen.SetFontFile(opts.FontFile)
-				gen.Output(opts.OutputFile)
-				gen.Info()
-				h.Download(novelURL, gen)
-				fmt.Println("downloaded", novelURL)
-				ch <- true
-				return
-			}
+		theURL, _ := url.Parse(h.Host)
+		if u.Scheme == theURL.Scheme && u.Host == theURL.Host {
+			gen := ebook.NewBook(opts.Format)
+			gen.SetFontSize(opts.TitleFontSize, opts.ContentFontSize)
+			gen.SetLineSpacing(opts.LineSpacing)
+			gen.PagesPerFile(opts.PagesPerFile)
+			gen.ChaptersPerFile(opts.ChaptersPerFile)
+			gen.SetMargins(opts.LeftMargin, opts.TopMargin)
+			gen.SetPageType(opts.PageType)
+			gen.SetPageSize(opts.PageWidth, opts.PageHeight)
+			gen.SetFontFile(opts.FontFile)
+			gen.Output(opts.OutputFile)
+			gen.Info()
+			h.Download(novelURL, gen)
+			fmt.Println("downloaded", novelURL)
+			ch <- true
+			return
 		}
 	}
 	fmt.Println("not downloaded", novelURL)

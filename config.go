@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -11,37 +10,42 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"regexp"
-	"strings"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/dfordsoft/golib/ebook"
 	"github.com/dfordsoft/golib/httputil"
 	"github.com/dfordsoft/golib/ic"
 )
 
+// PageProcessor defines page processor, replace From with To
+type PageProcessor struct {
+	From string `json:"from"`
+	To   string `json:"to"`
+}
+
 // NovelSiteConfig defines novel site configuration information
 type NovelSiteConfig struct {
-	Sites []struct {
-		Host          string `json:"host"`
-		Name          string `json:"name"`
-		TOCURLPattern string `json:"tocURLPattern"`
-	} `json:"sites"`
-	Title              string `json:"title"`
-	BookTitlePattern   string `json:"bookTitlePattern"`
-	BookTitlePos       int    `json:"bookTitlePos"`
-	ArticlePattern     string `json:"articlePattern"`
-	ArticleTitlePos    int    `json:"articleTitlePos"`
-	ArticleURLPos      int    `json:"articleURLPos"`
-	IsAbsoluteURL      bool   `json:"isAbsoluteURL"`
-	Encoding           string `json:"encoding"`
-	TOCStyle           string `json:"tocStyle"`
-	Cookies            string `json:"cookies"`
-	PageContentMarkers []struct {
-		Host  string `json:"host"`
-		Start string `json:"start"`
-		End   string `json:"end"`
-	} `json:"pageContentMarkers"`
+	Host                  string          `json:"host"`
+	SiteName              string          `json:"siteName"`
+	BookTitlePattern      string          `json:"bookTitlePattern"`
+	ArticleListPattern    string          `json:"articleListPattern"`
+	ArticleTitlePattern   string          `json:"articleTitlePattern"`
+	ArticleContentPattern string          `json:"articleContentPattern"`
+	ArticleURLPattern     string          `json:"articleURLPattern"`
+	IsAbsoluteURL         bool            `json:"isAbsoluteURL"`
+	Encoding              string          `json:"encoding"`
+	TOCStyle              string          `json:"tocStyle"`
+	Cookies               string          `json:"cookies"`
+	UserAgent             string          `json:"userAgent"`
+	PagePreprocessor      []PageProcessor `json:"pagePreprocessor"`
+	PagePostprocessor     []PageProcessor `json:"pagePostprocessor"`
+}
+
+// ArticleInfo simple article info
+type ArticleInfo struct {
+	Title string
+	URL   string
 }
 
 var (
@@ -78,6 +82,18 @@ func readNovelSiteConfigurations() {
 	}
 }
 
+func match(doc *goquery.Document, pattern string) (res string) {
+	return
+}
+
+func matchSelection(doc *goquery.Document, pattern string) *goquery.Selection {
+	return nil
+}
+
+func matchArray(sel *goquery.Selection, pattern string) (res []string) {
+	return
+}
+
 // Download download book content from novel URL and generate a ebook
 func (nsc *NovelSiteConfig) Download(u string, gen ebook.IBook) {
 	theURL, _ := url.Parse(u)
@@ -91,38 +107,33 @@ func (nsc *NovelSiteConfig) Download(u string, gen ebook.IBook) {
 
 	dlPage := func(u string) (c []byte) {
 		var err error
-		theURL, _ := url.Parse(u)
 		c, err = httputil.GetBytes(u, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
 		if err != nil {
 			return
 		}
 
-		if bytes.Index(c, []byte("charset="+nsc.Encoding)) > 0 {
+		// encoding convert
+		if nsc.Encoding != "utf-8" {
 			c = ic.Convert(nsc.Encoding, "utf-8", c)
 		}
-		c = bytes.Replace(c, []byte("\r\n"), []byte(""), -1)
-		c = bytes.Replace(c, []byte("\r"), []byte(""), -1)
-		c = bytes.Replace(c, []byte("\n"), []byte(""), -1)
-		for _, m := range nsc.PageContentMarkers {
-			if theURL.Host == m.Host {
-				idx := bytes.Index(c, []byte(m.Start))
-				if idx > 1 {
-					//fmt.Println("found start")
-					c = c[idx+len(m.Start):]
-				}
-				idx = bytes.Index(c, []byte(m.End))
-				if idx > 1 {
-					//fmt.Println("found end")
-					c = c[:idx]
-				}
-				break
-			}
+
+		// preprocess
+		for _, m := range nsc.PagePreprocessor {
+			c = bytes.Replace(c, []byte(m.From), []byte(m.To), -1)
 		}
 
-		c = bytes.Replace(c, []byte("<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;"), []byte("</p><p>"), -1)
-		c = bytes.Replace(c, []byte("<br />&nbsp;&nbsp;&nbsp;&nbsp;"), []byte("</p><p>"), -1)
-		c = bytes.Replace(c, []byte("<br/><br/>"), []byte("</p><p>"), -1)
-		c = bytes.Replace(c, []byte(`　　`), []byte(""), -1)
+		// find the main content
+		doc, err := goquery.NewDocumentFromReader(bytes.NewReader(c))
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		c = []byte(match(doc, nsc.ArticleContentPattern))
+
+		// post process
+		for _, m := range nsc.PagePostprocessor {
+			c = bytes.Replace(c, []byte(m.From), []byte(m.To), -1)
+		}
 		return
 	}
 
@@ -131,10 +142,7 @@ func (nsc *NovelSiteConfig) Download(u string, gen ebook.IBook) {
 		return
 	}
 
-	b = bytes.Replace(b, []byte("<dd>"), []byte("\n<dd>"), -1)
-	b = bytes.Replace(b, []byte("</dd>"), []byte("</dd>\n"), -1)
-
-	if bytes.Index(b, []byte("charset="+nsc.Encoding)) > 0 {
+	if nsc.Encoding != "utf-8" {
 		b = ic.Convert(nsc.Encoding, "utf-8", b)
 	}
 	gen.Begin()
@@ -142,49 +150,51 @@ func (nsc *NovelSiteConfig) Download(u string, gen ebook.IBook) {
 	dlutil := newDownloadUtil(dlPage, gen)
 	dlutil.process()
 
-	var title string
-	var lines []string
-
-	r, _ := regexp.Compile(nsc.ArticlePattern)
-	re, _ := regexp.Compile(nsc.BookTitlePattern)
-	scanner := bufio.NewScanner(bytes.NewReader(b))
-	scanner.Split(bufio.ScanLines)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if title == "" {
-			ss := re.FindAllStringSubmatch(line, -1)
-			if len(ss) > 0 && len(ss[0]) > 0 {
-				s := ss[0]
-				title = s[nsc.BookTitlePos]
-				gen.SetTitle(title)
-				continue
-			}
-		}
-		if r.MatchString(line) {
-			lines = append(lines, line)
-		}
+	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(b))
+	if err != nil {
+		log.Println(err)
+		return
 	}
 
-	for i := len(lines) - 1; i >= 0 && i < len(lines) && lines[0] == lines[i]; i -= 2 {
-		lines = lines[1:]
+	// extract book title
+	title := match(doc, nsc.BookTitlePattern)
+	gen.SetTitle(title)
+
+	// extract book articles title and URL
+	selection := matchSelection(doc, nsc.ArticleListPattern)
+
+	titles := matchArray(selection, nsc.ArticleTitlePattern)
+	urls := matchArray(selection, nsc.ArticleURLPattern)
+
+	if len(titles) != len(urls) {
+		log.Fatalln("title count and URL count not match", len(titles), len(urls))
+		return
 	}
 
-	for index, line := range lines {
-		ss := r.FindAllStringSubmatch(line, -1)
-		s := ss[0]
-		articleURL := s[nsc.ArticleURLPos]
-		finalURL := fmt.Sprintf("%s://%s%s", theURL.Scheme, theURL.Host, articleURL)
-		if articleURL[0] != '/' {
-			finalURL = fmt.Sprintf("%s%s", u, articleURL)
+	var articles []ArticleInfo
+	for i := 0; i < len(titles); i++ {
+		article := ArticleInfo{
+			Title: titles[i],
+			URL:   urls[i],
 		}
-		if strings.HasPrefix(articleURL, "http") {
-			finalURL = articleURL
-		}
+		articles = append(articles, article)
+	}
+	// clean & sort articles
+	for i := len(articles) - 1; i >= 0 && i < len(articles) && articles[0].URL == articles[i].URL; i -= 2 {
+		articles = articles[1:]
+	}
 
-		if dlutil.addURL(index+1, s[nsc.ArticleTitlePos], finalURL) {
+	// download article content
+	for index, article := range articles {
+		finalURL := article.URL
+		if !nsc.IsAbsoluteURL {
+			finalURL = fmt.Sprintf("%s://%s%s", theURL.Scheme, theURL.Host, article.URL)
+		}
+		if dlutil.addURL(index+1, article.Title, finalURL) {
 			break
 		}
 	}
+
 	dlutil.wait()
 	gen.End()
 }
