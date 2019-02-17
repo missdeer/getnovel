@@ -40,3 +40,7 @@ go get github.com/dfordsoft/getnovel
 * 无图小说: http://www.wutuxs.com
 * 幼狮书盟: http://www.yssm.org
 * 新顶点笔趣阁小说网: http://www.szzyue.com
+
+## 注意事项
+
+* 输出为PDF格式时，如果遇到打开PDF文件为空白，原因可能是所使用的自定义字体文件中未包含某些字符却被使用了，可以尝试更换嵌入字体文件为字符集较大的，比如“方正准雅宋GBK”等。
