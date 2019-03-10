@@ -18,8 +18,8 @@ func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title: `飘天文学`,
 		MatchPatterns: []string{
-			`https://www\.ptwxz\.com/html/[0-9]/[0-9]+/`,
-			`https://www\.ptwxz\.com/bookinfo/[0-9]/[0-9]+\.html`,
+			`https://www\.ptwxz\.com/html/[0-9]+/[0-9]+/`,
+			`https://www\.ptwxz\.com/bookinfo/[0-9]+/[0-9]+\.html`,
 		},
 		Download: func(u string, gen ebook.IBook) {
 			dlPage := func(u string) (c []byte) {
@@ -63,7 +63,7 @@ func init() {
 				return
 			}
 			tocURL := u
-			r, _ := regexp.Compile(`https://www\.ptwxz\.com/bookinfo/([0-9])/([0-9]+)\.html`)
+			r, _ := regexp.Compile(`https://www\.ptwxz\.com/bookinfo/([0-9]+)/([0-9]+)\.html`)
 			if r.MatchString(u) {
 				ss := r.FindAllStringSubmatch(u, -1)
 				s := ss[0]
