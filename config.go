@@ -104,6 +104,12 @@ func (nsc *NovelSiteConfig) Download(u string, gen ebook.IBook) {
 		"Accept-Language":           []string{`en-US,en;q=0.8`},
 		"Upgrade-Insecure-Requests": []string{"1"},
 	}
+	if nsc.UserAgent != "" {
+		headers["User-Agent"] = []string{nsc.UserAgent}
+	}
+	if nsc.Cookies != "" {
+		headers["Cookie"] = []string{nsc.Cookies}
+	}
 
 	dlPage := func(u string) (c []byte) {
 		var err error
