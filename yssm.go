@@ -16,13 +16,13 @@ func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title: `幼狮书盟`,
 		MatchPatterns: []string{
-			`http://www\.yssm\.org/uctxt/[0-9]+/[0-9]+/`,
+			`http://www\.yssm\.tv/uctxt/[0-9]+/[0-9]+/`,
 		},
 		Download: func(u string, gen ebook.IBook) {
 			dlPage := func(u string) (c []byte) {
 				var err error
 				headers := http.Header{
-					"Referer":                   []string{"http://www.yssm.org/"},
+					"Referer":                   []string{"http://www.yssm.tv/"},
 					"User-Agent":                []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"},
 					"Accept":                    []string{"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
 					"Accept-Language":           []string{`en-US,en;q=0.8`},
@@ -50,7 +50,7 @@ func init() {
 			}
 			tocURL := u
 			headers := http.Header{
-				"Referer":                   []string{"http://www.yssm.org/"},
+				"Referer":                   []string{"http://www.yssm.tv/"},
 				"User-Agent":                []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"},
 				"Accept":                    []string{"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
 				"Accept-Language":           []string{`en-US,en;q=0.8`},
