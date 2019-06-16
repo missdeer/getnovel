@@ -40,18 +40,6 @@ deploy:
     repo: dfordsoft/getnovel
     tags: true
   skip_cleanup: true
-install:
-  - go get github.com/dfordsoft/getnovel/webui
-  - go get github.com/dfordsoft/getnovel
-  - go get github.com/dfordsoft/golib/fsutil
-  - go get github.com/dfordsoft/golib/ebook
-  - go get github.com/dfordsoft/golib/httputil
-  - go get github.com/dfordsoft/golib/ic
-  - go get github.com/fsnotify/fsnotify
-  - go get github.com/gin-gonic/gin
-  - go get github.com/jessevdk/go-flags
-  - go get github.com/google/uuid
-  - go get golang.org/x/sync/semaphore
 script:
   - pwd && ls -l
   - env GOARCH=amd64       GOOS=linux     go build -ldflags="-s -w -X main.sha1ver=`git rev-parse HEAD` -X main.buildTime=$(date +'%Y-%m-%d_%T')" -o getnovel     && cd webui && env GOARCH=amd64       GOOS=linux     go build -ldflags="-s -w -X main.sha1ver=`git rev-parse HEAD` -X main.buildTime=$(date +'%Y-%m-%d_%T')" -o ../getnovel-webui     && cd .. && cp -r webui/templates ./ && tar czvf getnovel-linux-amd64.tar.gz        templates config preset getnovel-webui     getnovel
