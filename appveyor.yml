@@ -1,6 +1,6 @@
-image: Go
+image: Visual Studio 2017
 
-version: 0.8.{build}
+version: 1.6.3.{build}
 
 branches:
     only:
