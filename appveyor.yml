@@ -34,4 +34,4 @@ artifacts:
     - path: build\distrib\getnovel-windows-amd64.zip
       name: portable
     - path: build\distrib\getnovel.exe
-name: exe_only
+      name: exe_only
