@@ -25,7 +25,6 @@ build_script:
 # scripts that run after build
 after_build:
     - mkdir distrib\getnovel-windows-amd64
-    - windeployqt.exe --dir .\distrib\q5Go %APPVEYOR_BUILD_FOLDER%\build\src\release\q5go.exe
     - copy "%APPVEYOR_BUILD_FOLDER%\getnovel.exe" "distrib\getnovel-windows-amd64\getnovel.exe"
     - cd distrib
     - 7z a getnovel-windows-amd64.zip getnovel-windows-amd64
