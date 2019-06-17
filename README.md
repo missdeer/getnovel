@@ -2,7 +2,7 @@
 
 顾名思义~
 
-[![Build Status](https://secure.travis-ci.org/dfordsoft/getnovel.png)](https://travis-ci.org/dfordsoft/getnovel) [![GitHub release](https://img.shields.io/github/release/dfordsoft/getnovel.svg?maxAge=2592000)](https://github.com/dfordsoft/getnovel/releases) [![Github All Releases](https://img.shields.io/github/downloads/dfordsoft/getnovel/total.svg)](https://github.com/dfordsoft/getnovel/releases) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dfordsoft/getnovel/master/LICENSE)
+[![appveyor Build status](https://ci.appveyor.com/api/projects/status/yge3r6197oe6s802?svg=true)](https://ci.appveyor.com/project/missdeer/getnovel)[![travis Build Status](https://secure.travis-ci.org/dfordsoft/getnovel.png)](https://travis-ci.org/dfordsoft/getnovel) [![GitHub release](https://img.shields.io/github/release/dfordsoft/getnovel.svg?maxAge=2592000)](https://github.com/dfordsoft/getnovel/releases) [![Github All Releases](https://img.shields.io/github/downloads/dfordsoft/getnovel/total.svg)](https://github.com/dfordsoft/getnovel/releases) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dfordsoft/getnovel/master/LICENSE)
 
 ## 编译
 
@@ -38,7 +38,7 @@ go get github.com/dfordsoft/getnovel
 * 书迷楼: http://www.shumil.com
 * UU看书: http://www.uukanshu.net
 * 无图小说: http://www.wutuxs.com
-* 幼狮书盟: http://www.yssm.org
+* 幼狮书盟: http://www.yssm.tv
 * 新顶点笔趣阁小说网: http://www.szzyue.com
 
 ## 注意事项
