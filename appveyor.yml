@@ -1,0 +1,39 @@
+image: Go
+
+version: 0.8.{build}
+
+branches:
+    only:
+        - master
+
+environment:
+
+clone_depth: 1
+
+# scripts that run after cloning repository
+install:
+    - set PATH=C:\Go\bin;%PATH%
+    - set GO111MODULE=on
+
+# scripts that run before build
+before_build:
+    - go env
+    - go version
+
+# custom build scripts
+build_script:
+    - go build
+
+# scripts that run after build
+after_build:
+    - mkdir distrib\getnovel-windows-amd64
+    - windeployqt.exe --dir .\distrib\q5Go %APPVEYOR_BUILD_FOLDER%\build\src\release\q5go.exe
+    - copy "%APPVEYOR_BUILD_FOLDER%\getnovel.exe" "distrib\getnovel-windows-amd64\getnovel.exe"
+    - cd distrib
+    - 7z a getnovel-windows-amd64.zip getnovel-windows-amd64
+
+artifacts:
+    - path: build\distrib\getnovel-windows-amd64.zip
+      name: portable
+    - path: build\distrib\getnovel.exe
+name: exe_only
