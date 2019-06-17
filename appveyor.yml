@@ -30,7 +30,7 @@ after_build:
     - 7z a getnovel-windows-amd64.zip getnovel-windows-amd64
 
 artifacts:
-    - path: build\distrib\getnovel-windows-amd64.zip
+    - path: distrib\getnovel-windows-amd64.zip
       name: portable
-    - path: build\distrib\getnovel.exe
+    - path: distrib\getnovel.exe
       name: exe_only
