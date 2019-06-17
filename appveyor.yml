@@ -21,10 +21,19 @@ before_build:
 # custom build scripts
 build_script:
     - go build
+    - cd webui && go build
+    - cd ..
 
 # scripts that run after build
 after_build:
     - mkdir distrib\getnovel-windows-amd64
+    - mkdir distrib\getnovel-windows-amd64\webui
+    - mkdir distrib\getnovel-windows-amd64\preset
+    - mkdir distrib\getnovel-windows-amd64\config
+    - mkdir distrib\getnovel-windows-amd64\webui\templates
+    - copy "%APPVEYOR_BUILD_FOLDER%\preset\*.*" "distrib\getnovel-windows-amd64\preset\"
+    - copy "%APPVEYOR_BUILD_FOLDER%\config\*.*" "distrib\getnovel-windows-amd64\config\"
+    - copy "%APPVEYOR_BUILD_FOLDER%\webui\templates\*.*" "distrib\getnovel-windows-amd64\webui\templates\"
     - copy "%APPVEYOR_BUILD_FOLDER%\getnovel.exe" "distrib\getnovel-windows-amd64\getnovel.exe"
     - cd distrib
     - 7z a getnovel-windows-amd64.zip getnovel-windows-amd64
@@ -32,5 +41,5 @@ after_build:
 artifacts:
     - path: distrib\getnovel-windows-amd64.zip
       name: portable
-    - path: distrib\getnovel.exe
+    - path: distrib\getnovel-windows-amd64\getnovel.exe
       name: exe_only
