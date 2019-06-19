@@ -23,8 +23,6 @@ clone_depth: 1
 install:
     - set PATH=C:\Go\bin;%PATH%
     - set GO111MODULE=on
-    - set PREFIX=%GOOS%-%GOARCH%
-    - set SUFFIX=%SUFFIX%
 
 # scripts that run before build
 before_build:
@@ -39,12 +37,11 @@ build_script:
 
 # scripts that run after build
 after_build:
-    - dir 
     - mkdir "distrib\getnovel-%PREFIX%\webui\templates" "distrib\getnovel-%PREFIX%\config" "distrib\getnovel-%PREFIX%\preset"
     - copy "%APPVEYOR_BUILD_FOLDER%\preset\*.*" "distrib\getnovel-%PREFIX%\preset\"
     - copy "%APPVEYOR_BUILD_FOLDER%\config\*.*" "distrib\getnovel-%PREFIX%\config\"
     - copy "%APPVEYOR_BUILD_FOLDER%\webui\templates\*.*" "distrib\getnovel-%PREFIX%\webui\templates\"
-    - copy "%APPVEYOR_BUILD_FOLDER%\webui\getnovel-%PREFIX%%SUFFIX%" "distrib\getnovel-%PREFIX%\webui\"
+    - copy "%APPVEYOR_BUILD_FOLDER%\webui\getnovel-webui%PREFIX%%SUFFIX%" "distrib\getnovel-%PREFIX%\webui\"
     - copy "%APPVEYOR_BUILD_FOLDER%\getnovel-%PREFIX%%SUFFIX%" "distrib\getnovel-%PREFIX%\getnovel%SUFFIX%"
     - cd distrib
     - 7z a "getnovel-%PREFIX%.zip" "getnovel-%PREFIX%"
