@@ -30,18 +30,16 @@ install:
 before_build:
     - go env
     - go version
-    - env
 
 # custom build scripts
 build_script:
-    - env
     - go build -ldflags="-s -w" -o "getnovel-%PREFIX%%SUFFIX%"
     - cd webui && go build -ldflags="-s -w" -o "getnovel-webui%PREFIX%%SUFFIX%"
     - cd ..
 
 # scripts that run after build
 after_build:
-    - env
+    - dir 
     - mkdir "distrib\getnovel-%PREFIX%\webui\templates" "distrib\getnovel-%PREFIX%\config" "distrib\getnovel-%PREFIX%\preset"
     - copy "%APPVEYOR_BUILD_FOLDER%\preset\*.*" "distrib\getnovel-%PREFIX%\preset\"
     - copy "%APPVEYOR_BUILD_FOLDER%\config\*.*" "distrib\getnovel-%PREFIX%\config\"
