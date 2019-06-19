@@ -26,11 +26,7 @@ build_script:
 
 # scripts that run after build
 after_build:
-    - mkdir distrib\getnovel-windows-amd64
-    - mkdir distrib\getnovel-windows-amd64\webui
-    - mkdir distrib\getnovel-windows-amd64\preset
-    - mkdir distrib\getnovel-windows-amd64\config
-    - mkdir distrib\getnovel-windows-amd64\webui\templates
+    - mkdir distrib\getnovel-windows-amd64\webui\templates distrib\getnovel-windows-amd64\config distrib\getnovel-windows-amd64\preset distrib\getnovel-windows-amd64\webui
     - copy "%APPVEYOR_BUILD_FOLDER%\preset\*.*" "distrib\getnovel-windows-amd64\preset\"
     - copy "%APPVEYOR_BUILD_FOLDER%\config\*.*" "distrib\getnovel-windows-amd64\config\"
     - copy "%APPVEYOR_BUILD_FOLDER%\webui\templates\*.*" "distrib\getnovel-windows-amd64\webui\templates\"
