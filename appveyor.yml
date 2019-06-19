@@ -47,7 +47,7 @@ after_build:
     - 7z a "getnovel-%PREFIX%.zip" "getnovel-%PREFIX%"
 
 artifacts:
-    - path: "distrib\getnovel-%PREFIX%.zip"
+    - path: distrib\getnovel-%PREFIX%.zip
       name: portable
-    - path: "distrib\getnovel-%PREFIX%\getnovel-%PREFIX%%SUFFIX%"
+    - path: distrib\getnovel-%PREFIX%\getnovel-%PREFIX%%SUFFIX%
       name: exe_only
