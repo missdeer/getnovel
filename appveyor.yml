@@ -12,10 +12,6 @@ environment:
           GOARCH: amd64
           PREFIX: windows-amd64
           SUFFIX: .exe
-        - GOOS: windows
-          GOARCH: 386
-          PREFIX: windows-386
-          SUFFIX: .exe
         - GOOS: darwin
           GOARCH: amd64
           PREFIX: darwin-amd64
@@ -24,9 +20,45 @@ environment:
           GOARCH: amd64
           PREFIX: linux-amd64
           SUFFIX: 
+        - GOOS: freebsd
+          GOARCH: amd64
+          PREFIX: freebsd-amd64
+          SUFFIX: 
+        - GOOS: netbsd
+          GOARCH: amd64
+          PREFIX: netbsd-amd64
+          SUFFIX: 
+        - GOOS: openbsd
+          GOARCH: amd64
+          PREFIX: openbsd-amd64
+          SUFFIX: 
+        - GOOS: dragonfly
+          GOARCH: amd64
+          PREFIX: dragonfly-amd64
+          SUFFIX: 
+        - GOOS: solaris
+          GOARCH: amd64
+          PREFIX: solaris-amd64
+          SUFFIX: 
+        - GOOS: windows
+          GOARCH: 386
+          PREFIX: windows-386
+          SUFFIX: .exe
         - GOOS: linux
           GOARCH: 386
           PREFIX: linux-386
+          SUFFIX: 
+        - GOOS: freebsd
+          GOARCH: 386
+          PREFIX: freebsd-386
+          SUFFIX: 
+        - GOOS: netbsd
+          GOARCH: 386
+          PREFIX: netbsd-386
+          SUFFIX: 
+        - GOOS: openbsd
+          GOARCH: 386
+          PREFIX: openbsd-386
           SUFFIX: 
         - GOOS: linux
           GOARCH: arm
@@ -42,6 +74,14 @@ environment:
           GOARCH: arm
           GOARM: 7
           PREFIX: linux-armv7
+          SUFFIX: 
+        - GOOS: freebsd
+          GOARCH: arm
+          PREFIX: freebsd-arm
+          SUFFIX: 
+        - GOOS: netbsd
+          GOARCH: arm
+          PREFIX: netbsd-arm
           SUFFIX: 
         - GOOS: linux
           GOARCH: arm64
@@ -74,46 +114,6 @@ environment:
         - GOOS: linux
           GOARCH: s390x
           PREFIX: linux-s390x
-          SUFFIX: 
-        - GOOS: freebsd
-          GOARCH: amd64
-          PREFIX: freebsd-amd64
-          SUFFIX: 
-        - GOOS: freebsd
-          GOARCH: 386
-          PREFIX: freebsd-386
-          SUFFIX: 
-        - GOOS: freebsd
-          GOARCH: arm
-          PREFIX: freebsd-arm
-          SUFFIX: 
-        - GOOS: netbsd
-          GOARCH: amd64
-          PREFIX: netbsd-amd64
-          SUFFIX: 
-        - GOOS: netbsd
-          GOARCH: 386
-          PREFIX: netbsd-386
-          SUFFIX: 
-        - GOOS: netbsd
-          GOARCH: arm
-          PREFIX: netbsd-arm
-          SUFFIX: 
-        - GOOS: openbsd
-          GOARCH: amd64
-          PREFIX: openbsd-amd64
-          SUFFIX: 
-        - GOOS: openbsd
-          GOARCH: 386
-          PREFIX: openbsd-386
-          SUFFIX: 
-        - GOOS: dragonfly
-          GOARCH: amd64
-          PREFIX: dragonfly-amd64
-          SUFFIX: 
-        - GOOS: solaris
-          GOARCH: amd64
-          PREFIX: solaris-amd64
           SUFFIX: 
 
 clone_depth: 1
