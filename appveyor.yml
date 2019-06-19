@@ -31,23 +31,23 @@ before_build:
 
 # custom build scripts
 build_script:
-    - go build -ldflags="-s -w -X main.sha1ver=`git rev-parse HEAD` -X main.buildTime=$(date +'%Y-%m-%d_%T')" -o getnovel-%PREFIX%%SUFFIX%
-    - cd webui && go build -ldflags="-s -w -X main.sha1ver=`git rev-parse HEAD` -X main.buildTime=$(date +'%Y-%m-%d_%T')" -o getnovel-webui%PREFIX%%SUFFIX%
+    - go build -ldflags="-s -w" -o "getnovel-%PREFIX%%SUFFIX%"
+    - cd webui && go build -ldflags="-s -w" -o "getnovel-webui%PREFIX%%SUFFIX%"
     - cd ..
 
 # scripts that run after build
 after_build:
-    - mkdir distrib\getnovel-%PREFIX%\webui\templates distrib\getnovel-%PREFIX%\config distrib\getnovel-%PREFIX%\preset
+    - mkdir "distrib\getnovel-%PREFIX%\webui\templates" "distrib\getnovel-%PREFIX%\config" "distrib\getnovel-%PREFIX%\preset"
     - copy "%APPVEYOR_BUILD_FOLDER%\preset\*.*" "distrib\getnovel-%PREFIX%\preset\"
     - copy "%APPVEYOR_BUILD_FOLDER%\config\*.*" "distrib\getnovel-%PREFIX%\config\"
     - copy "%APPVEYOR_BUILD_FOLDER%\webui\templates\*.*" "distrib\getnovel-%PREFIX%\webui\templates\"
     - copy "%APPVEYOR_BUILD_FOLDER%\webui\getnovel-%PREFIX%%SUFFIX%" "distrib\getnovel-%PREFIX%\webui\"
     - copy "%APPVEYOR_BUILD_FOLDER%\getnovel-%PREFIX%%SUFFIX%" "distrib\getnovel-%PREFIX%\getnovel%SUFFIX%"
     - cd distrib
-    - 7z a getnovel-%PREFIX%.zip getnovel-%PREFIX%
+    - 7z a "getnovel-%PREFIX%.zip" "getnovel-%PREFIX%"
 
 artifacts:
-    - path: distrib\getnovel-%PREFIX%.zip
+    - path: "distrib\getnovel-%PREFIX%.zip"
       name: portable
-    - path: distrib\getnovel-%PREFIX%\getnovel-%PREFIX%%SUFFIX%
+    - path: "distrib\getnovel-%PREFIX%\getnovel-%PREFIX%%SUFFIX%"
       name: exe_only
