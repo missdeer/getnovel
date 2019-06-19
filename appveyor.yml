@@ -12,9 +12,108 @@ environment:
           GOARCH: amd64
           PREFIX: windows-amd64
           SUFFIX: .exe
+        - GOOS: windows
+          GOARCH: 386
+          PREFIX: windows-386
+          SUFFIX: .exe
         - GOOS: darwin
           GOARCH: amd64
           PREFIX: darwin-amd64
+          SUFFIX: 
+        - GOOS: linux
+          GOARCH: amd64
+          PREFIX: linux-amd64
+          SUFFIX: 
+        - GOOS: linux
+          GOARCH: 386
+          PREFIX: linux-386
+          SUFFIX: 
+        - GOOS: linux
+          GOARCH: arm
+          GOARM: 5
+          PREFIX: linux-armv5
+          SUFFIX: 
+        - GOOS: linux
+          GOARCH: arm
+          GOARM: 6
+          PREFIX: linux-armv6
+          SUFFIX: 
+        - GOOS: linux
+          GOARCH: arm
+          GOARM: 7
+          PREFIX: linux-armv7
+          SUFFIX: 
+        - GOOS: linux
+          GOARCH: arm64
+          PREFIX: linux-arm64
+          SUFFIX: 
+        - GOOS: linux
+          GOARCH: ppc64
+          PREFIX: linux-ppc64
+          SUFFIX: 
+        - GOOS: linux
+          GOARCH: ppc64le
+          PREFIX: linux-ppc64le
+          SUFFIX: 
+        - GOOS: linux
+          GOARCH: mips64
+          PREFIX: linux-mips64
+          SUFFIX: 
+        - GOOS: linux
+          GOARCH: mips64le
+          PREFIX: linux-mips64le
+          SUFFIX: 
+        - GOOS: linux
+          GOARCH: mips
+          PREFIX: linux-mips
+          SUFFIX: 
+        - GOOS: linux
+          GOARCH: mipsle
+          PREFIX: linux-mipsle
+          SUFFIX: 
+        - GOOS: linux
+          GOARCH: s390x
+          PREFIX: linux-s390x
+          SUFFIX: 
+        - GOOS: freebsd
+          GOARCH: amd64
+          PREFIX: freebsd-amd64
+          SUFFIX: 
+        - GOOS: freebsd
+          GOARCH: 386
+          PREFIX: freebsd-386
+          SUFFIX: 
+        - GOOS: freebsd
+          GOARCH: arm
+          PREFIX: freebsd-arm
+          SUFFIX: 
+        - GOOS: netbsd
+          GOARCH: amd64
+          PREFIX: netbsd-amd64
+          SUFFIX: 
+        - GOOS: netbsd
+          GOARCH: 386
+          PREFIX: netbsd-386
+          SUFFIX: 
+        - GOOS: netbsd
+          GOARCH: arm
+          PREFIX: netbsd-arm
+          SUFFIX: 
+        - GOOS: openbsd
+          GOARCH: amd64
+          PREFIX: openbsd-amd64
+          SUFFIX: 
+        - GOOS: openbsd
+          GOARCH: 386
+          PREFIX: openbsd-386
+          SUFFIX: 
+        - GOOS: dragonfly
+          GOARCH: amd64
+          PREFIX: dragonfly-amd64
+          SUFFIX: 
+        - GOOS: solaris
+          GOARCH: amd64
+          PREFIX: solaris-amd64
           SUFFIX: 
 
 clone_depth: 1
@@ -49,5 +148,5 @@ after_build:
 artifacts:
     - path: distrib\getnovel-%PREFIX%.zip
       name: portable
-    - path: distrib\getnovel-%PREFIX%\getnovel-%PREFIX%%SUFFIX%
+    - path: distrib\getnovel-%PREFIX%\getnovel%SUFFIX%
       name: exe_only
