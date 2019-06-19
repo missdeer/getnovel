@@ -6,6 +6,17 @@ branches:
     only:
         - master
 
+environment:
+    matrix:
+        - GOOS: windows
+          GOARCH: amd64
+          PREFIX: windows-amd64
+          SUFFIX: .exe
+        - GOOS: darwin
+          GOARCH: amd64
+          PREFIX: darwin-amd64
+          SUFFIX: 
+
 clone_depth: 1
 
 # scripts that run after cloning repository
@@ -20,23 +31,23 @@ before_build:
 
 # custom build scripts
 build_script:
-    - go build
-    - cd webui && go build -o getnovel-webui.exe
+    - go build -ldflags="-s -w -X main.sha1ver=`git rev-parse HEAD` -X main.buildTime=$(date +'%Y-%m-%d_%T')" -o getnovel-%PREFIX%%SUFFIX%
+    - cd webui && go build -ldflags="-s -w -X main.sha1ver=`git rev-parse HEAD` -X main.buildTime=$(date +'%Y-%m-%d_%T')" -o getnovel-webui%PREFIX%%SUFFIX%
     - cd ..
 
 # scripts that run after build
 after_build:
-    - mkdir distrib\getnovel-windows-amd64\webui\templates distrib\getnovel-windows-amd64\config distrib\getnovel-windows-amd64\preset
-    - copy "%APPVEYOR_BUILD_FOLDER%\preset\*.*" "distrib\getnovel-windows-amd64\preset\"
-    - copy "%APPVEYOR_BUILD_FOLDER%\config\*.*" "distrib\getnovel-windows-amd64\config\"
-    - copy "%APPVEYOR_BUILD_FOLDER%\webui\templates\*.*" "distrib\getnovel-windows-amd64\webui\templates\"
-    - copy "%APPVEYOR_BUILD_FOLDER%\webui\getnovel-webui.exe" "distrib\getnovel-windows-amd64\webui\"
-    - copy "%APPVEYOR_BUILD_FOLDER%\getnovel.exe" "distrib\getnovel-windows-amd64\getnovel.exe"
+    - mkdir distrib\getnovel-%PREFIX%\webui\templates distrib\getnovel-%PREFIX%\config distrib\getnovel-%PREFIX%\preset
+    - copy "%APPVEYOR_BUILD_FOLDER%\preset\*.*" "distrib\getnovel-%PREFIX%\preset\"
+    - copy "%APPVEYOR_BUILD_FOLDER%\config\*.*" "distrib\getnovel-%PREFIX%\config\"
+    - copy "%APPVEYOR_BUILD_FOLDER%\webui\templates\*.*" "distrib\getnovel-%PREFIX%\webui\templates\"
+    - copy "%APPVEYOR_BUILD_FOLDER%\webui\getnovel-%PREFIX%%SUFFIX%" "distrib\getnovel-%PREFIX%\webui\"
+    - copy "%APPVEYOR_BUILD_FOLDER%\getnovel-%PREFIX%%SUFFIX%" "distrib\getnovel-%PREFIX%\getnovel%SUFFIX%"
     - cd distrib
-    - 7z a getnovel-windows-amd64.zip getnovel-windows-amd64
+    - 7z a getnovel-%PREFIX%.zip getnovel-%PREFIX%
 
 artifacts:
-    - path: distrib\getnovel-windows-amd64.zip
+    - path: distrib\getnovel-%PREFIX%.zip
       name: portable
-    - path: distrib\getnovel-windows-amd64\getnovel.exe
+    - path: distrib\getnovel-%PREFIX%\getnovel-%PREFIX%%SUFFIX%
       name: exe_only
