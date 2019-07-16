@@ -3,7 +3,7 @@ go:
 - tip
 env:
   global:
-  - GITHUB_REPO: dfordsoft/getnovel
+  - GITHUB_REPO: missdeer/getnovel
   - GIT_NAME: missdeer
   - GIT_EMAIL: missdeer@dfordsoft.com
 deploy:
@@ -37,7 +37,7 @@ deploy:
     - getnovel-windows-amd64.tar.gz
     - getnovel-windows-386.tar.gz
   on:
-    repo: dfordsoft/getnovel
+    repo: missdeer/getnovel
     tags: true
   skip_cleanup: true
 script:

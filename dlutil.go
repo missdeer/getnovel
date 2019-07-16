@@ -9,7 +9,7 @@ import (
 	"os"
 	"sync/atomic"
 
-	"github.com/dfordsoft/golib/ebook"
+	"github.com/missdeer/golib/ebook"
 	"github.com/google/uuid"
 	"golang.org/x/sync/semaphore"
 )

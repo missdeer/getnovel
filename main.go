@@ -14,8 +14,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/dfordsoft/golib/ebook"
-	"github.com/dfordsoft/golib/fsutil"
+	"github.com/missdeer/golib/ebook"
+	"github.com/missdeer/golib/fsutil"
 	flags "github.com/jessevdk/go-flags"
 )
 
@@ -135,7 +135,7 @@ func parseConfigurations(content []byte, opts *Options) bool {
 }
 
 func readRemotePreset(opts *Options) bool {
-	u := "https://cdn.jsdelivr.net/gh/dfordsoft/getnovel/preset/" + opts.ConfigFile
+	u := "https://cdn.jsdelivr.net/gh/missdeer/getnovel/preset/" + opts.ConfigFile
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {

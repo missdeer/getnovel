@@ -2,12 +2,12 @@
 
 顾名思义~
 
-[![appveyor Build status](https://ci.appveyor.com/api/projects/status/yge3r6197oe6s802?svg=true)](https://ci.appveyor.com/project/missdeer/getnovel)[![travis Build Status](https://secure.travis-ci.org/dfordsoft/getnovel.png)](https://travis-ci.org/dfordsoft/getnovel) [![GitHub release](https://img.shields.io/github/release/dfordsoft/getnovel.svg?maxAge=2592000)](https://github.com/dfordsoft/getnovel/releases) [![Github All Releases](https://img.shields.io/github/downloads/dfordsoft/getnovel/total.svg)](https://github.com/dfordsoft/getnovel/releases) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dfordsoft/getnovel/master/LICENSE)
+[![appveyor Build status](https://ci.appveyor.com/api/projects/status/yge3r6197oe6s802?svg=true)](https://ci.appveyor.com/project/missdeer/getnovel)[![travis Build Status](https://secure.travis-ci.org/missdeer/getnovel.png)](https://travis-ci.org/missdeer/getnovel) [![GitHub release](https://img.shields.io/github/release/missdeer/getnovel.svg?maxAge=2592000)](https://github.com/missdeer/getnovel/releases) [![Github All Releases](https://img.shields.io/github/downloads/missdeer/getnovel/total.svg)](https://github.com/missdeer/getnovel/releases) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/missdeer/getnovel/master/LICENSE)
 
 ## 编译
 
 ```bash
-go get github.com/dfordsoft/getnovel
+go get github.com/missdeer/getnovel
 ```
 
 ## 使用方法

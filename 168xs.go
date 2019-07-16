@@ -8,9 +8,9 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/dfordsoft/golib/ebook"
-	"github.com/dfordsoft/golib/httputil"
-	"github.com/dfordsoft/golib/ic"
+	"github.com/missdeer/golib/ebook"
+	"github.com/missdeer/golib/httputil"
+	"github.com/missdeer/golib/ic"
 )
 
 func init() {

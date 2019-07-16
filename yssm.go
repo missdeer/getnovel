@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/dfordsoft/golib/ebook"
-	"github.com/dfordsoft/golib/httputil"
+	"github.com/missdeer/golib/ebook"
+	"github.com/missdeer/golib/httputil"
 )
 
 func init() {
