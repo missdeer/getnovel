@@ -151,6 +151,6 @@ after_build:
 
 artifacts:
     - path: distrib\getnovel-%PREFIX%.zip
-      name: portable
-    - path: distrib\getnovel-%PREFIX%\getnovel%SUFFIX%
+      name: full_package
+    - path: "%APPVEYOR_BUILD_FOLDER%\getnovel-%PREFIX%%SUFFIX%"
       name: exe_only
