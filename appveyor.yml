@@ -152,5 +152,5 @@ after_build:
 artifacts:
     - path: distrib\getnovel-%PREFIX%.zip
       name: full_package
-    - path: distrib\getnovel-%PREFIX%\getnovel%SUFFIX%
+    - path: distrib\getnovel-%PREFIX%\getnovel*
       name: exe_only
