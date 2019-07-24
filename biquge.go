@@ -15,55 +15,9 @@ import (
 	"github.com/missdeer/golib/ic"
 )
 
-func init() {
-	dl := func(u string, gen ebook.IBook, tocPatterns []tocPattern, pageContentMarkers []pageContentMarker) {
-		dlPage := func(u string) (c []byte) {
-			var err error
-			theURL, _ := url.Parse(u)
-			headers := http.Header{
-				"Referer":                   []string{fmt.Sprintf("%s://%s", theURL.Scheme, theURL.Host)},
-				"User-Agent":                []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"},
-				"Accept":                    []string{"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
-				"Accept-Language":           []string{`en-US,en;q=0.8`},
-				"Upgrade-Insecure-Requests": []string{"1"},
-			}
-			c, err = httputil.GetBytes(u, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
-			if err != nil {
-				return
-			}
-
-			if bytes.Index(c, []byte("charset=gbk")) > 0 {
-				c = ic.Convert("gbk", "utf-8", c)
-			}
-			if bytes.Index(c, []byte("charset=gb2312")) > 0 {
-				c = ic.Convert("gbk", "utf-8", c)
-			}
-			c = bytes.Replace(c, []byte("\r\n"), []byte(""), -1)
-			c = bytes.Replace(c, []byte("\r"), []byte(""), -1)
-			c = bytes.Replace(c, []byte("\n"), []byte(""), -1)
-			for _, m := range pageContentMarkers {
-				if theURL.Host == m.host {
-					idx := bytes.Index(c, m.start)
-					if idx > 1 {
-						//fmt.Println("found start")
-						c = c[idx+len(m.start):]
-					}
-					idx = bytes.Index(c, m.end)
-					if idx > 1 {
-						//fmt.Println("found end")
-						c = c[:idx]
-					}
-					break
-				}
-			}
-
-			c = bytes.Replace(c, []byte("<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;"), []byte("</p><p>"), -1)
-			c = bytes.Replace(c, []byte("<br />&nbsp;&nbsp;&nbsp;&nbsp;"), []byte("</p><p>"), -1)
-			c = bytes.Replace(c, []byte("<br/><br/>"), []byte("</p><p>"), -1)
-			c = bytes.Replace(c, []byte(`　　`), []byte(""), -1)
-			return
-		}
-
+func getBiqugeDLPage(pageContentMarkers []pageContentMarker) func(string) []byte {
+	return func(u string) (c []byte) {
+		var err error
 		theURL, _ := url.Parse(u)
 		headers := http.Header{
 			"Referer":                   []string{fmt.Sprintf("%s://%s", theURL.Scheme, theURL.Host)},
@@ -72,79 +26,128 @@ func init() {
 			"Accept-Language":           []string{`en-US,en;q=0.8`},
 			"Upgrade-Insecure-Requests": []string{"1"},
 		}
-		b, err := httputil.GetBytes(u, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
+		c, err = httputil.GetBytes(u, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
 		if err != nil {
 			return
 		}
 
-		b = bytes.Replace(b, []byte("<dd>"), []byte("\n<dd>"), -1)
-		b = bytes.Replace(b, []byte("</dd>"), []byte("</dd>\n"), -1)
-		b = bytes.Replace(b, []byte("</li><li>"), []byte("</li>\n<li>"), -1)
-		if bytes.Index(b, []byte("charset=gbk")) > 0 {
-			b = ic.Convert("gbk", "utf-8", b)
+		if bytes.Index(c, []byte("charset=gbk")) > 0 {
+			c = ic.Convert("gbk", "utf-8", c)
 		}
-		if bytes.Index(b, []byte("charset=gb2312")) > 0 {
-			b = ic.Convert("gbk", "utf-8", b)
+		if bytes.Index(c, []byte("charset=gb2312")) > 0 {
+			c = ic.Convert("gbk", "utf-8", c)
 		}
-
-		gen.Begin()
-
-		dlutil := newDownloadUtil(dlPage, gen)
-		dlutil.process()
-
-		var title string
-		var lines []string
-
-		var p tocPattern
-		for _, patt := range tocPatterns {
-			if theURL.Host == patt.host {
-				p = patt
-				break
-			}
-		}
-		r, _ := regexp.Compile(p.item)
-		re, _ := regexp.Compile(p.bookTitle)
-		scanner := bufio.NewScanner(bytes.NewReader(b))
-		scanner.Split(bufio.ScanLines)
-		for scanner.Scan() {
-			line := scanner.Text()
-			if title == "" {
-				ss := re.FindAllStringSubmatch(line, -1)
-				if len(ss) > 0 && len(ss[0]) > 0 {
-					s := ss[0]
-					title = s[p.bookTitlePos]
-					gen.SetTitle(title)
-					continue
+		c = bytes.Replace(c, []byte("\r\n"), []byte(""), -1)
+		c = bytes.Replace(c, []byte("\r"), []byte(""), -1)
+		c = bytes.Replace(c, []byte("\n"), []byte(""), -1)
+		for _, m := range pageContentMarkers {
+			if theURL.Host == m.host {
+				idx := bytes.Index(c, m.start)
+				if idx > 1 {
+					//fmt.Println("found start")
+					c = c[idx+len(m.start):]
 				}
-			}
-			if r.MatchString(line) {
-				lines = append(lines, line)
-			}
-		}
-
-		for i := len(lines) - 1; i >= 0 && i < len(lines) && lines[0] == lines[i]; i -= 2 {
-			lines = lines[1:]
-		}
-
-		for index, line := range lines {
-			ss := r.FindAllStringSubmatch(line, -1)
-			s := ss[0]
-			articleURL := s[p.articleURLPos]
-			finalURL := fmt.Sprintf("%s://%s%s", theURL.Scheme, theURL.Host, articleURL)
-			if articleURL[0] != '/' {
-				finalURL = fmt.Sprintf("%s%s", u, articleURL)
-			}
-			if strings.HasPrefix(articleURL, "http") {
-				finalURL = articleURL
-			}
-
-			if dlutil.addURL(index+1, s[p.articleTitlePos], finalURL) {
+				idx = bytes.Index(c, m.end)
+				if idx > 1 {
+					//fmt.Println("found end")
+					c = c[:idx]
+				}
 				break
 			}
 		}
-		dlutil.wait()
-		gen.End()
+
+		c = bytes.Replace(c, []byte("<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;"), []byte("</p><p>"), -1)
+		c = bytes.Replace(c, []byte("<br />&nbsp;&nbsp;&nbsp;&nbsp;"), []byte("</p><p>"), -1)
+		c = bytes.Replace(c, []byte("<br/><br/>"), []byte("</p><p>"), -1)
+		c = bytes.Replace(c, []byte(`　　`), []byte(""), -1)
+		return
 	}
+}
+
+func downloadBiquge(u string, gen ebook.IBook, tocPatterns []tocPattern, pageContentMarkers []pageContentMarker) {
+	theURL, _ := url.Parse(u)
+	headers := http.Header{
+		"Referer":                   []string{fmt.Sprintf("%s://%s", theURL.Scheme, theURL.Host)},
+		"User-Agent":                []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"},
+		"Accept":                    []string{"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
+		"Accept-Language":           []string{`en-US,en;q=0.8`},
+		"Upgrade-Insecure-Requests": []string{"1"},
+	}
+	b, err := httputil.GetBytes(u, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
+	if err != nil {
+		return
+	}
+
+	b = bytes.Replace(b, []byte("<dd>"), []byte("\n<dd>"), -1)
+	b = bytes.Replace(b, []byte("</dd>"), []byte("</dd>\n"), -1)
+	b = bytes.Replace(b, []byte("</li><li>"), []byte("</li>\n<li>"), -1)
+	if bytes.Index(b, []byte("charset=gbk")) > 0 {
+		b = ic.Convert("gbk", "utf-8", b)
+	}
+	if bytes.Index(b, []byte("charset=gb2312")) > 0 {
+		b = ic.Convert("gbk", "utf-8", b)
+	}
+
+	gen.Begin()
+
+	dlutil := newDownloadUtil(getBiqugeDLPage(pageContentMarkers), gen)
+	dlutil.process()
+
+	var title string
+	var lines []string
+
+	var p tocPattern
+	for _, patt := range tocPatterns {
+		if theURL.Host == patt.host {
+			p = patt
+			break
+		}
+	}
+	r, _ := regexp.Compile(p.item)
+	re, _ := regexp.Compile(p.bookTitle)
+	scanner := bufio.NewScanner(bytes.NewReader(b))
+	scanner.Split(bufio.ScanLines)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if title == "" {
+			ss := re.FindAllStringSubmatch(line, -1)
+			if len(ss) > 0 && len(ss[0]) > 0 {
+				s := ss[0]
+				title = s[p.bookTitlePos]
+				gen.SetTitle(title)
+				continue
+			}
+		}
+		if r.MatchString(line) {
+			lines = append(lines, line)
+		}
+	}
+
+	for i := len(lines) - 1; i >= 0 && i < len(lines) && lines[0] == lines[i]; i -= 2 {
+		lines = lines[1:]
+	}
+
+	for index, line := range lines {
+		ss := r.FindAllStringSubmatch(line, -1)
+		s := ss[0]
+		articleURL := s[p.articleURLPos]
+		finalURL := fmt.Sprintf("%s://%s%s", theURL.Scheme, theURL.Host, articleURL)
+		if articleURL[0] != '/' {
+			finalURL = fmt.Sprintf("%s%s", u, articleURL)
+		}
+		if strings.HasPrefix(articleURL, "http") {
+			finalURL = articleURL
+		}
+
+		if dlutil.addURL(index+1, s[p.articleTitlePos], finalURL) {
+			break
+		}
+	}
+	dlutil.wait()
+	gen.End()
+}
+
+func init() {
 	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `书呆子`,
 		MatchPatterns: []string{`http://www\.shudaizi\.org/book/[0-9]+`},
@@ -167,7 +170,7 @@ func init() {
 					end:   []byte(`<div class="wz-page"></div></div>`),
 				},
 			}
-			dl(u, gen, tocPatterns, pageContentMarkers)
+			downloadBiquge(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 	registerNovelSiteHandler(&novelSiteHandler{
@@ -192,7 +195,7 @@ func init() {
 					end:   []byte(`</p></div>`),
 				},
 			}
-			dl(u, gen, tocPatterns, pageContentMarkers)
+			downloadBiquge(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 	registerNovelSiteHandler(&novelSiteHandler{
@@ -217,7 +220,7 @@ func init() {
 					end:   []byte(`</div>`),
 				},
 			}
-			dl(u, gen, tocPatterns, pageContentMarkers)
+			downloadBiquge(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 
@@ -243,7 +246,7 @@ func init() {
 					end:   []byte(`</div>`),
 				},
 			}
-			dl(u, gen, tocPatterns, pageContentMarkers)
+			downloadBiquge(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 	registerNovelSiteHandler(&novelSiteHandler{
@@ -267,7 +270,7 @@ func init() {
 					end:   []byte(`</div>`),
 				},
 			}
-			dl(u, gen, tocPatterns, pageContentMarkers)
+			downloadBiquge(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 	registerNovelSiteHandler(&novelSiteHandler{
@@ -291,7 +294,7 @@ func init() {
 					end:   []byte(`</div>`),
 				},
 			}
-			dl(u, gen, tocPatterns, pageContentMarkers)
+			downloadBiquge(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 	registerNovelSiteHandler(&novelSiteHandler{
@@ -315,7 +318,7 @@ func init() {
 					end:   []byte(`</div>`),
 				},
 			}
-			dl(u, gen, tocPatterns, pageContentMarkers)
+			downloadBiquge(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 	registerNovelSiteHandler(&novelSiteHandler{
@@ -340,7 +343,7 @@ func init() {
 					end:   []byte(`</div>`),
 				},
 			}
-			dl(u, gen, tocPatterns, pageContentMarkers)
+			downloadBiquge(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 	registerNovelSiteHandler(&novelSiteHandler{
@@ -536,7 +539,7 @@ func init() {
 					end:   []byte(`</div>`),
 				},
 			}
-			dl(u, gen, tocPatterns, pageContentMarkers)
+			downloadBiquge(u, gen, tocPatterns, pageContentMarkers)
 		},
 	})
 }
