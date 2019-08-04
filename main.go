@@ -14,9 +14,9 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/jessevdk/go-flags"
 	"github.com/missdeer/golib/ebook"
 	"github.com/missdeer/golib/fsutil"
-	flags "github.com/jessevdk/go-flags"
 )
 
 // Options for all command line options, long name must match field name
@@ -33,7 +33,7 @@ type Options struct {
 	ContentFontSize int     `long:"contentFontSize" description:"set content font point size for PDF format"`
 	LineSpacing     float64 `long:"lineSpacing" description:"set line spacing rate for PDF format"`
 	PagesPerFile    int     `long:"pagesPerFile" description:"split the big single PDF file to several smaller PDF files, how many pages should be included in a file, 0 means don't split"`
-	ChaptersPerFile int     `long:"chaptersPerFile" description:"split the big signle PDF file to several smaller PDF files, how many chapters should be included in a file, 0 means don't split"`
+	ChaptersPerFile int     `long:"chaptersPerFile" description:"split the big single PDF file to several smaller PDF files, how many chapters should be included in a file, 0 means don't split"`
 	FontFile        string  `long:"fontFile" description:"set TTF font file path"`
 	RetryCount      int     `short:"r" long:"retryCount" description:"download retry count"`
 	Timeout         int     `short:"t" long:"timeout" description:"download timeout seconds"`
@@ -105,7 +105,7 @@ func listCommandHandler() {
 func parseConfigurations(content []byte, opts *Options) bool {
 	var options map[string]interface{}
 	if err := json.Unmarshal(content, &options); err != nil {
-		log.Println("unmarshall configurations failed", err)
+		log.Println("unmarshal configurations failed", err)
 		return false
 	}
 
@@ -320,21 +320,21 @@ func main() {
 	}
 
 	downloadedChannel := make(chan bool)
-	donwloadCount := 0
+	downloadCount := 0
 	for _, novelURL := range args {
 		_, e := url.Parse(novelURL)
 		if e != nil {
 			fmt.Println("invalid URL", novelURL)
 			continue
 		}
-		donwloadCount++
+		downloadCount++
 		go downloadBook(novelURL, downloadedChannel)
 	}
 
 	downloaded := false
-	for i := 0; i < donwloadCount; i++ {
+	for i := 0; i < downloadCount; i++ {
 		ch := <-downloadedChannel
-		downloaded = (downloaded || ch)
+		downloaded = downloaded || ch
 	}
 
 	if !downloaded {
