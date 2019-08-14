@@ -13,6 +13,7 @@ require (
 	github.com/mozillazg/go-pinyin v0.15.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/signintech/gopdf v0.9.0
+	golang.org/x/image v0.0.0-20190507092727-e4e5bf290fec // indirect
 	golang.org/x/net v0.0.0-20190503192946-f4e77d36d62c
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/text v0.3.0

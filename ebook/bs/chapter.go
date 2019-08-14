@@ -48,7 +48,7 @@ func (c *Chapter) GetBookSource() *BookSource {
 		}
 		c.BookSourceSite = httputil.GetHostByURL(c.ChapterURL)
 	}
-	if bsItem, ok := BSCache.Get(c.BookSourceSite); ok {
+	if bsItem, ok := bsCache.Get(c.BookSourceSite); ok {
 		if bs, ok := bsItem.(BookSource); ok {
 			c.BookSourceInst = &bs
 			return &bs

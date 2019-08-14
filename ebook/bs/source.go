@@ -7,9 +7,11 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"net/url"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/missdeer/golib/httputil"
@@ -18,9 +20,55 @@ import (
 	"golang.org/x/text/transform"
 )
 
-var BSCache *cache.Cache = cache.New(0, 0)
+var bsCache *cache.Cache = cache.New(0, 0)
 
 type SearchOutput map[string][]*Book
+
+// ReadBookSourceFromLocalFileSystem book source is stored in local file, read and parse it
+func ReadBookSourceFromLocalFileSystem(fileName string) (bs []BookSource) {
+	c, e := ioutil.ReadFile(fileName)
+
+	if e != nil {
+		log.Println(e)
+		return
+	}
+	e = json.Unmarshal(c, &bs)
+	if e == nil {
+		return
+	}
+	var s BookSource
+	e2 := json.Unmarshal(c, &s)
+	if e2 != nil {
+		log.Println(e, e2)
+		return
+	}
+	bs = append(bs, s)
+	return
+}
+
+// ReadBookSourceFromURL book source is stored in a URL, read and parse it
+func ReadBookSourceFromURL(u string) (bs []BookSource) {
+	c, e := httputil.GetBytes(u,
+		http.Header{"User-Agent": []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"}},
+		60*time.Second,
+		3)
+	if e != nil {
+		log.Println(e)
+		return
+	}
+	e = json.Unmarshal(c, &bs)
+	if e == nil {
+		return
+	}
+	var s BookSource
+	e2 := json.Unmarshal(c, &s)
+	if e2 != nil {
+		log.Println(e, e2)
+		return
+	}
+	bs = append(bs, s)
+	return
+}
 
 func SortSearchOutput(so SearchOutput) []string {
 	sortedResult := make(map[string]int, len(so))
@@ -48,11 +96,11 @@ func SortSearchOutput(so SearchOutput) []string {
 	return newKeys
 }
 
+// BookSource book source structure
 type BookSource struct {
 	BookSourceGroup       string `json:"bookSourceGroup"`
 	BookSourceName        string `json:"bookSourceName"`
 	BookSourceURL         string `json:"bookSourceUrl"`
-	CheckURL              string `json:"checkUrl"`
 	Enable                bool   `json:"enable"`
 	HTTPUserAgent         string `json:"httpUserAgent"`
 	RuleBookAuthor        string `json:"ruleBookAuthor"`
@@ -63,6 +111,7 @@ type BookSource struct {
 	RuleChapterURL        string `json:"ruleChapterUrl"`
 	RuleChapterURLNext    string `json:"ruleChapterUrlNext"`
 	RuleContentURL        string `json:"ruleContentUrl"`
+	RuleContentURLNext    string `json:"ruleContentUrlNext"`
 	RuleCoverURL          string `json:"ruleCoverUrl"`
 	RuleFindURL           string `json:"ruleFindUrl"`
 	RuleIntroduce         string `json:"ruleIntroduce"`
@@ -82,6 +131,7 @@ func (bs BookSource) String() string {
 	return fmt.Sprintf("%s( %s )", bs.BookSourceName, bs.BookSourceURL)
 }
 
+// SearchResult book search result
 type SearchResult struct {
 	BookSourceSite string `json:"source"`
 	BookTitle      string `json:"name"`
@@ -93,30 +143,29 @@ type SearchResult struct {
 	NoteURL        string `json:"note_url"`
 }
 
-/*
-例:http://www.gxwztv.com/search.htm?keyword=searchKey&pn=searchPage-1
-- ?为get @为post
-- searchKey为关键字标识,运行时会替换为搜索关键字,
-- searchPage,searchPage-1为搜索页数,从0开始的用searchPage-1,
-- page规则还可以写成
-{index（第一页）,
-indexSecond（第二页）,
-indexThird（第三页）,
-index-searchPage+1 或 index-searchPage-1 或 index-searchPage}
-- 要添加转码编码在最后加 |char=gbk
-- |char=escape 会模拟js escape方法进行编码
-如果搜索结果可能会跳到简介页请填写简介页url正则
-*/
-func (b *BookSource) SearchBook(title string) []*Book {
-	if b.RuleSearchURL == "" || b.RuleSearchURL == "-" {
+// SearchBook search book on the book source
+// 例:http://www.gxwztv.com/search.htm?keyword=searchKey&pn=searchPage-1
+// - ?为get @为post
+// - searchKey为关键字标识,运行时会替换为搜索关键字,
+// - searchPage,searchPage-1为搜索页数,从0开始的用searchPage-1,
+// - page规则还可以写成
+// {index（第一页）,
+// indexSecond（第二页）,
+// indexThird（第三页）,
+// index-searchPage+1 或 index-searchPage-1 或 index-searchPage}
+// - 要添加转码编码在最后加 |char=gbk
+// - |char=escape 会模拟js escape方法进行编码
+// 如果搜索结果可能会跳到简介页请填写简介页url正则
+func (bs *BookSource) SearchBook(title string) []*Book {
+	if bs.RuleSearchURL == "" || bs.RuleSearchURL == "-" {
 		return nil
 	}
-	searchUrl := b.RuleSearchURL
+	searchURL := bs.RuleSearchURL
 
 	// Process encoding transform
-	if strings.Contains(searchUrl, "|char") {
-		charParam := strings.Split(searchUrl, "|")[1]
-		searchUrl = strings.Replace(searchUrl, fmt.Sprintf("|%s", charParam), "", -1)
+	if strings.Contains(searchURL, "|char") {
+		charParam := strings.Split(searchURL, "|")[1]
+		searchURL = strings.Replace(searchURL, fmt.Sprintf("|%s", charParam), "", -1)
 		charEncoding := strings.Split(charParam, "=")[1]
 		charEncoding = strings.ToLower(charEncoding)
 		if charEncoding == "gbk" || charEncoding == "gb2312" || charEncoding == "gb18030" {
@@ -127,17 +176,17 @@ func (b *BookSource) SearchBook(title string) []*Book {
 
 	var err error
 	var p io.Reader
-	searchUrl = strings.Replace(searchUrl, "=searchKey", fmt.Sprintf("=%s", url.QueryEscape(title)), -1)
-	searchUrl = strings.Replace(searchUrl, "searchPage-1", "0", -1)
-	searchUrl = strings.Replace(searchUrl, "searchPage", "1", -1)
+	searchURL = strings.Replace(searchURL, "=searchKey", fmt.Sprintf("=%s", url.QueryEscape(title)), -1)
+	searchURL = strings.Replace(searchURL, "searchPage-1", "0", -1)
+	searchURL = strings.Replace(searchURL, "searchPage", "1", -1)
 	// if searchUrl contains "@", searchKey should be post, not get.
-	if b.searchMethod() == "post" {
-		data := strings.Split(searchUrl, "@")[1]
+	if bs.searchMethod() == "post" {
+		data := strings.Split(searchURL, "@")[1]
 		params := strings.Replace(data, "=searchKey", fmt.Sprintf("=%s", url.QueryEscape(title)), -1)
-		p, err = httputil.PostPage(strings.Split(searchUrl, "@")[0], params)
+		p, err = httputil.PostPage(strings.Split(searchURL, "@")[0], params)
 	} else {
-		log.Println(searchUrl)
-		p, err = httputil.GetPage(searchUrl, b.HTTPUserAgent)
+		log.Println(searchURL)
+		p, err = httputil.GetPage(searchURL, bs.HTTPUserAgent)
 	}
 
 	if err != nil {
@@ -145,51 +194,51 @@ func (b *BookSource) SearchBook(title string) []*Book {
 		return nil
 	}
 	doc, err := goquery.NewDocumentFromReader(p)
-	return b.extractSearchResult(doc)
+	return bs.extractSearchResult(doc)
 
 }
 
-func (b *BookSource) searchMethod() string {
-	if strings.Contains(b.RuleSearchURL, "@") {
+func (bs *BookSource) searchMethod() string {
+	if strings.Contains(bs.RuleSearchURL, "@") {
 		return "post"
 	}
 	return "get"
 }
 
-func (b *BookSource) searchPage() int {
-	if !strings.Contains(b.RuleSearchURL, "searchPage") {
+func (bs *BookSource) searchPage() int {
+	if !strings.Contains(bs.RuleSearchURL, "searchPage") {
 		return -1
 	}
-	if strings.Contains(b.RuleSearchURL, "searchPage-1") {
+	if strings.Contains(bs.RuleSearchURL, "searchPage-1") {
 		return 0
 	}
 	return 1
 }
 
-func (b *BookSource) extractSearchResult(doc *goquery.Document) []*Book {
+func (bs *BookSource) extractSearchResult(doc *goquery.Document) []*Book {
 	var srList []*Book
-	sel, str := ParseRules(doc, b.RuleSearchList)
+	sel, str := ParseRules(doc, bs.RuleSearchList)
 	if sel != nil {
 		sel.Each(func(i int, s *goquery.Selection) {
-			_, title := ParseRules(s, b.RuleSearchName)
+			_, title := ParseRules(s, bs.RuleSearchName)
 			if title != "" {
-				_, url := ParseRules(s, b.RuleSearchNoteURL)
-				_, author := ParseRules(s, b.RuleSearchAuthor)
-				_, kind := ParseRules(s, b.RuleSearchKind)
-				_, cover := ParseRules(s, b.RuleSearchCoverURL)
-				_, lastChapter := ParseRules(s, b.RuleSearchLastChapter)
-				_, noteURL := ParseRules(s, b.RuleSearchNoteURL)
+				_, url := ParseRules(s, bs.RuleSearchNoteURL)
+				_, author := ParseRules(s, bs.RuleSearchAuthor)
+				_, kind := ParseRules(s, bs.RuleSearchKind)
+				_, cover := ParseRules(s, bs.RuleSearchCoverURL)
+				_, lastChapter := ParseRules(s, bs.RuleSearchLastChapter)
+				_, noteURL := ParseRules(s, bs.RuleSearchNoteURL)
 				if strings.HasPrefix(url, "/") {
-					url = fmt.Sprintf("%s%s", b.BookSourceURL, url)
+					url = fmt.Sprintf("%s%s", bs.BookSourceURL, url)
 				}
 				if strings.HasPrefix(cover, "/") {
-					cover = fmt.Sprintf("%s%s", b.BookSourceURL, cover)
+					cover = fmt.Sprintf("%s%s", bs.BookSourceURL, cover)
 				}
 				if strings.HasPrefix(noteURL, "/") {
-					noteURL = fmt.Sprintf("%s%s", b.BookSourceURL, noteURL)
+					noteURL = fmt.Sprintf("%s%s", bs.BookSourceURL, noteURL)
 				}
 				sr := &Book{
-					Tag:         b.BookSourceURL,
+					Tag:         bs.BookSourceURL,
 					Name:        title,
 					Author:      author,
 					Kind:        kind,
@@ -209,12 +258,13 @@ func (b *BookSource) extractSearchResult(doc *goquery.Document) []*Book {
 	return srList
 }
 
+// SearchBooks search book from book sources
 func SearchBooks(title string) SearchOutput {
 	c := make(chan *Book, 10)
 	result := make(SearchOutput)
 	go func() {
-		for i, _ := range BSCache.Items() {
-			if b, ok := BSCache.Get(i); ok {
+		for i := range bsCache.Items() {
+			if b, ok := bsCache.Get(i); ok {
 				bs, ok := b.(BookSource)
 				if ok {
 					searchResult := bs.SearchBook(title)
@@ -242,8 +292,8 @@ func SearchBooks(title string) SearchOutput {
 	}
 	for _, key := range SortSearchOutput(result) {
 		if key != "" {
-			resultJson, _ := json.MarshalIndent(result[key], "", "    ")
-			log.Printf("%s:\n %s\n", key, resultJson)
+			resultJSON, _ := json.MarshalIndent(result[key], "", "    ")
+			log.Printf("%s:\n %s\n", key, resultJSON)
 		}
 	}
 	return result

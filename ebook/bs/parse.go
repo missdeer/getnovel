@@ -122,6 +122,7 @@ func ParseRule(rule string) (string, int, int) {
 	return sel, len(ruleList), index
 }
 
+// RemoveNodes remove nodes
 func RemoveNodes(srcNodes, removeNodes []*html.Node) []*html.Node {
 	var nodes = make([]*html.Node, 0)
 	for _, n := range srcNodes {

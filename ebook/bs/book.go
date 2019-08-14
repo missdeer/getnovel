@@ -46,7 +46,7 @@ func (b *Book) GetBookSource() *BookSource {
 		}
 		b.Tag = httputil.GetHostByURL(b.NoteURL)
 	}
-	if bsItem, ok := BSCache.Get(b.Tag); ok {
+	if bsItem, ok := bsCache.Get(b.Tag); ok {
 		if bs, ok := bsItem.(BookSource); ok {
 			b.BookSourceInst = &bs
 			b.Origin = bs.BookSourceName
