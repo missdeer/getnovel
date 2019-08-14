@@ -15,7 +15,7 @@ import (
 	"strings"
 
 	"github.com/jessevdk/go-flags"
-	"github.com/missdeer/golib/ebook"
+	"github.com/missdeer/getnovel/ebook"
 	"github.com/missdeer/golib/fsutil"
 )
 

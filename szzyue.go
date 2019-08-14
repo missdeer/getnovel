@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/missdeer/golib/ebook"
+	"github.com/missdeer/getnovel/ebook"
 	"github.com/missdeer/golib/httputil"
 	"github.com/missdeer/golib/ic"
 )
