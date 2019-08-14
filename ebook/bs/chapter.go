@@ -10,6 +10,7 @@ import (
 	"github.com/missdeer/golib/httputil"
 )
 
+// Chapter represent a chapter of a book
 type Chapter struct {
 	BookSourceSite string      `json:"source"`
 	BookSourceInst *BookSource `json:"-"`
@@ -22,23 +23,26 @@ type Chapter struct {
 	Page           *goquery.Document `json:"-"`
 }
 
-func (c Chapter) String() string {
-	return fmt.Sprintf("%s( %s )", c.ChapterTitle, c.ChapterURL)
-}
-func (c *Chapter) FromURL(chapterURL string) error {
+func NewChapterFromURL(chapterURL string) (*Chapter, error) {
 	if chapterURL == "" {
-		return errors.New("no url.")
+		return nil, errors.New("no url.")
 	}
 	_, err := url.ParseRequestURI(chapterURL)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	c.ChapterURL = chapterURL
-	c.BookSourceSite = httputil.GetHostByURL(c.ChapterURL)
-	return nil
+	c := &Chapter{
+		BookSourceSite: httputil.GetHostByURL(c.ChapterURL),
+		ChapterURL:     chapterURL,
+	}
+	return c, nil
 }
 
-func (c *Chapter) GetBookSource() *BookSource {
+func (c Chapter) String() string {
+	return fmt.Sprintf("%s( %s )", c.ChapterTitle, c.ChapterURL)
+}
+
+func FindBookSourceForChapter(c *Chapter) *BookSource {
 	if c.BookSourceInst != nil {
 		return c.BookSourceInst
 	}
@@ -63,9 +67,9 @@ func (c *Chapter) getChapterPage() (*goquery.Document, error) {
 	if c.Page != nil {
 		return c.Page, nil
 	}
-	bs := c.GetBookSource()
+	bs := FindBookSourceForChapter(c)
 	if c.ChapterURL != "" && bs != nil {
-		p, err := httputil.GetPage(c.ChapterURL, c.GetBookSource().HTTPUserAgent)
+		p, err := httputil.GetPage(c.ChapterURL, FindBookSourceForChapter(c).HTTPUserAgent)
 		if err == nil {
 			doc, err := goquery.NewDocumentFromReader(p)
 			if err == nil {
