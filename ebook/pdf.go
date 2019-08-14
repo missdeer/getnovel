@@ -15,7 +15,7 @@ import (
 	"github.com/signintech/gopdf/fontmaker/core"
 )
 
-// Pdf generate PDF file
+// pdfBook generate PDF file
 type pdfBook struct {
 	title           string
 	height          float64
