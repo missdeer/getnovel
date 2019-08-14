@@ -11,6 +11,7 @@ import (
 	"github.com/missdeer/golib/httputil"
 )
 
+// Book represent a book instance
 type Book struct {
 	Tag          string        `json:"tag"`
 	Origin       string        `json:"origin"`

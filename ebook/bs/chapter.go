@@ -32,7 +32,7 @@ func NewChapterFromURL(chapterURL string) (*Chapter, error) {
 		return nil, err
 	}
 	c := &Chapter{
-		BookSourceSite: httputil.GetHostByURL(c.ChapterURL),
+		BookSourceSite: httputil.GetHostByURL(chapterURL),
 		ChapterURL:     chapterURL,
 	}
 	return c, nil
