@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -58,28 +56,22 @@ func (b *Book) GetBookSource() *BookSource {
 	return nil
 }
 
-func (b *Book) FromURL(bookURL string) error {
+// NewBookFromURL create new Book instance from URL
+func NewBookFromURL(bookURL string) (*Book, error) {
 	if bookURL == "" {
-		return errors.New("no url.")
+		return nil, errors.New("no url.")
 	}
 	_, err := url.ParseRequestURI(bookURL)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	b.NoteURL = bookURL
-	b.Tag = httputil.GetHostByURL(b.NoteURL)
+	b := &Book{
+		NoteURL: bookURL,
+		Tag:     httputil.GetHostByURL(bookURL),
+	}
 	b.GetAuthor()
 	b.GetIntroduce()
-	return nil
-}
-
-func (b *Book) FromCache(bookPath string) error {
-	if _, err := os.Stat(bookPath); os.IsNotExist(err) {
-		return errors.New(fmt.Sprintf("book path: %s not exists.", bookPath))
-	}
-	bookName := filepath.Base(bookPath)
-	fmt.Printf("book name is: %s.\n", bookName)
-	return nil
+	return b, nil
 }
 
 func (b *Book) getBookPage() (*goquery.Document, error) {
