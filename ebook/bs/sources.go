@@ -17,6 +17,7 @@ type BookSources struct {
 func (bss *BookSources) Add(bs *BookSource) {
 	bss.Lock()
 	bss.BookSourceCollection = append(bss.BookSourceCollection, bs)
+	bss.Unlock()
 }
 
 // FindBookSourceByHost find the first matched book source

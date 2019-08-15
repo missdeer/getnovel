@@ -10,6 +10,9 @@ func TestBook(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	if book == nil {
+		t.Error("no matched book source")
+	}
 	fmt.Println("===========Book Start===========")
 	fmt.Printf("%v\n", book.GetChapterList())
 	fmt.Printf("%v\n", book.GetName())

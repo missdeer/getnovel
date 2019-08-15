@@ -69,8 +69,11 @@ func ReadBookSourceFromURL(u string) (bs []BookSource) {
 		return
 	}
 	bs = append(bs, s)
-	for _, b := range bs {
-		allBookSources.Add(&b)
+	for i := range bs {
+		if strings.HasSuffix(bs[i].BookSourceURL, `-By Dark`) {
+			bs[i].BookSourceURL = bs[i].BookSourceURL[:len(bs[i].BookSourceURL)-len(`-By Dark`)]
+		}
+		allBookSources.Add(&bs[i])
 	}
 	return
 }
