@@ -42,7 +42,7 @@ func (c Chapter) String() string {
 	return fmt.Sprintf("%s( %s )", c.ChapterTitle, c.ChapterURL)
 }
 
-func FindBookSourceForChapter(c *Chapter) *BookSource {
+func (c *Chapter)findBookSourceForChapter() *BookSource {
 	if c.BookSourceInst != nil {
 		return c.BookSourceInst
 	}
@@ -67,9 +67,9 @@ func (c *Chapter) getChapterPage() (*goquery.Document, error) {
 	if c.Page != nil {
 		return c.Page, nil
 	}
-	bs := FindBookSourceForChapter(c)
+	bs := c.findBookSourceForChapter()
 	if c.ChapterURL != "" && bs != nil {
-		p, err := httputil.GetPage(c.ChapterURL, FindBookSourceForChapter(c).HTTPUserAgent)
+		p, err := httputil.GetPage(c.ChapterURL, c.findBookSourceForChapter().HTTPUserAgent)
 		if err == nil {
 			doc, err := goquery.NewDocumentFromReader(p)
 			if err == nil {
