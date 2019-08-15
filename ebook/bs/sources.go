@@ -1,6 +1,8 @@
 package bs
 
 import (
+	"log"
+	"net/url"
 	"sync"
 )
 
@@ -20,16 +22,35 @@ func (bss *BookSources) Add(bs *BookSource) {
 	bss.Unlock()
 }
 
+// Clear remove all elements
+func (bss *BookSources) Clear() {
+	bss.Lock()
+	bss.BookSourceCollection = []*BookSource{}
+	bss.Unlock()
+}
+
 // FindBookSourceByHost find the first matched book source
-func (bss *BookSources) FindBookSourceByHost(host string) (bs *BookSource) {
+func (bss *BookSources) FindBookSourceByHost(host string) *BookSource {
+	u, e := url.Parse(host)
+	if e != nil {
+		log.Println(e)
+		return nil
+	}
 	bss.RLock()
 	defer bss.RUnlock()
 	for _, v := range bss.BookSourceCollection {
 		if v.BookSourceURL == host {
-			return bs
+			return v
+		}
+		bsu, e := url.Parse(v.BookSourceURL)
+		if e != nil {
+			continue
+		}
+		if bsu.Host == u.Host {
+			return v
 		}
 	}
-	return
+	return nil
 }
 
 // FindBookSourcesByHost find all the matched book sources

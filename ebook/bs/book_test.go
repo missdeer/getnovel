@@ -6,7 +6,11 @@ import (
 )
 
 func TestBook(t *testing.T) {
-	book, err := NewBookFromURL("https://www.zwdu.com/book/32642/")
+	allBookSources.Clear()
+	for _, u := range bookSourceURLs {
+		ReadBookSourceFromURL(u)
+	}
+	book, err := NewBookFromURL("https://www.biquge.cm/9/9434/")
 	if err != nil {
 		t.Error(err)
 	}

@@ -6,7 +6,11 @@ import (
 )
 
 func TestChapter(t *testing.T) {
-	c, e := NewChapterFromURL("https://www.zwdu.com/book/32642/16771698.html")
+	allBookSources.Clear()
+	for _, u := range bookSourceURLs {
+		ReadBookSourceFromURL(u)
+	}
+	c, e := NewChapterFromURL("https://www.biquge.cm/9/9434/7424413.html")
 	if e != nil {
 		t.Error(e)
 		return

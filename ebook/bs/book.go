@@ -77,19 +77,23 @@ func (b *Book) getBookPage() (*goquery.Document, error) {
 	if b.Page != nil {
 		return b.Page, nil
 	}
+	if b.NoteURL == "" {
+		return nil, errors.New("No valid book URL")
+	}
 	bs := b.findBookSourceForBook()
-	if b.NoteURL != "" && bs != nil {
-		p, err := httputil.GetPage(b.NoteURL, b.findBookSourceForBook().HTTPUserAgent)
-		if err == nil {
-			doc, err := goquery.NewDocumentFromReader(p)
-			if err == nil {
-				b.Page = doc
-				return b.Page, nil
-			}
-		}
+	if bs == nil {
+		return nil, errors.New("No valid book source")
+	}
+	p, err := httputil.GetPage(b.NoteURL, b.findBookSourceForBook().HTTPUserAgent)
+	if err != nil {
 		return nil, err
 	}
-	return nil, errors.New("can't get book page.")
+	doc, err := goquery.NewDocumentFromReader(p)
+	if err != nil {
+		return nil, err
+	}
+	b.Page = doc
+	return b.Page, nil
 }
 
 func (b *Book) GetChapterURL() string {
@@ -119,8 +123,11 @@ func (b *Book) UpdateChapterList(startFrom int) error {
 	var doc *goquery.Document
 	var err error
 	bs := b.findBookSourceForBook()
+	if bs == nil {
+		return errors.New("No valid book source")
+	}
 	// if b.ChapterURL != "" && bs != nil {
-	p, err := httputil.GetPage(b.GetChapterURL(), b.findBookSourceForBook().HTTPUserAgent)
+	p, err := httputil.GetPage(b.GetChapterURL(), bs.HTTPUserAgent)
 	log.Printf("%s chapterlist url is:%s .", b.Name, b.ChapterURL)
 	if err != nil {
 		log.Printf("error while getting chapter list page: %s", err.Error())
