@@ -42,7 +42,7 @@ func (c Chapter) String() string {
 	return fmt.Sprintf("%s( %s )", c.ChapterTitle, c.ChapterURL)
 }
 
-func (c *Chapter)findBookSourceForChapter() *BookSource {
+func (c *Chapter) findBookSourceForChapter() *BookSource {
 	if c.BookSourceInst != nil {
 		return c.BookSourceInst
 	}
@@ -52,13 +52,9 @@ func (c *Chapter)findBookSourceForChapter() *BookSource {
 		}
 		c.BookSourceSite = httputil.GetHostByURL(c.ChapterURL)
 	}
-	if bsItem, ok := bsCache.Get(c.BookSourceSite); ok {
-		if bs, ok := bsItem.(BookSource); ok {
-			c.BookSourceInst = &bs
-			return &bs
-		} else {
-			return nil
-		}
+	if bs := allBookSources.FindBookSourceByHost(c.BookSourceSite); bs != nil {
+		c.BookSourceInst = bs
+		return bs
 	}
 	return nil
 }

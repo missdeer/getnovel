@@ -15,14 +15,13 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/missdeer/golib/httputil"
-	"github.com/patrickmn/go-cache"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
 )
 
-var bsCache *cache.Cache = cache.New(0, 0)
-
-type SearchOutput map[string][]*Book
+var (
+	allBookSources BookSources
+)
 
 // ReadBookSourceFromLocalFileSystem book source is stored in local file, read and parse it
 func ReadBookSourceFromLocalFileSystem(fileName string) (bs []BookSource) {
@@ -43,6 +42,9 @@ func ReadBookSourceFromLocalFileSystem(fileName string) (bs []BookSource) {
 		return
 	}
 	bs = append(bs, s)
+	for _, b := range bs {
+		allBookSources.Add(&b)
+	}
 	return
 }
 
@@ -67,8 +69,13 @@ func ReadBookSourceFromURL(u string) (bs []BookSource) {
 		return
 	}
 	bs = append(bs, s)
+	for _, b := range bs {
+		allBookSources.Add(&b)
+	}
 	return
 }
+
+type SearchOutput map[string][]*Book
 
 func SortSearchOutput(so SearchOutput) []string {
 	sortedResult := make(map[string]int, len(so))
@@ -263,18 +270,13 @@ func SearchBooks(title string) SearchOutput {
 	c := make(chan *Book, 10)
 	result := make(SearchOutput)
 	go func() {
-		for i := range bsCache.Items() {
-			if b, ok := bsCache.Get(i); ok {
-				bs, ok := b.(BookSource)
-				if ok {
-					searchResult := bs.SearchBook(title)
-					if searchResult != nil {
-						for _, sr := range searchResult {
-							c <- sr
-						}
-					}
-				} else {
-					log.Println("not book source.")
+		allBookSources.RLock()
+		defer allBookSources.RUnlock()
+		for _, bs := range allBookSources.BookSourceCollection {
+			searchResult := bs.SearchBook(title)
+			if searchResult != nil {
+				for _, sr := range searchResult {
+					c <- sr
 				}
 			}
 		}

@@ -36,7 +36,7 @@ func (b Book) String() string {
 }
 
 // findBookSourceForBook find book source for a specified book
-func (b *Book)findBookSourceForBook() *BookSource {
+func (b *Book) findBookSourceForBook() *BookSource {
 	if b.BookSourceInst != nil {
 		return b.BookSourceInst
 	}
@@ -46,16 +46,13 @@ func (b *Book)findBookSourceForBook() *BookSource {
 		}
 		b.Tag = httputil.GetHostByURL(b.NoteURL)
 	}
-	if bsItem, ok := bsCache.Get(b.Tag); ok {
-		if bs, ok := bsItem.(BookSource); ok {
-			b.BookSourceInst = &bs
-			b.Origin = bs.BookSourceName
-			return &bs
-		} else {
-			return nil
-		}
+	if bs := allBookSources.FindBookSourceByHost(b.Tag); bs != nil {
+		b.BookSourceInst = bs
+		b.Origin = bs.BookSourceName
+		return bs
 	}
 	return nil
+
 }
 
 // NewBookFromURL create new Book instance from URL
@@ -114,16 +111,16 @@ func (b *Book) GetChapterURL() string {
 }
 
 func (b *Book) GetChapterList() []*Chapter {
-	b.UpdateChapterList(len(b.ChapterList))
+	_ = b.UpdateChapterList(len(b.ChapterList))
 	return b.ChapterList
 }
 
 func (b *Book) UpdateChapterList(startFrom int) error {
 	var doc *goquery.Document
 	var err error
-	bs := findBookSourceForBook(b)
+	bs := b.findBookSourceForBook()
 	// if b.ChapterURL != "" && bs != nil {
-	p, err := httputil.GetPage(b.GetChapterURL(), findBookSourceForBook(b).HTTPUserAgent)
+	p, err := httputil.GetPage(b.GetChapterURL(), b.findBookSourceForBook().HTTPUserAgent)
 	log.Printf("%s chapterlist url is:%s .", b.Name, b.ChapterURL)
 	if err != nil {
 		log.Printf("error while getting chapter list page: %s", err.Error())
