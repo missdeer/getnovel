@@ -172,9 +172,9 @@ func (m *pdfBook) End() {
 func (m *pdfBook) endBook() {
 	m.pdf.SetInfo(gopdf.PdfInfo{
 		Title:        m.title,
-		Author:       `golib/ebook/pdf 用户制作成PDF，并非一定是作品原作者`,
-		Creator:      `golib/ebook/pdf，仅限个人研究学习，对其造成的所有后果，软件/库作者不承担任何责任`,
-		Producer:     `golib/ebook/pdf，仅限个人研究学习，对其造成的所有后果，软件/库作者不承担任何责任`,
+		Author:       `getnovel/ebook/pdf 用户制作成PDF，并非一定是作品原作者`,
+		Creator:      `getnovel/ebook/pdf，仅限个人研究学习，对其造成的所有后果，软件/库作者不承担任何责任`,
+		Producer:     `getnovel/ebook/pdf，仅限个人研究学习，对其造成的所有后果，软件/库作者不承担任何责任`,
 		Subject:      m.title,
 		CreationDate: time.Now(),
 	})
