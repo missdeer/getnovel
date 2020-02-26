@@ -120,7 +120,7 @@ clone_depth: 1
 
 # scripts that run after cloning repository
 install:
-    - set GOVERSION=1.12.9
+    - set GOVERSION=1.14
     - rmdir c:\go /s /q
     - appveyor DownloadFile https://storage.googleapis.com/golang/go%GOVERSION%.windows-amd64.msi
     - msiexec /i go%GOVERSION%.windows-amd64.msi /q
