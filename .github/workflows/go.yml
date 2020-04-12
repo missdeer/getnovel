@@ -34,6 +34,7 @@ jobs:
         env GOOS=netbsd GOARCH=amd64 go build -o netbsd-amd64/getnovel -ldflags="-s -w" .
         env GOOS=netbsd GOARCH=386 go build -o netbsd-386/getnovel -ldflags="-s -w" .
         env GOOS=dragonfly GOARCH=amd64 go build -o dragonfly-amd64/getnovel -ldflags="-s -w" .
+        env GOPATH=$PWD/gopath go get -u github.com/missdeer/cicdutil
       
     - name: Upload artifact getnovel-linux-amd64
       uses: actions/upload-artifact@v1.0.0
@@ -162,3 +163,8 @@ jobs:
         name: getnovel-windows-386
         # Directory containing files to upload
         path: windows-386
+
+
+    - name: Remove old artifacts
+      run: |
+        gopath/bin/cicdutil -p github -u missdeer -t ${{ secrets.GH_TOKEN }} -r getnovel -k 0 -a delete
