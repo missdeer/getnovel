@@ -11,13 +11,16 @@ require (
 	github.com/golang/protobuf v1.3.5 // indirect
 	github.com/google/uuid v1.1.1
 	github.com/jessevdk/go-flags v1.4.0
-	github.com/missdeer/golib v0.0.0-20190815035116-f27d804c6c69
+	github.com/mattn/go-runewidth v0.0.4 // indirect
+	github.com/missdeer/golib v0.0.0-20200416060047-8c39c445a688
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/mozillazg/go-pinyin v0.17.0
+	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/phpdave11/gofpdi v1.0.11 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/signintech/gopdf v0.9.7
+	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1 // indirect
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
