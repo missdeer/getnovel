@@ -3,7 +3,7 @@ module github.com/missdeer/getnovel
 go 1.12
 
 require (
-	github.com/PuerkitoBio/goquery v1.5.0
+	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/bmaupin/go-epub v0.5.3
 	github.com/gin-gonic/gin v1.6.2
 	github.com/gofrs/uuid v3.2.0+incompatible // indirect
