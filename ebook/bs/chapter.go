@@ -5,17 +5,22 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/missdeer/golib/httputil"
+)
+
+var (
+	getChapterTried int = 0
 )
 
 // Chapter represent a chapter of a book
 type Chapter struct {
 	BookSourceSite string      `json:"source"`
 	BookSourceInst *BookSource `json:"-"`
-	Content        string      `json:"content"`
-	ChapterTitle   string      `json:"chapter_title"`
+	Content        string      `json:"-"`
+	ChapterTitle   string      `json:"title"`
 	Read           bool        `json:"is_read"`
 	ChapterURL     string      `json:"url"`
 	Index          int         `json:"index"`
@@ -27,10 +32,11 @@ func NewChapterFromURL(chapterURL string) (*Chapter, error) {
 	if chapterURL == "" {
 		return nil, errors.New("no url.")
 	}
-	_, err := url.ParseRequestURI(chapterURL)
-	if err != nil {
+
+	if _, err := url.ParseRequestURI(chapterURL); err != nil {
 		return nil, err
 	}
+
 	c := &Chapter{
 		BookSourceSite: httputil.GetHostByURL(chapterURL),
 		ChapterURL:     chapterURL,
@@ -64,19 +70,19 @@ func (c *Chapter) getChapterPage() (*goquery.Document, error) {
 		return c.Page, nil
 	}
 	bs := c.findBookSourceForChapter()
-	if c.ChapterURL != "" && bs != nil {
-		p, err := httputil.GetPage(c.ChapterURL, c.findBookSourceForChapter().HTTPUserAgent)
-		if err == nil {
-			doc, err := goquery.NewDocumentFromReader(p)
-			if err == nil {
-				c.Page = doc
-
-				return c.Page, err
-			}
-		}
+	if c.ChapterURL == "" || bs == nil {
+		return nil, errors.New("can't get chapter page.")
+	}
+	p, err := httputil.GetPage(c.ChapterURL, c.findBookSourceForChapter().HTTPUserAgent)
+	if err != nil {
 		return nil, err
 	}
-	return nil, errors.New("can't get chapter page.")
+	doc, err := goquery.NewDocumentFromReader(p)
+	if err != nil {
+		return nil, err
+	}
+	c.Page = doc
+	return c.Page, nil
 }
 
 func (c *Chapter) GetContent() string {
@@ -90,8 +96,17 @@ func (c *Chapter) GetContent() string {
 			// re := regexp.MustCompile("(\b)+")
 			// content = re.ReplaceAllString(content, "\n    ")
 			c.Content = content
+			getChapterTried = 0
+			return c.Content
 		}
 	} else {
+		if getChapterTried < 5 {
+			getChapterTried++
+			time.Sleep(1 * time.Second)
+			return c.GetContent()
+		} else {
+			getChapterTried = 0
+		}
 		log.Printf("get content error:%s\n", err.Error())
 	}
 	return c.Content

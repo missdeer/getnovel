@@ -3,9 +3,11 @@ package bs
 import (
 	"errors"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"net/url"
-	"strings"
+	"os"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/missdeer/golib/httputil"
@@ -23,7 +25,7 @@ type Book struct {
 	CoverURL         string            `json:"coverUrl"`
 	Kind             string            `json:"kind"`
 	LastChapter      string            `json:"lastChapter"`
-	FinalRefreshData UnixTime          `json:"finalRefreshData"`
+	FinalRefreshDate UnixTime          `json:"finalRefreshData"` // typo here
 	NoteURL          string            `json:"noteUrl"`
 	Introduce        string            `json:"introduce"`
 	ChapterList      []*Chapter        `json:"-"`
@@ -52,7 +54,6 @@ func (b *Book) findBookSourceForBook() *BookSource {
 		return bs
 	}
 	return nil
-
 }
 
 // NewBookFromURL create new Book instance from URL
@@ -70,6 +71,7 @@ func NewBookFromURL(bookURL string) (*Book, error) {
 	}
 	b.GetAuthor()
 	b.GetIntroduce()
+	b.GetName()
 	return b, nil
 }
 
@@ -104,6 +106,7 @@ func (b *Book) GetChapterURL() string {
 	if err == nil {
 		_, chapterURL := ParseRules(doc, b.BookSourceInst.RuleChapterURL)
 		if chapterURL != "" {
+			chapterURL = urlFix(chapterURL, b.Tag)
 			log.Printf("chapter url is: %s", chapterURL)
 			b.ChapterURL = chapterURL
 			return b.ChapterURL
@@ -126,7 +129,7 @@ func (b *Book) UpdateChapterList(startFrom int) error {
 	if bs == nil {
 		return errors.New("No valid book source")
 	}
-	// if b.ChapterURL != "" && bs != nil {
+
 	p, err := httputil.GetPage(b.GetChapterURL(), bs.HTTPUserAgent)
 	log.Printf("%s chapterlist url is:%s .", b.Name, b.ChapterURL)
 	if err != nil {
@@ -136,7 +139,7 @@ func (b *Book) UpdateChapterList(startFrom int) error {
 	if err != nil {
 		log.Printf("error while parsing chapter list page to goquery: %s", err.Error())
 	}
-	// }
+
 	if doc == nil {
 		log.Printf("%s no chapterurl found.got by bookurl.", bs.BookSourceName)
 		doc, err = b.getBookPage()
@@ -152,9 +155,7 @@ func (b *Book) UpdateChapterList(startFrom int) error {
 			}
 			_, name := ParseRules(s, b.BookSourceInst.RuleChapterName)
 			_, url := ParseRules(s, b.BookSourceInst.RuleContentURL)
-			if strings.HasPrefix(url, "/") {
-				url = fmt.Sprintf("%s%s", b.BookSourceInst.BookSourceURL, url)
-			}
+			url = urlFix(url, b.Tag)
 			b.ChapterList = append(b.ChapterList, &Chapter{
 				ChapterTitle: name,
 				ChapterURL:   url,
@@ -199,16 +200,59 @@ func (b *Book) GetIntroduce() string {
 }
 
 func (b *Book) GetAuthor() string {
-	if b.Author == "" {
-		doc, err := b.getBookPage()
-		if err == nil {
-			_, intro := ParseRules(doc, b.BookSourceInst.RuleBookAuthor)
-			if intro != "" {
-				b.Author = intro
-			}
-		} else {
-			log.Printf("get author error:%s\n", err.Error())
-		}
+	if b.Author != "" {
+		return b.Author
+	}
+	doc, err := b.getBookPage()
+	if err != nil {
+		log.Printf("get author error:%s\n", err.Error())
+		return b.Author
+	}
+
+	if _, intro := ParseRules(doc, b.BookSourceInst.RuleBookAuthor); intro != "" {
+		b.Author = intro
 	}
 	return b.Author
+}
+
+func (b *Book) GetCoverURL() string {
+	if b.CoverURL != "" {
+		return b.CoverURL
+	}
+	doc, err := b.getBookPage()
+	if err != nil {
+		log.Printf("get cover error:%s\n", err.Error())
+		return b.CoverURL
+	}
+
+	if _, cover := ParseRules(doc, b.BookSourceInst.RuleCoverURL); cover != "" {
+		cover = urlFix(cover, b.Tag)
+		b.CoverURL = cover
+	}
+	return b.CoverURL
+}
+
+func (b *Book) GetOrigin() string {
+	if b.Origin != "" {
+		return b.Origin
+	}
+	b.Origin = b.findBookSourceForBook().BookSourceName
+	return b.Origin
+}
+
+func (b *Book) DownloadCover(coverPath string) error {
+	if b.GetCoverURL() == "" {
+		return errors.New("No cover found.")
+	}
+	res, err := http.Get(b.GetCoverURL())
+	if err != nil {
+		return err
+	}
+	f, err := os.Create(coverPath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	io.Copy(f, res.Body)
+	return nil
 }

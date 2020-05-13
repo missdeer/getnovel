@@ -19,6 +19,13 @@ import (
 	"golang.org/x/text/transform"
 )
 
+// Book Sources:
+// https://github.com/idalin/govel/raw/master/models/bs_ok.json
+// https://moonbegonia.github.io/Source/
+// https://github.com/XIU2/yuedu
+// https://gitee.com/vpq/yd
+// https://github.com/yeyulingfeng01/yuedu.github.io
+
 var (
 	allBookSources BookSources
 	bookSourceURLs = []string{
@@ -190,6 +197,7 @@ type BookSource struct {
 	BookSourceGroup       string `json:"bookSourceGroup"`
 	BookSourceName        string `json:"bookSourceName"`
 	BookSourceURL         string `json:"bookSourceUrl"`
+	CheckURL              string `json:"checkUrl"`
 	Enable                bool   `json:"enable"`
 	HTTPUserAgent         string `json:"httpUserAgent"`
 	RuleBookAuthor        string `json:"ruleBookAuthor"`
@@ -200,7 +208,6 @@ type BookSource struct {
 	RuleChapterURL        string `json:"ruleChapterUrl"`
 	RuleChapterURLNext    string `json:"ruleChapterUrlNext"`
 	RuleContentURL        string `json:"ruleContentUrl"`
-	RuleContentURLNext    string `json:"ruleContentUrlNext"`
 	RuleCoverURL          string `json:"ruleCoverUrl"`
 	RuleFindURL           string `json:"ruleFindUrl"`
 	RuleIntroduce         string `json:"ruleIntroduce"`
@@ -257,8 +264,15 @@ func (bs *BookSource) SearchBook(title string) []*Book {
 		searchURL = strings.Replace(searchURL, fmt.Sprintf("|%s", charParam), "", -1)
 		charEncoding := strings.Split(charParam, "=")[1]
 		charEncoding = strings.ToLower(charEncoding)
-		if charEncoding == "gbk" || charEncoding == "gb2312" || charEncoding == "gb18030" {
+		switch charEncoding {
+		case "gbk":
 			data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), simplifiedchinese.GBK.NewEncoder()))
+			title = string(data)
+		case "gb2312":
+			data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), simplifiedchinese.HZGB2312.NewEncoder()))
+			title = string(data)
+		case "gb18030":
+			data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), simplifiedchinese.GB18030.NewEncoder()))
 			title = string(data)
 		}
 	}
@@ -283,8 +297,15 @@ func (bs *BookSource) SearchBook(title string) []*Book {
 		return nil
 	}
 	doc, err := goquery.NewDocumentFromReader(p)
+	if err != nil {
+		log.Printf("searching book error:%s\n", err.Error())
+		return nil
+	}
+	if doc == nil {
+		log.Printf("doc is nil.")
+		return nil
+	}
 	return bs.extractSearchResult(doc)
-
 }
 
 func (bs *BookSource) searchMethod() string {
@@ -349,8 +370,9 @@ func (bs *BookSource) extractSearchResult(doc *goquery.Document) []*Book {
 
 // SearchBooks search book from book sources
 func SearchBooks(title string) SearchOutput {
-	c := make(chan *Book, 10)
+	c := make(chan *Book, 5)
 	result := make(SearchOutput)
+
 	go func() {
 		allBookSources.RLock()
 		defer allBookSources.RUnlock()
@@ -362,18 +384,24 @@ func SearchBooks(title string) SearchOutput {
 				}
 			}
 		}
-		close(c)
 	}()
 
-	for i := range c {
-		if _, ok := result[i.Name]; !ok {
-			result[i.Name] = []*Book{i}
-			// result[title] = append(result[title], sr)
-		} else {
-			// fmt.Println("exists, append.")
-			result[i.Name] = append(result[i.Name], i)
+	for timeout := false; !timeout; {
+		select {
+		case i, ok := <-c:
+			if ok {
+				if _, ok = result[i.Name]; !ok {
+					result[i.Name] = []*Book{i}
+				} else {
+					result[i.Name] = append(result[i.Name], i)
+				}
+			}
+		case <-time.After(5 * time.Second):
+			log.Printf("Timeout,exiting...\n")
+			timeout = true
 		}
 	}
+
 	for _, key := range SortSearchOutput(result) {
 		if key != "" {
 			resultJSON, _ := json.MarshalIndent(result[key], "", "    ")
