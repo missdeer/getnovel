@@ -131,7 +131,7 @@ func (b *Book) UpdateChapterList(startFrom int) error {
 	}
 
 	p, err := httputil.GetPage(b.GetChapterURL(), bs.HTTPUserAgent)
-	log.Printf("%s chapterlist url is:%s .", b.Name, b.ChapterURL)
+
 	if err != nil {
 		log.Printf("error while getting chapter list page: %s", err.Error())
 	}
