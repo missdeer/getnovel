@@ -16,19 +16,22 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/missdeer/golib/httputil"
 	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/encoding/traditionalchinese"
 	"golang.org/x/text/transform"
 )
-
-// Book Sources:
-// https://github.com/idalin/govel/raw/master/models/bs_ok.json
-// https://moonbegonia.github.io/Source/
-// https://github.com/XIU2/yuedu
-// https://gitee.com/vpq/yd
-// https://github.com/yeyulingfeng01/yuedu.github.io
 
 var (
 	allBookSources BookSources
 	bookSourceURLs = []string{
+		"https://cdn.jsdelivr.net/gh/yeyulingfeng01/yuedu.github.io/202003.txt",
+		"https://gitee.com/vpq/codes/ez5qu1ifx260layps3b7981/raw?blob_name=3.0sy.json",
+		"https://xiu2.github.io/yuedu/shuyuan",
+		"https://moonbegonia.github.io/Source/yuedu/full.json",
+		"https://github.com/idalin/govel/raw/master/models/bs_ok.json",
+		"http://alanskycn.gitee.io/vip/assets/import/book_source.json",
+		"https://gitee.com/haobai1/bookyuan/raw/master/shuyuan.json",
+		"https://gitee.com/zmn1307617161/booksource/raw/master/%E4%B9%A6%E6%BA%90/%E7%B2%BE%E6%8E%923.txt",
+		"https://gitee.com/slght/yuedu_booksource/raw/master/%E4%B9%A6%E6%BA%90/API%E4%B9%A6%E6%BA%90_3.0.json",
 		"https://gitee.com/gekunfei/web/raw/master/myBookshelf/bookSource_176",
 		"https://gitee.com/gekunfei/web/raw/master/myBookshelf/bookSource_176_1",
 		"https://gitee.com/gekunfei/web/raw/master/myBookshelf/bookSource_1909tv",
@@ -36,21 +39,6 @@ var (
 		"https://gitee.com/gekunfei/web/raw/master/myBookshelf/bookSource_miui",
 		"https://gitee.com/gekunfei/web/raw/master/myBookshelf/bookSource_qidian",
 		"https://gitee.com/gekunfei/web/raw/master/myBookshelf/bookSource_tingfree",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/00ksw.net",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/kygso",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/530p",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/9txs",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/biquge5200",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/dmzj",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/jpxs123",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/midu",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/motie",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/quanben5",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/shushu8",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/wenku8",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/xiaobiquge",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/xiaoshuo2016",
-		"https://gitee.com/alanskycn/yuedu/raw/master/booksource/yomou.syosetu.com",
 		"https://blackholep.github.io/20190815set1",
 		"https://blackholep.github.io/31xsw",
 		"https://blackholep.github.io/37shuwu",
@@ -104,8 +92,6 @@ var (
 		"https://booksources.github.io/list/xiashutxt_com.json",
 		"https://booksources.github.io/list/xslou_com.json",
 		"https://booksources.github.io/list/zhaishuyuan_com.json",
-		"http://cloud.iszoc.com/booksource/booksource.json",
-		// "http://cloud.iszoc.com/booksource/booksources.json",
 	}
 )
 
@@ -141,20 +127,19 @@ func ReadBookSourceFromURL(u string) (bs []BookSource) {
 		60*time.Second,
 		3)
 	if e != nil {
-		log.Println(e)
+		log.Println(u, e)
 		return
 	}
-	e = json.Unmarshal(c, &bs)
-	if e == nil {
-		return
+
+	if e = json.Unmarshal(c, &bs); e != nil {
+		var s BookSource
+		e2 := json.Unmarshal(c, &s)
+		if e2 != nil {
+			log.Println(u, e, e2)
+			return
+		}
+		bs = append(bs, s)
 	}
-	var s BookSource
-	e2 := json.Unmarshal(c, &s)
-	if e2 != nil {
-		log.Println(e, e2)
-		return
-	}
-	bs = append(bs, s)
 	for i := range bs {
 		if strings.HasSuffix(bs[i].BookSourceURL, `-By Dark`) {
 			bs[i].BookSourceURL = bs[i].BookSourceURL[:len(bs[i].BookSourceURL)-len(`-By Dark`)]
@@ -197,19 +182,16 @@ type BookSource struct {
 	BookSourceGroup       string `json:"bookSourceGroup"`
 	BookSourceName        string `json:"bookSourceName"`
 	BookSourceURL         string `json:"bookSourceUrl"`
-	CheckURL              string `json:"checkUrl"`
 	Enable                bool   `json:"enable"`
 	HTTPUserAgent         string `json:"httpUserAgent"`
-	RuleBookAuthor        string `json:"ruleBookAuthor"`
+	RuleBookAuthor        string `json:"ruleBookAuthor,omitempty"`
 	RuleBookContent       string `json:"ruleBookContent"`
-	RuleBookName          string `json:"ruleBookName"`
+	RuleBookName          string `json:"ruleBookName,omitempty"`
 	RuleChapterList       string `json:"ruleChapterList"`
 	RuleChapterName       string `json:"ruleChapterName"`
 	RuleChapterURL        string `json:"ruleChapterUrl"`
-	RuleChapterURLNext    string `json:"ruleChapterUrlNext"`
-	RuleContentURL        string `json:"ruleContentUrl"`
-	RuleCoverURL          string `json:"ruleCoverUrl"`
-	RuleFindURL           string `json:"ruleFindUrl"`
+	RuleContentURL        string `json:"ruleContentUrl,omitempty"`
+	RuleCoverURL          string `json:"ruleCoverUrl,omitempty"`
 	RuleIntroduce         string `json:"ruleIntroduce"`
 	RuleSearchAuthor      string `json:"ruleSearchAuthor"`
 	RuleSearchCoverURL    string `json:"ruleSearchCoverUrl"`
@@ -219,8 +201,6 @@ type BookSource struct {
 	RuleSearchName        string `json:"ruleSearchName"`
 	RuleSearchNoteURL     string `json:"ruleSearchNoteUrl"`
 	RuleSearchURL         string `json:"ruleSearchUrl"`
-	SerialNumber          int    `json:"serialNumber"`
-	Weight                int    `json:"weight"`
 }
 
 func (bs BookSource) String() string {
@@ -273,6 +253,9 @@ func (bs *BookSource) SearchBook(title string) []*Book {
 			title = string(data)
 		case "gb18030":
 			data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), simplifiedchinese.GB18030.NewEncoder()))
+			title = string(data)
+		case "big5", "big-5":
+			data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), traditionalchinese.Big5.NewEncoder()))
 			title = string(data)
 		}
 	}

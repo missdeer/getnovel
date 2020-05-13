@@ -29,6 +29,13 @@ func (bss *BookSources) Clear() {
 	bss.Unlock()
 }
 
+// Length returns count of book sources
+func (bss *BookSources) Length() int {
+	bss.RLock()
+	defer bss.RUnlock()
+	return len(bss.BookSourceCollection)
+}
+
 // FindBookSourceByHost find the first matched book source
 func (bss *BookSources) FindBookSourceByHost(host string) *BookSource {
 	u, e := url.Parse(host)

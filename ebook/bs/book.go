@@ -148,22 +148,23 @@ func (b *Book) UpdateChapterList(startFrom int) error {
 		}
 	}
 	sel, _ := ParseRules(doc, b.BookSourceInst.RuleChapterList)
-	if sel != nil {
-		sel.Each(func(i int, s *goquery.Selection) {
-			if i < startFrom {
-				return
-			}
-			_, name := ParseRules(s, b.BookSourceInst.RuleChapterName)
-			_, url := ParseRules(s, b.BookSourceInst.RuleContentURL)
-			url = urlFix(url, b.Tag)
-			b.ChapterList = append(b.ChapterList, &Chapter{
-				ChapterTitle: name,
-				ChapterURL:   url,
-				BelongToBook: b,
-				Index:        i,
-			})
-		})
+	if sel == nil {
+		return errors.New("empty chapter list")
 	}
+	sel.Each(func(i int, s *goquery.Selection) {
+		if i < startFrom {
+			return
+		}
+		_, name := ParseRules(s, b.BookSourceInst.RuleChapterName)
+		_, url := ParseRules(s, b.BookSourceInst.RuleContentURL)
+		url = urlFix(url, b.Tag)
+		b.ChapterList = append(b.ChapterList, &Chapter{
+			ChapterTitle: name,
+			ChapterURL:   url,
+			BelongToBook: b,
+			Index:        i,
+		})
+	})
 	return nil
 }
 
