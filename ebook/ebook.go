@@ -24,7 +24,7 @@ func NewBook(bookType string) IBook {
 	case "pdf":
 		return &pdfBook{}
 	case "mobi":
-		return &mobiBook{}
+		return &kindlegenMobiBook{}
 	case "epub":
 		return &epubBook{}
 	default:
