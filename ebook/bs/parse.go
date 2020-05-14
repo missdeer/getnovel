@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/jaytaylor/html2text"
 	"golang.org/x/net/html"
-	"jaytaylor.com/html2text"
 )
 
 // ParseRules parse rules

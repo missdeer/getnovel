@@ -10,6 +10,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/golang/protobuf v1.3.5 // indirect
 	github.com/google/uuid v1.1.1
+	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/missdeer/golib v1.0.2
@@ -26,5 +27,4 @@ require (
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
 	golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa // indirect
 	golang.org/x/text v0.3.2
-	jaytaylor.com/html2text v0.0.0-20190408195923-01ec452cbe43
 )
