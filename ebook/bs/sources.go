@@ -15,6 +15,20 @@ type BookSources struct {
 	sync.RWMutex
 }
 
+type ByBookSourceURL []*BookSource
+
+func (bss ByBookSourceURL) Len() int {
+	return len(bss)
+}
+
+func (bss ByBookSourceURL) Less(i, j int) bool {
+	return bss[i].BookSourceURL < bss[j].BookSourceURL
+}
+
+func (bss ByBookSourceURL) Swap(i, j int) {
+	bss[i], bss[j] = bss[j], bss[i]
+}
+
 // Add add a book source to array
 func (bss *BookSources) Add(bs *BookSource) {
 	bss.Lock()

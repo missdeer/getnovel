@@ -3,6 +3,7 @@ package bs
 import (
 	"fmt"
 	"log"
+	"sort"
 	"testing"
 )
 
@@ -18,6 +19,7 @@ func setupBookSources() {
 		// 	log.Println(bs.BookSourceGroup, "Book source", bs.BookSourceName, "at", bs.BookSourceURL)
 		// }
 	}
+	sort.Sort(ByBookSourceURL(allBookSources.BookSourceCollection))
 	log.Println("Got", allBookSources.Length(), "book sources totally")
 }
 
