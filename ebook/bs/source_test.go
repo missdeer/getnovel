@@ -18,3 +18,12 @@ func TestReadBookSourceFromURL(t *testing.T) {
 		t.Error("no book sources read")
 	}
 }
+
+func TestSearchBooks(t *testing.T) {
+	setupBookSources()
+	sr:= SearchBooks(`斗破苍穹`)
+	if sr == nil {
+		t.Error("can't find 斗破苍穹")
+	}
+	fmt.Println(sr)
+}
