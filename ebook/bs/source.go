@@ -141,8 +141,9 @@ func ReadBookSourceFromURL(u string) (bs []BookSource) {
 		bs = append(bs, s)
 	}
 	for i := range bs {
-		if strings.HasSuffix(bs[i].BookSourceURL, `-By Dark`) {
-			bs[i].BookSourceURL = bs[i].BookSourceURL[:len(bs[i].BookSourceURL)-len(`-By Dark`)]
+		if strings.Contains(bs[i].BookSourceURL, `-By`) {
+			idx := strings.LastIndex(bs[i].BookSourceURL, `-By`)
+			bs[i].BookSourceURL = bs[i].BookSourceURL[:idx]
 		}
 		allBookSources.Add(&bs[i])
 	}
