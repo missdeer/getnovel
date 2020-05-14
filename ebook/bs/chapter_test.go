@@ -1,19 +1,17 @@
 package bs
 
 import (
-	"fmt"
+	"log"
 	"testing"
 )
 
 func TestChapter(t *testing.T) {
-	allBookSources.Clear()
-	for _, u := range bookSourceURLs {
-		ReadBookSourceFromURL(u)
-	}
-	c, e := NewChapterFromURL("https://www.biquge.cm/9/9434/7424413.html")
+	setupBookSources()
+	c, e := NewChapterFromURL("http://www.b5200.net/46_46254/17700048.html")
 	if e != nil {
 		t.Error(e)
 		return
 	}
-	fmt.Println(c.GetContent())
+	log.Println("chapter title:", c.GetTitle())
+	log.Println("chapter content:", c.GetContent())
 }
