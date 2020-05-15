@@ -151,12 +151,12 @@ after_build:
     - cd distrib
     - 7z a "getnovel-%PREFIX%.7z" "getnovel-%PREFIX%"
     - 7z a "getnovel-webui%PREFIX%.7z" "getnovel-webui%PREFIX%"
-    - 7z a "sbss-%PREFIX%.7z" "sbss-%PREFIX%"
+    - 7z a "getnovel-sbss-%PREFIX%.7z" "sbss-%PREFIX%"
 
 artifacts:
     - path: distrib\getnovel-%PREFIX%.7z
       name: getnovel_package
     - path: distrib\getnovel-webui%PREFIX%.7z
       name: getnovel_webui_package
-    - path: distrib\sbss-%PREFIX%.7z
-      name: sbss_package
+    - path: distrib\getnovel-sbss-%PREFIX%.7z
+      name: getnovel_sbss_package
