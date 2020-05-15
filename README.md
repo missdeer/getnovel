@@ -20,28 +20,28 @@ go get github.com/missdeer/getnovel
 
 | 操作系统     | CPU架构 | 选项       | 下载链接                                                               |
 |--------------|---------|------------|------------------------------------------------------------------------|
-| Windows      | x86_64  |            | https://coredns.minidump.info/dl/getnovel-windows-amd64.7z             |
-| Windows      | x86     |            | https://coredns.minidump.info/dl/getnovel-windows-386.7z               |
-| macOS        | x86_64  |            | https://coredns.minidump.info/dl/getnovel-darwin-amd64.7z              |
-| Linux        | x86     |            | https://coredns.minidump.info/dl/getnovel-linux-386.7z                 |
-| Linux        | x86_64  |            | https://coredns.minidump.info/dl/getnovel-linux-amd64.7z               |
-| Linux        | arm     |  5         | https://coredns.minidump.info/dl/getnovel-linux-armv5.7z               |
-| Linux        | arm     |  6         | https://coredns.minidump.info/dl/getnovel-linux-armv6.7z               |
-| Linux        | arm     |  7         | https://coredns.minidump.info/dl/getnovel-linux-armv7.7z               |
-| Linux        | arm64   |            | https://coredns.minidump.info/dl/getnovel-linux-arm64.7z               |
-| Linux        | ppc64   |            | https://coredns.minidump.info/dl/getnovel-linux-ppc64.7z               |
-| Linux        | ppc64le |            | https://coredns.minidump.info/dl/getnovel-linux-ppc64le.7z             |
-| Linux        | s390x   |            | https://coredns.minidump.info/dl/getnovel-linux-s390x.7z               |
-| FreeBSD      | x86_64  |            | https://coredns.minidump.info/dl/getnovel-freebsd-amd64.7z             |
-| FreeBSD      | x86     |            | https://coredns.minidump.info/dl/getnovel-freebsd-386.7z               |
-| FreeBSD      | arm     |            | https://coredns.minidump.info/dl/getnovel-freebsd-arm.7z               |
-| NetBSD       | x86_64  |            | https://coredns.minidump.info/dl/getnovel-netbsd-amd64.7z              |
-| NetBSD       | x86     |            | https://coredns.minidump.info/dl/getnovel-netbsd-386.7z                |
-| NetBSD       | arm     |            | https://coredns.minidump.info/dl/getnovel-netbsd-arm.7z                |
-| OpenBSD      | x86_64  |            | https://coredns.minidump.info/dl/getnovel-openbsd-amd64.7z             |
-| OpenBSD      | x86     |            | https://coredns.minidump.info/dl/getnovel-openbsd-386.7z               |
-| DragonflyBSD | x86_64  |            | https://coredns.minidump.info/dl/getnovel-dragonfly-amd64.7z           |
-| Solaris      | x86_64  |            | https://coredns.minidump.info/dl/getnovel-solaris-amd64.7z             |
+| Windows      | x86_64  |            | https://getnovel.minidump.info/dl/getnovel-windows-amd64.7z             |
+| Windows      | x86     |            | https://getnovel.minidump.info/dl/getnovel-windows-386.7z               |
+| macOS        | x86_64  |            | https://getnovel.minidump.info/dl/getnovel-darwin-amd64.7z              |
+| Linux        | x86     |            | https://getnovel.minidump.info/dl/getnovel-linux-386.7z                 |
+| Linux        | x86_64  |            | https://getnovel.minidump.info/dl/getnovel-linux-amd64.7z               |
+| Linux        | arm     |  5         | https://getnovel.minidump.info/dl/getnovel-linux-armv5.7z               |
+| Linux        | arm     |  6         | https://getnovel.minidump.info/dl/getnovel-linux-armv6.7z               |
+| Linux        | arm     |  7         | https://getnovel.minidump.info/dl/getnovel-linux-armv7.7z               |
+| Linux        | arm64   |            | https://getnovel.minidump.info/dl/getnovel-linux-arm64.7z               |
+| Linux        | ppc64   |            | https://getnovel.minidump.info/dl/getnovel-linux-ppc64.7z               |
+| Linux        | ppc64le |            | https://getnovel.minidump.info/dl/getnovel-linux-ppc64le.7z             |
+| Linux        | s390x   |            | https://getnovel.minidump.info/dl/getnovel-linux-s390x.7z               |
+| FreeBSD      | x86_64  |            | https://getnovel.minidump.info/dl/getnovel-freebsd-amd64.7z             |
+| FreeBSD      | x86     |            | https://getnovel.minidump.info/dl/getnovel-freebsd-386.7z               |
+| FreeBSD      | arm     |            | https://getnovel.minidump.info/dl/getnovel-freebsd-arm.7z               |
+| NetBSD       | x86_64  |            | https://getnovel.minidump.info/dl/getnovel-netbsd-amd64.7z              |
+| NetBSD       | x86     |            | https://getnovel.minidump.info/dl/getnovel-netbsd-386.7z                |
+| NetBSD       | arm     |            | https://getnovel.minidump.info/dl/getnovel-netbsd-arm.7z                |
+| OpenBSD      | x86_64  |            | https://getnovel.minidump.info/dl/getnovel-openbsd-amd64.7z             |
+| OpenBSD      | x86     |            | https://getnovel.minidump.info/dl/getnovel-openbsd-386.7z               |
+| DragonflyBSD | x86_64  |            | https://getnovel.minidump.info/dl/getnovel-dragonfly-amd64.7z           |
+| Solaris      | x86_64  |            | https://getnovel.minidump.info/dl/getnovel-solaris-amd64.7z             |
 
 ## 使用方法
 
