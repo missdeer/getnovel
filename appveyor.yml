@@ -120,7 +120,7 @@ clone_depth: 1
 
 # scripts that run after cloning repository
 install:
-    - set GOVERSION=1.14
+    - set GOVERSION=1.14.3
     - rmdir c:\go /s /q
     - appveyor DownloadFile https://storage.googleapis.com/golang/go%GOVERSION%.windows-amd64.msi
     - msiexec /i go%GOVERSION%.windows-amd64.msi /q
@@ -134,6 +134,7 @@ before_build:
 
 # custom build scripts
 build_script:
+    - go test ./... -v
     - go build -ldflags="-s -w" -o "getnovel-%PREFIX%%SUFFIX%"
     - cd webui && go build -ldflags="-s -w" -o "getnovel-webui%PREFIX%%SUFFIX%"
     - cd .. && cd sbss && go build -ldflags="-s -w" -o "sbss%PREFIX%%SUFFIX%"
