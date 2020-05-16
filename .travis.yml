@@ -42,6 +42,7 @@ deploy:
   skip_cleanup: true
 script:
   - pwd && ls -l
+  - go test ./... -v
   - env GOARCH=amd64       GOOS=linux     go build -ldflags="-s -w -X main.sha1ver=`git rev-parse HEAD` -X main.buildTime=$(date +'%Y-%m-%d_%T')" -o getnovel     && cd webui && env GOARCH=amd64       GOOS=linux     go build -ldflags="-s -w -X main.sha1ver=`git rev-parse HEAD` -X main.buildTime=$(date +'%Y-%m-%d_%T')" -o ../getnovel-webui     && cd .. && cp -r webui/templates ./ && tar czvf getnovel-linux-amd64.tar.gz        templates preset getnovel-webui     getnovel
   - env GOARCH=386         GOOS=linux     go build -ldflags="-s -w -X main.sha1ver=`git rev-parse HEAD` -X main.buildTime=$(date +'%Y-%m-%d_%T')" -o getnovel     && cd webui && env GOARCH=386         GOOS=linux     go build -ldflags="-s -w -X main.sha1ver=`git rev-parse HEAD` -X main.buildTime=$(date +'%Y-%m-%d_%T')" -o ../getnovel-webui     && cd .. && cp -r webui/templates ./ && tar czvf getnovel-linux-386.tar.gz          templates preset getnovel-webui     getnovel
   - env GOARCH=arm GOARM=5 GOOS=linux     go build -ldflags="-s -w -X main.sha1ver=`git rev-parse HEAD` -X main.buildTime=$(date +'%Y-%m-%d_%T')" -o getnovel     && cd webui && env GOARCH=arm GOARM=5 GOOS=linux     go build -ldflags="-s -w -X main.sha1ver=`git rev-parse HEAD` -X main.buildTime=$(date +'%Y-%m-%d_%T')" -o ../getnovel-webui     && cd .. && cp -r webui/templates ./ && tar czvf getnovel-linux-armv5.tar.gz        templates preset getnovel-webui     getnovel
