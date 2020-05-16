@@ -136,27 +136,21 @@ before_build:
 build_script:
     - go build -ldflags="-s -w" -o "getnovel-%PREFIX%%SUFFIX%"
     - cd webui && go build -ldflags="-s -w" -o "getnovel-webui%PREFIX%%SUFFIX%"
-    - cd .. && cd sbss && go build -ldflags="-s -w" -o "sbss%PREFIX%%SUFFIX%"
     - cd ..
 
 # scripts that run after build
 after_build:
-    - mkdir "distrib\getnovel-webui%PREFIX%\templates" "distrib\getnovel-%PREFIX%\preset" "distrib\sbss-%PREFIX%\templates"
+    - mkdir "distrib\getnovel-webui%PREFIX%\templates" "distrib\getnovel-%PREFIX%\preset"
     - copy "%APPVEYOR_BUILD_FOLDER%\preset\*.*" "distrib\getnovel-%PREFIX%\preset\"
     - copy "%APPVEYOR_BUILD_FOLDER%\getnovel-%PREFIX%%SUFFIX%" "distrib\getnovel-%PREFIX%\getnovel%SUFFIX%"
     - copy "%APPVEYOR_BUILD_FOLDER%\webui\templates\*.*" "distrib\getnovel-webui%PREFIX%\templates\"
     - copy "%APPVEYOR_BUILD_FOLDER%\webui\getnovel-webui%PREFIX%%SUFFIX%" "distrib\getnovel-webui%PREFIX%\"
-    - copy "%APPVEYOR_BUILD_FOLDER%\sbss\templates\*.*" "distrib\sbss-%PREFIX%\templates\"
-    - copy "%APPVEYOR_BUILD_FOLDER%\sbss\sbss%PREFIX%%SUFFIX%" "distrib\sbss-%PREFIX%\"
     - cd distrib
     - 7z a "getnovel-%PREFIX%.7z" "getnovel-%PREFIX%"
     - 7z a "getnovel-webui%PREFIX%.7z" "getnovel-webui%PREFIX%"
-    - 7z a "getnovel-sbss-%PREFIX%.7z" "sbss-%PREFIX%"
 
 artifacts:
     - path: distrib\getnovel-%PREFIX%.7z
       name: getnovel_package
     - path: distrib\getnovel-webui%PREFIX%.7z
       name: getnovel_webui_package
-    - path: distrib\getnovel-sbss-%PREFIX%.7z
-      name: getnovel_sbss_package
