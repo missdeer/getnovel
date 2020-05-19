@@ -13,7 +13,7 @@ require (
 	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/mattn/go-runewidth v0.0.4 // indirect
-	github.com/missdeer/golib v1.0.2
+	github.com/missdeer/golib v1.0.3
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/mozillazg/go-pinyin v0.17.0
