@@ -9,7 +9,7 @@ require (
 	github.com/gofrs/uuid v3.3.0+incompatible // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/golang/protobuf v1.3.5 // indirect
-	github.com/google/uuid v1.1.5
+	github.com/google/uuid v1.2.0
 	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/mattn/go-runewidth v0.0.4 // indirect
