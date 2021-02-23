@@ -25,7 +25,7 @@ jobs:
         env GOOS=linux GOARCH=arm GOARM=7 go build -o linux-arm-7/getnovel -ldflags="-s -w" .
         env GOOS=linux GOARCH=arm64 go build -o linux-arm64/getnovel -ldflags="-s -w" .
         env GOOS=darwin GOARCH=amd64 go build -o darwin-amd64/getnovel -ldflags="-s -w" .
-        env GOOS=darwin GOARCH=arm64 go build -o darwin-amd64/getnovel -ldflags="-s -w" .
+        env GOOS=darwin GOARCH=arm64 go build -o darwin-arm64/getnovel -ldflags="-s -w" .
         env GOOS=windows GOARCH=amd64 go build -o windows-amd64/getnovel.exe -ldflags="-s -w" .
         env GOOS=windows GOARCH=386 go build -o windows-386/getnovel.exe -ldflags="-s -w" .
         env GOOS=freebsd GOARCH=amd64 go build -o freebsd-amd64/getnovel -ldflags="-s -w" .
