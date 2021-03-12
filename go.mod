@@ -20,7 +20,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/phpdave11/gofpdi v1.0.13 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/signintech/gopdf v0.9.14
+	github.com/signintech/gopdf v0.9.15
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	golang.org/x/image v0.0.0-20210220032944-ac19c3e999fb // indirect
 	golang.org/x/net v0.0.0-20210222171744-9060382bd457

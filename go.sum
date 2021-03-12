@@ -64,6 +64,7 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/signintech/gopdf v0.9.14 h1:sJuR+kXdc+TPRalQ7gApZZ2hkXpILT+oQFt8MzhFJeQ=
 github.com/signintech/gopdf v0.9.14/go.mod h1:YSAgnGaC2bLUlciG/pbzpnzFg9qfhqdITEA9lKEHiI0=
+github.com/signintech/gopdf v0.9.15/go.mod h1:YSAgnGaC2bLUlciG/pbzpnzFg9qfhqdITEA9lKEHiI0=
 github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf h1:pvbZ0lM0XWPBqUKqFU8cmavspvIl9nulOYwdy6IFRRo=
 github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf/go.mod h1:RJID2RhlZKId02nZ62WenDCkgHFerpIOmW0iT7GKmXM=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
