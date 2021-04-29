@@ -11,7 +11,7 @@ require (
 	github.com/golang/protobuf v1.3.5 // indirect
 	github.com/google/uuid v1.2.0
 	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7
-	github.com/jessevdk/go-flags v1.4.0
+	github.com/jessevdk/go-flags v1.5.0
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/missdeer/golib v1.0.4
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
