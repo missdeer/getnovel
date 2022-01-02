@@ -17,13 +17,13 @@ var (
 
 // Chapter represent a chapter of a book
 type Chapter struct {
-	BookSourceSite string      `json:"source"`
-	BookSourceInst *BookSource `json:"-"`
-	Content        string      `json:"-"`
-	ChapterTitle   string      `json:"title"`
-	Read           bool        `json:"is_read"`
-	ChapterURL     string      `json:"url"`
-	Index          int         `json:"index"`
+	BookSourceSite string        `json:"source"`
+	BookSourceInst *BookSourceV2 `json:"-"`
+	Content        string        `json:"-"`
+	ChapterTitle   string        `json:"title"`
+	Read           bool          `json:"is_read"`
+	ChapterURL     string        `json:"url"`
+	Index          int           `json:"index"`
 	BelongToBook   *Book
 	Page           *goquery.Document `json:"-"`
 }
@@ -48,7 +48,7 @@ func (c Chapter) String() string {
 	return fmt.Sprintf("%s( %s )", c.ChapterTitle, c.ChapterURL)
 }
 
-func (c *Chapter) findBookSourceForChapter() *BookSource {
+func (c *Chapter) findBookSourceForChapter() *BookSourceV2 {
 	if c.BookSourceInst != nil {
 		return c.BookSourceInst
 	}

@@ -6,8 +6,8 @@ import (
 	"sync"
 )
 
-// BookSourceCollection is an array that the element type is a BookSource
-type BookSourceCollection []*BookSource
+// BookSourceCollection is an array that the element type is a BookSourceV2
+type BookSourceCollection []*BookSourceV2
 
 // BookSources wrapper for operating array in concurrent environment
 type BookSources struct {
@@ -15,7 +15,7 @@ type BookSources struct {
 	sync.RWMutex
 }
 
-type ByBookSourceURL []*BookSource
+type ByBookSourceURL []*BookSourceV2
 
 func (bss ByBookSourceURL) Len() int {
 	return len(bss)
@@ -30,7 +30,7 @@ func (bss ByBookSourceURL) Swap(i, j int) {
 }
 
 // Add add a book source to array
-func (bss *BookSources) Add(bs *BookSource) {
+func (bss *BookSources) Add(bs *BookSourceV2) {
 	bss.Lock()
 	bss.BookSourceCollection = append(bss.BookSourceCollection, bs)
 	bss.Unlock()
@@ -39,7 +39,7 @@ func (bss *BookSources) Add(bs *BookSource) {
 // Clear remove all elements
 func (bss *BookSources) Clear() {
 	bss.Lock()
-	bss.BookSourceCollection = []*BookSource{}
+	bss.BookSourceCollection = []*BookSourceV2{}
 	bss.Unlock()
 }
 
@@ -51,7 +51,7 @@ func (bss *BookSources) Length() int {
 }
 
 // FindBookSourceByHost find the first matched book source
-func (bss *BookSources) FindBookSourceByHost(host string) *BookSource {
+func (bss *BookSources) FindBookSourceByHost(host string) *BookSourceV2 {
 	u, e := url.Parse(host)
 	if e != nil {
 		log.Println(e)

@@ -1,23 +1,15 @@
 package bs
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/PuerkitoBio/goquery"
 	"github.com/missdeer/golib/httputil"
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/encoding/traditionalchinese"
-	"golang.org/x/text/transform"
 )
 
 var (
@@ -95,61 +87,6 @@ var (
 	}
 )
 
-// ReadBookSourceFromLocalFileSystem book source is stored in local file, read and parse it
-func ReadBookSourceFromLocalFileSystem(fileName string) (bs []BookSource) {
-	c, e := ioutil.ReadFile(fileName)
-
-	if e != nil {
-		log.Println(e)
-		return
-	}
-	e = json.Unmarshal(c, &bs)
-	if e == nil {
-		return
-	}
-	var s BookSource
-	e2 := json.Unmarshal(c, &s)
-	if e2 != nil {
-		log.Println(e, e2)
-		return
-	}
-	bs = append(bs, s)
-	for _, b := range bs {
-		allBookSources.Add(&b)
-	}
-	return
-}
-
-// ReadBookSourceFromURL book source is stored in a URL, read and parse it
-func ReadBookSourceFromURL(u string) (bs []BookSource) {
-	c, e := httputil.GetBytes(u,
-		http.Header{"User-Agent": []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"}},
-		60*time.Second,
-		3)
-	if e != nil {
-		log.Println(u, e)
-		return
-	}
-
-	if e = json.Unmarshal(c, &bs); e != nil {
-		var s BookSource
-		e2 := json.Unmarshal(c, &s)
-		if e2 != nil {
-			log.Println(u, e, e2)
-			return
-		}
-		bs = append(bs, s)
-	}
-	for i := range bs {
-		if strings.Contains(bs[i].BookSourceURL, `-By`) {
-			idx := strings.LastIndex(bs[i].BookSourceURL, `-By`)
-			bs[i].BookSourceURL = bs[i].BookSourceURL[:idx]
-		}
-		allBookSources.Add(&bs[i])
-	}
-	return
-}
-
 type SearchOutput map[string][]*Book
 
 func SortSearchOutput(so SearchOutput) []string {
@@ -178,36 +115,6 @@ func SortSearchOutput(so SearchOutput) []string {
 	return newKeys
 }
 
-// BookSource book source structure
-type BookSource struct {
-	BookSourceGroup       string `json:"bookSourceGroup"`
-	BookSourceName        string `json:"bookSourceName"`
-	BookSourceURL         string `json:"bookSourceUrl"`
-	Enable                bool   `json:"enable"`
-	HTTPUserAgent         string `json:"httpUserAgent"`
-	RuleBookAuthor        string `json:"ruleBookAuthor,omitempty"`
-	RuleBookContent       string `json:"ruleBookContent"`
-	RuleBookName          string `json:"ruleBookName,omitempty"`
-	RuleChapterList       string `json:"ruleChapterList"`
-	RuleChapterName       string `json:"ruleChapterName"`
-	RuleChapterURL        string `json:"ruleChapterUrl"`
-	RuleContentURL        string `json:"ruleContentUrl,omitempty"`
-	RuleCoverURL          string `json:"ruleCoverUrl,omitempty"`
-	RuleIntroduce         string `json:"ruleIntroduce"`
-	RuleSearchAuthor      string `json:"ruleSearchAuthor"`
-	RuleSearchCoverURL    string `json:"ruleSearchCoverUrl"`
-	RuleSearchKind        string `json:"ruleSearchKind"`
-	RuleSearchLastChapter string `json:"ruleSearchLastChapter"`
-	RuleSearchList        string `json:"ruleSearchList"`
-	RuleSearchName        string `json:"ruleSearchName"`
-	RuleSearchNoteURL     string `json:"ruleSearchNoteUrl"`
-	RuleSearchURL         string `json:"ruleSearchUrl"`
-}
-
-func (bs BookSource) String() string {
-	return fmt.Sprintf("%s( %s )", bs.BookSourceName, bs.BookSourceURL)
-}
-
 // SearchResult book search result
 type SearchResult struct {
 	BookSourceSite string `json:"source"`
@@ -218,138 +125,6 @@ type SearchResult struct {
 	Kind           string `json:"kind"`
 	LastChapter    string `json:"last_chapter"`
 	NoteURL        string `json:"note_url"`
-}
-
-// SearchBook search book on the book source
-// 例:http://www.gxwztv.com/search.htm?keyword=searchKey&pn=searchPage-1
-// - ?为get @为post
-// - searchKey为关键字标识,运行时会替换为搜索关键字,
-// - searchPage,searchPage-1为搜索页数,从0开始的用searchPage-1,
-// - page规则还可以写成
-// {index（第一页）,
-// indexSecond（第二页）,
-// indexThird（第三页）,
-// index-searchPage+1 或 index-searchPage-1 或 index-searchPage}
-// - 要添加转码编码在最后加 |char=gbk
-// - |char=escape 会模拟js escape方法进行编码
-// 如果搜索结果可能会跳到简介页请填写简介页url正则
-func (bs *BookSource) SearchBook(title string) []*Book {
-	if bs.RuleSearchURL == "" || bs.RuleSearchURL == "-" {
-		return nil
-	}
-	searchURL := bs.RuleSearchURL
-
-	// Process encoding transform
-	if strings.Contains(searchURL, "|char") {
-		charParam := strings.Split(searchURL, "|")[1]
-		searchURL = strings.Replace(searchURL, fmt.Sprintf("|%s", charParam), "", -1)
-		charEncoding := strings.Split(charParam, "=")[1]
-		charEncoding = strings.ToLower(charEncoding)
-		switch charEncoding {
-		case "gbk":
-			data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), simplifiedchinese.GBK.NewEncoder()))
-			title = string(data)
-		case "gb2312":
-			data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), simplifiedchinese.HZGB2312.NewEncoder()))
-			title = string(data)
-		case "gb18030":
-			data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), simplifiedchinese.GB18030.NewEncoder()))
-			title = string(data)
-		case "big5", "big-5":
-			data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), traditionalchinese.Big5.NewEncoder()))
-			title = string(data)
-		}
-	}
-
-	var err error
-	var p io.Reader
-	searchURL = strings.Replace(searchURL, "=searchKey", fmt.Sprintf("=%s", url.QueryEscape(title)), -1)
-	searchURL = strings.Replace(searchURL, "searchPage-1", "0", -1)
-	searchURL = strings.Replace(searchURL, "searchPage", "1", -1)
-	// if searchUrl contains "@", searchKey should be post, not get.
-	if bs.searchMethod() == "post" {
-		data := strings.Split(searchURL, "@")[1]
-		params := strings.Replace(data, "=searchKey", fmt.Sprintf("=%s", url.QueryEscape(title)), -1)
-		p, err = httputil.PostPage(strings.Split(searchURL, "@")[0], params)
-	} else {
-		log.Println(searchURL)
-		p, err = httputil.GetPage(searchURL, bs.HTTPUserAgent)
-	}
-
-	if err != nil {
-		log.Printf("searching book error:%s\n", err.Error())
-		return nil
-	}
-	doc, err := goquery.NewDocumentFromReader(p)
-	if err != nil {
-		log.Printf("searching book error:%s\n", err.Error())
-		return nil
-	}
-	if doc == nil {
-		log.Printf("doc is nil.")
-		return nil
-	}
-	return bs.extractSearchResult(doc)
-}
-
-func (bs *BookSource) searchMethod() string {
-	if strings.Contains(bs.RuleSearchURL, "@") {
-		return "post"
-	}
-	return "get"
-}
-
-func (bs *BookSource) searchPage() int {
-	if !strings.Contains(bs.RuleSearchURL, "searchPage") {
-		return -1
-	}
-	if strings.Contains(bs.RuleSearchURL, "searchPage-1") {
-		return 0
-	}
-	return 1
-}
-
-func (bs *BookSource) extractSearchResult(doc *goquery.Document) []*Book {
-	var srList []*Book
-	sel, str := ParseRules(doc, bs.RuleSearchList)
-	if sel != nil {
-		sel.Each(func(i int, s *goquery.Selection) {
-			_, title := ParseRules(s, bs.RuleSearchName)
-			if title != "" {
-				_, url := ParseRules(s, bs.RuleSearchNoteURL)
-				_, author := ParseRules(s, bs.RuleSearchAuthor)
-				_, kind := ParseRules(s, bs.RuleSearchKind)
-				_, cover := ParseRules(s, bs.RuleSearchCoverURL)
-				_, lastChapter := ParseRules(s, bs.RuleSearchLastChapter)
-				_, noteURL := ParseRules(s, bs.RuleSearchNoteURL)
-				if strings.HasPrefix(url, "/") {
-					url = fmt.Sprintf("%s%s", bs.BookSourceURL, url)
-				}
-				if strings.HasPrefix(cover, "/") {
-					cover = fmt.Sprintf("%s%s", bs.BookSourceURL, cover)
-				}
-				if strings.HasPrefix(noteURL, "/") {
-					noteURL = fmt.Sprintf("%s%s", bs.BookSourceURL, noteURL)
-				}
-				sr := &Book{
-					Tag:         bs.BookSourceURL,
-					Name:        title,
-					Author:      author,
-					Kind:        kind,
-					CoverURL:    cover,
-					LastChapter: lastChapter,
-					NoteURL:     noteURL,
-				}
-				srList = append(srList, sr)
-
-			}
-		})
-
-	} else {
-		log.Printf("No search result found. string:%s\n", str)
-	}
-
-	return srList
 }
 
 // SearchBooks search book from book sources
@@ -393,4 +168,119 @@ func SearchBooks(title string) SearchOutput {
 		}
 	}
 	return result
+}
+
+// ConvertBookSourceV3ToV2 convert BookSource from v3 to v2
+func ConvertBookSourceV3ToV2(bs3 BookSourceV3) BookSourceV2 {
+	var header map[string]string
+	var userAgent string
+	if e := json.Unmarshal([]byte(bs3.Header), &header); e == nil {
+		userAgent = header["User-Agent"]
+	}
+	return BookSourceV2{
+		BookSourceGroup:       bs3.BookSourceGroup,
+		BookSourceName:        bs3.BookSourceName,
+		BookSourceURL:         bs3.BookSourceURL,
+		Enable:                bs3.Enable,
+		HTTPUserAgent:         userAgent,
+		RuleBookAuthor:        bs3.RuleBookInfo.Author,
+		RuleBookContent:       bs3.RuleContent.Content,
+		RuleBookName:          bs3.RuleBookInfo.Name,
+		RuleChapterList:       bs3.RuleTOC.ChapterList,
+		RuleChapterName:       bs3.RuleTOC.ChapterName,
+		RuleChapterURL:        bs3.RuleTOC.ChapterURL,
+		RuleContentURL:        "",
+		RuleCoverURL:          bs3.RuleBookInfo.CoverURL,
+		RuleIntroduce:         bs3.RuleBookInfo.Intro,
+		RuleSearchAuthor:      bs3.RuleSearch.Author,
+		RuleSearchCoverURL:    bs3.RuleSearch.CoverURL,
+		RuleSearchKind:        bs3.RuleSearch.Kind,
+		RuleSearchLastChapter: bs3.RuleSearch.LastChapter,
+		RuleSearchList:        bs3.RuleSearch.BookList,
+		RuleSearchName:        bs3.RuleSearch.Name,
+		RuleSearchNoteURL:     bs3.RuleSearch.BookURL,
+		RuleSearchURL:         bs3.RuleSearch.BookURL,
+	}
+}
+
+func CollectBookSources(bss2 []BookSourceV2) {
+	for i := range bss2 {
+		lastDotPos := strings.LastIndex(bss2[i].BookSourceURL, `.`)
+		lastDashPos := strings.LastIndex(bss2[i].BookSourceURL, `-`)
+		if lastDashPos > lastDotPos {
+			bss2[i].BookSourceURL = bss2[i].BookSourceURL[:lastDashPos]
+		}
+		if bss2[i].BookSourceGroup == "" {
+			bss2[i].BookSourceGroup = `未分类`
+		}
+
+		allBookSources.Add(&bss2[i])
+	}
+}
+
+// ReadBookSourceFromBytes book source is stored as bytes, read and parse it
+func ReadBookSourceFromBytes(c []byte)(bss2 []BookSourceV2) {
+	e := json.Unmarshal(c, &bss2)
+	if e != nil || len(bss2) == 0 || bss2[0].RuleChapterList == "" {
+		// try v3
+		var bss3 []BookSourceV3
+		e = json.Unmarshal(c, &bss3)
+		if e == nil && len(bss3) > 0 && bss3[0].RuleTOC.ChapterList != "" {
+			// copy to v2 collection
+			bss2 = []BookSourceV2{}
+			for _, bs3 := range bss3 {
+				bs2 := ConvertBookSourceV3ToV2(bs3)
+				bss2 = append(bss2, bs2)
+			}
+		}
+	}
+
+	if len(bss2) == 0 {
+		var bs2 BookSourceV2
+		e = json.Unmarshal(c, &bs2)
+		if e == nil && bs2.RuleChapterList != "" {
+			bss2 = append(bss2, bs2)
+		} else {
+			// try v3
+			var bs3 BookSourceV3
+			if e = json.Unmarshal(c, &bs3); e == nil {
+				bs2 := ConvertBookSourceV3ToV2(bs3)
+				bss2 = append(bss2, bs2)
+			}
+		}
+	}
+	return
+}
+
+// ReadBookSourceFromLocalFileSystem book source is stored in local file, read and parse it
+func ReadBookSourceFromLocalFileSystem(fileName string) (bss2 []BookSourceV2) {
+	c, e := ioutil.ReadFile(fileName)
+
+	if e != nil {
+		log.Println(e)
+		return
+	}
+
+	bss2 = ReadBookSourceFromBytes(c)
+
+	CollectBookSources(bss2)
+	return
+}
+
+// ReadBookSourceFromURL book source is stored in a URL, read and parse it
+func ReadBookSourceFromURL(u string) (bss2 []BookSourceV2) {
+	c, e := httputil.GetBytes(u,
+		http.Header{"User-Agent": []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"}},
+		60*time.Second,
+		3)
+
+	if e != nil {
+		log.Println(u, e)
+		return
+	}
+
+	bss2 = ReadBookSourceFromBytes(c)
+
+	CollectBookSources(bss2)
+	return
 }

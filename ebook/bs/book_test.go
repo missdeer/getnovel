@@ -25,7 +25,7 @@ func setupBookSources() {
 
 func TestBook(t *testing.T) {
 	setupBookSources()
-	book, err := NewBookFromURL("http://www.b5200.net/46_46254/")
+	book, err := NewBookFromURL("https://www.mangg.net/id68990/")
 	if err != nil {
 		t.Error(err)
 	}

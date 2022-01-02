@@ -29,7 +29,7 @@ type Book struct {
 	NoteURL          string            `json:"noteUrl"`
 	Introduce        string            `json:"introduce"`
 	ChapterList      []*Chapter        `json:"-"`
-	BookSourceInst   *BookSource       `json:"-"`
+	BookSourceInst   *BookSourceV2     `json:"-"`
 	Page             *goquery.Document `json:"-"`
 }
 
@@ -38,7 +38,7 @@ func (b Book) String() string {
 }
 
 // findBookSourceForBook find book source for a specified book
-func (b *Book) findBookSourceForBook() *BookSource {
+func (b *Book) findBookSourceForBook() *BookSourceV2 {
 	if b.BookSourceInst != nil {
 		return b.BookSourceInst
 	}

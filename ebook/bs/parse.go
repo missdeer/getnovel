@@ -1,8 +1,8 @@
 package bs
 
 import (
+	"bytes"
 	"fmt"
-	"log"
 	"reflect"
 	"strconv"
 	"strings"
@@ -12,20 +12,20 @@ import (
 	"golang.org/x/net/html"
 )
 
-// ParseRules parse rules
 func ParseRules(doc interface{}, rule string) (*goquery.Selection, string) {
 	// log.Debugf("parsing rules:%s\n", rule)
 	var sel *goquery.Selection
 	var result string
+	var tmpRule = make([]string, 0)
 	var exclude = make([]string, 0)
 
 	if strings.HasPrefix(rule, "@JSon") {
-		log.Println("json result. not implemented.")
+		// log.Error("json result. not implemented.")
 		return nil, ""
 	}
 
 	if strings.HasPrefix(rule, "@css") {
-		log.Println("jsoup selector.not implemented.")
+		// log.Error("jsoup selector.not implemented.")
 		return nil, ""
 	}
 	rules := strings.Split(rule, "@")
@@ -43,37 +43,62 @@ func ParseRules(doc interface{}, rule string) (*goquery.Selection, string) {
 			document, ok := doc.(*goquery.Document)
 			if ok {
 				sel = document.Find(ruleStr)
-
 			} else {
 				sel, _ = doc.(*goquery.Selection)
+
 				sel = sel.Find(ruleStr)
 			}
+
 			if length == 3 {
 				sel = sel.Eq(index)
 			}
 
 		case len(rules) - 1:
+			if strings.Contains(ruleStr, "#") {
+				tmpRule = strings.Split(ruleStr, "#")
+				ruleStr = tmpRule[0]
+			}
 			switch ruleStr {
 			case "text":
-				result = sel.Text()
+				var s []string
+				for _, n := range sel.Nodes {
+					s = append(s, Nodetext(n))
+				}
+				result = strings.Join(s, "　　\n")
 			case "html":
 				result, _ = sel.Html()
 			case "textNodes":
 				result, _ = sel.Html()
+				// log.DebugF("length of sel:%d\n length of children:%d\n", len(sel.Nodes), len(sel.Children().Nodes))
 				text, err := html2text.FromString(result, html2text.Options{PrettyTables: false})
+
 				if err == nil {
-					result = text
+					s := strings.Split(text, "\n\n")
+					for i, v := range s {
+						s[i] = fmt.Sprintf("　　%s", strings.TrimSpace(v))
+					}
+					result = strings.Join(s, "\n")
 				}
+
 			case "src", "href":
 				result, _ = sel.Attr(ruleStr)
+			case "a":
+				break
 			default:
+				// tHtml, _ := sel.Html()
+				// log.Debugf("ruleStr is %s.\tsel is: %s.\n", ruleStr, tHtml)
 				sel = sel.Find(ruleStr)
+				// tHtml, _ = sel.Html()
+				// log.Debugf("ruleStr is %s.\tsel is: %s.\n", ruleStr, tHtml)
 			}
 			if result != "" {
+				if len(tmpRule) >= 2 {
+					result = strings.Replace(result, tmpRule[1], "", 0)
+				}
 				return nil, strings.TrimSpace(result)
-				// return nil, result
 			}
 		default:
+
 			sel = sel.Find(ruleStr)
 			if length == 3 {
 				sel = sel.Eq(index)
@@ -88,19 +113,19 @@ func ParseRules(doc interface{}, rule string) (*goquery.Selection, string) {
 			if err != nil {
 				fmt.Printf("convert string to int error:%s\n", err.Error())
 			}
-			if index < 0 {
+			if index < 0 { // !是排除,有些位置不符合需要排除用!,后面的序号用:隔开0是第1个,负数为倒数序号,-1最后一个,-2倒数第2个,依次
 				index += sel.Length()
-				// fmt.Printf("index = %d\n", index)
 			}
-			nodes = append(nodes, sel.Nodes[index])
+			if index < len(sel.Nodes) { // 有时候规则写的不是很准确，排除的节点序号超过实际可用的节点数，会引发越界异常
+				nodes = append(nodes, sel.Nodes[index])
+			}
 		}
 		sel.Nodes = RemoveNodes(sel.Nodes, nodes)
-		// fmt.Printf("total %d after removed.\n", sel.Length())
 	}
 	return sel, ""
 }
 
-// ParseRule return selector,length of rules, index of selector
+// return selector,length of rules, index of selector
 func ParseRule(rule string) (string, int, int) {
 	ruleList := strings.Split(rule, ".")
 	var index int
@@ -110,7 +135,19 @@ func ParseRule(rule string) (string, int, int) {
 	}
 	switch ruleList[0] {
 	case "class":
-		sel = fmt.Sprintf(".%s", ruleList[1])
+		if strings.Contains(ruleList[1], " ") { // 多个class name的情况
+			var s = ""
+			for _, v := range strings.Split(ruleList[1], " ") {
+				v = strings.TrimSpace(v)
+				if v != "" {
+					s = fmt.Sprintf("%s.%s", s, v)
+				}
+			}
+			sel = s
+		} else {
+			sel = fmt.Sprintf(".%s", ruleList[1])
+		}
+
 	case "tag":
 		sel = ruleList[1]
 	case "id":
@@ -122,7 +159,6 @@ func ParseRule(rule string) (string, int, int) {
 	return sel, len(ruleList), index
 }
 
-// RemoveNodes remove nodes
 func RemoveNodes(srcNodes, removeNodes []*html.Node) []*html.Node {
 	var nodes = make([]*html.Node, 0)
 	for _, n := range srcNodes {
@@ -137,4 +173,19 @@ func RemoveNodes(srcNodes, removeNodes []*html.Node) []*html.Node {
 		}
 	}
 	return nodes
+}
+
+func Nodetext(node *html.Node) string {
+	if node.Type == html.TextNode {
+		// Keep newlines and spaces, like jQuery
+		return node.Data
+	} else if node.FirstChild != nil {
+		var buf bytes.Buffer
+		for c := node.FirstChild; c != nil; c = c.NextSibling {
+			buf.WriteString(Nodetext(c))
+		}
+		return buf.String()
+	}
+
+	return ""
 }

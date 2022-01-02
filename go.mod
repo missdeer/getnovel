@@ -5,8 +5,9 @@ go 1.12
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/bmaupin/go-epub v0.10.0
+	github.com/gabriel-vasile/mimetype v1.4.0 // indirect
 	github.com/gin-gonic/gin v1.7.7
-	github.com/gofrs/uuid v4.0.0+incompatible // indirect
+	github.com/gofrs/uuid v4.2.0+incompatible // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/golang/protobuf v1.3.5 // indirect
 	github.com/google/uuid v1.3.0
@@ -20,10 +21,12 @@ require (
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/phpdave11/gofpdi v1.0.13 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/signintech/gopdf v0.9.15
+	github.com/signintech/gopdf v0.10.6
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
-	golang.org/x/image v0.0.0-20210220032944-ac19c3e999fb // indirect
-	golang.org/x/net v0.0.0-20210916014120-12bc252f5db8
+	github.com/vincent-petithory/dataurl v1.0.0 // indirect
+	golang.org/x/image v0.0.0-20211028202545-6944b10bf410 // indirect
+	golang.org/x/net v0.0.0-20211216030914-fe4d6282115f
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	golang.org/x/text v0.3.7
 )
