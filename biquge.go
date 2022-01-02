@@ -274,60 +274,12 @@ func init() {
 		},
 	})
 	registerNovelSiteHandler(&novelSiteHandler{
-		Title:         `大海中文`,
-		MatchPatterns: []string{`https://www\.dhzw\.org/book/[0-9]+/[0-9]+/`},
-		Download: func(u string, gen ebook.IBook) {
-			tocPatterns := []tocPattern{
-				{
-					host:            "www.dhzw.org",
-					bookTitle:       `<h1>([^<]+)</h1>$`,
-					bookTitlePos:    1,
-					item:            `<dd>\s*<a\s+href="([^"]+)"\s+title="[^"]+">([^<]+)</a></dd>$`,
-					articleURLPos:   1,
-					articleTitlePos: 2,
-				},
-			}
-			pageContentMarkers := []pageContentMarker{
-				{
-					host:  "www.dhzw.org",
-					start: []byte(`<div id="BookText">`),
-					end:   []byte(`</div>`),
-				},
-			}
-			downloadBiquge(u, gen, tocPatterns, pageContentMarkers)
-		},
-	})
-	registerNovelSiteHandler(&novelSiteHandler{
-		Title:         `手牵手`,
-		MatchPatterns: []string{`https://www\.sqsxs\.com/book/[0-9]+/[0-9]+/`},
-		Download: func(u string, gen ebook.IBook) {
-			tocPatterns := []tocPattern{
-				{
-					host:            "www.sqsxs.com",
-					bookTitle:       `<h1>([^<]+)</h1>$`,
-					bookTitlePos:    1,
-					item:            `<dd>\s*<a\s+href="([^"]+)"\s+class="f-green">([^<]+)</a></a></dd>$`,
-					articleURLPos:   1,
-					articleTitlePos: 2,
-				},
-			}
-			pageContentMarkers := []pageContentMarker{
-				{
-					host:  "www.sqsxs.com",
-					start: []byte(`<div id="content">`),
-					end:   []byte(`</div>`),
-				},
-			}
-			downloadBiquge(u, gen, tocPatterns, pageContentMarkers)
-		},
-	})
-	registerNovelSiteHandler(&novelSiteHandler{
 		Title:         `燃文小说`,
-		MatchPatterns: []string{`http://www\.ranwena\.com/files/article/[0-9]+/[0-9]+/`},
+		MatchPatterns: []string{`http://www\.ranwena\.net/files/article/[0-9]+/[0-9]+/`},
 		Download: func(u string, gen ebook.IBook) {
 			tocPatterns := []tocPattern{
 				{
-					host:            "www.ranwena.com",
+					host:            "www.ranwena.net",
 					bookTitle:       `<h1>([^<]+)</h1>$`,
 					bookTitlePos:    1,
 					item:            `<dd>\s*<a\s*href="([^"]+)">([^<]+)</a></dd>$`,
@@ -338,7 +290,7 @@ func init() {
 			}
 			pageContentMarkers := []pageContentMarker{
 				{
-					host:  "www.ranwena.com",
+					host:  "www.ranwena.net",
 					start: []byte(`<div id="content">`),
 					end:   []byte(`</div>`),
 				},
