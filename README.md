@@ -16,7 +16,7 @@ go get github.com/missdeer/getnovel
 
 ## 下载预编译可执行文件
 
-所有预编译可以执行文件由[Appveyor 服务](https://ci.appveyor.com/project/missdeer/coredns-custom-build)编译生成
+所有预编译可以执行文件由[Appveyor 服务](https://ci.appveyor.com/project/missdeer/getnovel-6xgd2)编译生成
 
 ## 使用方法
 
@@ -44,3 +44,6 @@ go get github.com/missdeer/getnovel
 ## 注意事项
 
 * 输出为PDF格式时，如果遇到打开PDF文件为空白，原因可能是所使用的自定义字体文件中未包含某些字符却被使用了，可以尝试更换嵌入字体文件为字符集较大的，比如“方正准雅宋GBK”等。
+
+# Number of historical stars
+![](https://starchart.cc/missdeer/getnovel.svg)
