@@ -1,6 +1,8 @@
 {
     "format": "pdf",
     "pageType": "6inch",
+    "titleFontSize": 12,
+    "contentFontSize": 10,
     "pageWidth": 255.12,
     "pageHeight": 331.65
 }
