@@ -11,7 +11,7 @@
 ## 编译
 
 ```bash
-go get github.com/missdeer/getnovel
+go install github.com/missdeer/getnovel@latest
 ```
 
 ## 下载预编译可执行文件
