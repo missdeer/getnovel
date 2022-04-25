@@ -152,11 +152,12 @@ after_build:
     - echo $APPVEYOR_BUILD_FOLDER
     - ls -l $APPVEYOR_BUILD_FOLDER
     - ls -l $APPVEYOR_BUILD_FOLDER/preset
-    - mkdir -p "distrib/getnovel-$PREFIX/preset"
-    - cp "$APPVEYOR_BUILD_FOLDER/preset/*" "distrib/getnovel-$PREFIX/preset/"
+    - mkdir -p "distrib/getnovel-$PREFIX"
+    - ls -l
+    - cp -r "$APPVEYOR_BUILD_FOLDER/preset" "distrib/getnovel-$PREFIX/"
     - cp "$APPVEYOR_BUILD_FOLDER/getnovel-$PREFIX$SUFFIX" "distrib/getnovel-$PREFIX/getnovel$SUFFIX"
     - cd distrib
-    - zip -r "getnovel-$PREFIX.zip" "getnovel-$PREFIX"
+    - zip -r "getnovel-$PREFIX.zip" "getnovel-$PREFIX" getnovel-$PREFIX/preset
 
 artifacts:
     - path: distrib/getnovel-$PREFIX.zip
