@@ -143,17 +143,17 @@ before_build:
 
 # custom build scripts
 build_script:
-    - if [ "$HOST" = "darwin" ]; then env GOARCH=amd64 go build -ldflags="-s" -o getnovel-amd64; env GOARCH=arm64 go build -ldflags="-s" -o getnovel-arm64; lipo -create -output getnovel-%PREFIX%%SUFFIX% getnovel-amd64 getnovel-arm64; else go build -ldflags="-s" -o "getnovel-%PREFIX%%SUFFIX%"; fi 
+    - if [ "$HOST" = "darwin" ]; then env GOARCH=amd64 go build -ldflags="-s" -o getnovel-amd64; env GOARCH=arm64 go build -ldflags="-s" -o getnovel-arm64; lipo -create -output getnovel-$PREFIX$SUFFIX getnovel-amd64 getnovel-arm64; else go build -ldflags="-s" -o "getnovel-$PREFIX$SUFFIX"; fi 
     - cd ..
 
 # scripts that run after build
 after_build:
-    - mkdir -p "distrib/getnovel-%PREFIX%/preset"
-    - cp "%APPVEYOR_BUILD_FOLDER%/preset/*.*" "distrib/getnovel-%PREFIX%/preset/"
-    - cp "%APPVEYOR_BUILD_FOLDER%/getnovel-%PREFIX%%SUFFIX%" "distrib/getnovel-%PREFIX%/getnovel%SUFFIX%"
+    - mkdir -p "distrib/getnovel-$PREFIX/preset"
+    - cp "$APPVEYOR_BUILD_FOLDER/preset/*" "distrib/getnovel-$PREFIX/preset/"
+    - cp "$APPVEYOR_BUILD_FOLDER/getnovel-$PREFIX$SUFFIX" "distrib/getnovel-$PREFIX/getnovel$SUFFIX"
     - cd distrib
-    - zip -r "getnovel-%PREFIX%.zip" "getnovel-%PREFIX%"
+    - zip -r "getnovel-$PREFIX.zip" "getnovel-$PREFIX"
 
 artifacts:
-    - path: distrib/getnovel-%PREFIX%.zip
+    - path: distrib/getnovel-$PREFIX.zip
       name: getnovel_package
