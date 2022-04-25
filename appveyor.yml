@@ -148,6 +148,10 @@ build_script:
 
 # scripts that run after build
 after_build:
+    - pwd && ls -l
+    - echo $APPVEYOR_BUILD_FOLDER
+    - ls -l $APPVEYOR_BUILD_FOLDER
+    - ls -l $APPVEYOR_BUILD_FOLDER/preset
     - mkdir -p "distrib/getnovel-$PREFIX/preset"
     - cp "$APPVEYOR_BUILD_FOLDER/preset/*" "distrib/getnovel-$PREFIX/preset/"
     - cp "$APPVEYOR_BUILD_FOLDER/getnovel-$PREFIX$SUFFIX" "distrib/getnovel-$PREFIX/getnovel$SUFFIX"
