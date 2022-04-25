@@ -155,5 +155,5 @@ after_build:
     - zip -r -9 "getnovel-$PREFIX.zip" "getnovel-$PREFIX"
 
 artifacts:
-    - path: $APPVEYOR_BUILD_FOLDER/distrib/getnovel-$PREFIX.zip
+    - path: distrib/getnovel-$PREFIX.zip
       name: getnovel_package
