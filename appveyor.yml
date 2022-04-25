@@ -1,4 +1,6 @@
-image: Visual Studio 2019
+image: 
+  - macos
+  - Ubuntu
 
 version: 1.6.3.{build}
 
@@ -7,6 +9,7 @@ branches:
         - master
 
 environment:
+    GOVERSION: 1.18.1
     matrix:
         - GOOS: windows
           GOARCH: amd64
@@ -14,7 +17,7 @@ environment:
           SUFFIX: .exe
         - GOOS: darwin
           GOARCH: amd64
-          PREFIX: darwin-amd64
+          PREFIX: darwin-universal
           SUFFIX: 
         - GOOS: linux
           GOARCH: amd64
@@ -39,26 +42,6 @@ environment:
         - GOOS: solaris
           GOARCH: amd64
           PREFIX: solaris-amd64
-          SUFFIX: 
-        - GOOS: windows
-          GOARCH: 386
-          PREFIX: windows-386
-          SUFFIX: .exe
-        - GOOS: linux
-          GOARCH: 386
-          PREFIX: linux-386
-          SUFFIX: 
-        - GOOS: freebsd
-          GOARCH: 386
-          PREFIX: freebsd-386
-          SUFFIX: 
-        - GOOS: netbsd
-          GOARCH: 386
-          PREFIX: netbsd-386
-          SUFFIX: 
-        - GOOS: openbsd
-          GOARCH: 386
-          PREFIX: openbsd-386
           SUFFIX: 
         - GOOS: linux
           GOARCH: arm
@@ -116,16 +99,22 @@ environment:
           PREFIX: linux-s390x
           SUFFIX: 
 
+matrix:
+  exclude:
+    - image: macos
+      HOST: linux
+    - image: Ubuntu
+      HOST: darwin
+      
 clone_depth: 1
 
 # scripts that run after cloning repository
 install:
-    - set GOVERSION=1.18.1
-    - rmdir c:\go /s /q
-    - appveyor DownloadFile https://storage.googleapis.com/golang/go%GOVERSION%.windows-amd64.msi
-    - msiexec /i go%GOVERSION%.windows-amd64.msi /q
-    - set PATH=C:\Go\bin;%PATH%
-    - set GO111MODULE=on
+    - curl -O -L "https://storage.googleapis.com/golang/go$GOVERSION.$HOST-amd64.tar.gz"
+    - tar xzf "go$GOVERSION.$HOST-amd64.tar.gz"
+    - export GOROOT=$(pwd)/go
+    - export PATH=$(pwd)/go/bin:$PATH
+    - if [ "$HOST" = "darwin" ]; then brew install gnu-sed; export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"; fi
 
 # scripts that run before build
 before_build:
@@ -134,23 +123,17 @@ before_build:
 
 # custom build scripts
 build_script:
-    - go build -ldflags="-s -w" -o "getnovel-%PREFIX%%SUFFIX%"
-    - cd webui && go build -ldflags="-s -w" -o "getnovel-webui%PREFIX%%SUFFIX%"
+    - if [ "$HOST" = "darwin" ]; then env GOARCH=amd64 go build -ldflags="-s" -o getnovel-amd64; env GOARCH=arm64 go build -ldflags="-s" -o getnovel-arm64; lipo -create -output getnovel-%PREFIX%%SUFFIX% getnovel-amd64 getnovel-arm64; else go build -ldflags="-s" -o "getnovel-%PREFIX%%SUFFIX%"; fi 
     - cd ..
 
 # scripts that run after build
 after_build:
-    - mkdir "distrib\getnovel-webui%PREFIX%\templates" "distrib\getnovel-%PREFIX%\preset"
-    - copy "%APPVEYOR_BUILD_FOLDER%\preset\*.*" "distrib\getnovel-%PREFIX%\preset\"
-    - copy "%APPVEYOR_BUILD_FOLDER%\getnovel-%PREFIX%%SUFFIX%" "distrib\getnovel-%PREFIX%\getnovel%SUFFIX%"
-    - copy "%APPVEYOR_BUILD_FOLDER%\webui\templates\*.*" "distrib\getnovel-webui%PREFIX%\templates\"
-    - copy "%APPVEYOR_BUILD_FOLDER%\webui\getnovel-webui%PREFIX%%SUFFIX%" "distrib\getnovel-webui%PREFIX%\"
+    - mkdir "distrib/getnovel-%PREFIX%/preset"
+    - copy "%APPVEYOR_BUILD_FOLDER%/preset/*.*" "distrib/getnovel-%PREFIX%/preset/"
+    - copy "%APPVEYOR_BUILD_FOLDER%/getnovel-%PREFIX%%SUFFIX%" "distrib/getnovel-%PREFIX%/getnovel%SUFFIX%"
     - cd distrib
     - 7z a "getnovel-%PREFIX%.7z" "getnovel-%PREFIX%"
-    - 7z a "getnovel-webui%PREFIX%.7z" "getnovel-webui%PREFIX%"
 
 artifacts:
-    - path: distrib\getnovel-%PREFIX%.7z
+    - path: distrib/getnovel-%PREFIX%.7z
       name: getnovel_package
-    - path: distrib\getnovel-webui%PREFIX%.7z
-      name: getnovel_webui_package
