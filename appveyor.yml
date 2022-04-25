@@ -149,11 +149,11 @@ build_script:
 # scripts that run after build
 after_build:
     - mkdir -p "distrib/getnovel-%PREFIX%/preset"
-    - copy "%APPVEYOR_BUILD_FOLDER%/preset/*.*" "distrib/getnovel-%PREFIX%/preset/"
-    - copy "%APPVEYOR_BUILD_FOLDER%/getnovel-%PREFIX%%SUFFIX%" "distrib/getnovel-%PREFIX%/getnovel%SUFFIX%"
+    - cp "%APPVEYOR_BUILD_FOLDER%/preset/*.*" "distrib/getnovel-%PREFIX%/preset/"
+    - cp "%APPVEYOR_BUILD_FOLDER%/getnovel-%PREFIX%%SUFFIX%" "distrib/getnovel-%PREFIX%/getnovel%SUFFIX%"
     - cd distrib
-    - 7z a "getnovel-%PREFIX%.7z" "getnovel-%PREFIX%"
+    - zip -r "getnovel-%PREFIX%.zip" "getnovel-%PREFIX%"
 
 artifacts:
-    - path: distrib/getnovel-%PREFIX%.7z
+    - path: distrib/getnovel-%PREFIX%.zip
       name: getnovel_package
