@@ -8,17 +8,17 @@
 [![Github All Releases Download Count](https://img.shields.io/github/downloads/missdeer/getnovel/total.svg)](https://github.com/missdeer/getnovel/releases) 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/missdeer/getnovel/master/LICENSE)
 
-## 编译
+## Build
 
 ```bash
 go install github.com/missdeer/getnovel@latest
 ```
 
-## 下载预编译可执行文件
+## Download prebuilt binaries
 
 所有预编译可以执行文件由[Appveyor 服务](https://ci.appveyor.com/project/missdeer/getnovel-6xgd2)编译生成
 
-## 使用方法
+## Usage
 
 1. 首先，在当前目录创建名为fonts的目录，并将你喜欢的字体文件改名为CustomFont.ttf后放入该目录；
 2. 然后，在当前目录执行命令获取小说内容：`getnovel 小说目录网址`，如`getnovel https://www.aszw.org/book/192/192150/`，可以通过命令行参数对程序行为进行设置，比如指定输出文件格式为PDF或epub等等；
@@ -32,7 +32,7 @@ go install github.com/missdeer/getnovel@latest
 * 输出适合在Kindle DXG上看的PDF格式：`getnovel -f pdf -c dxg https://www.aszw.org/book/192/192150/`
 * 输出适合在6寸或7寸Kindle上看的mobi格式：`getnovel -f mobi https://www.aszw.org/book/192/192150/`，之后需要运行`kindlegen`工具，参考上面第3步
 
-## 支持小说网站
+## Supported websites
 
 * 少年文学网: https://www.snwx8.com
 * 燃文小说: http://www.ranwena.net
@@ -41,9 +41,13 @@ go install github.com/missdeer/getnovel@latest
 * 书迷楼: http://www.shumil.com
 * 无图小说: http://www.wutuxs.com
 
-## 注意事项
+## Notice
 
 * 输出为PDF格式时，如果遇到打开PDF文件为空白，原因可能是所使用的自定义字体文件中未包含某些字符却被使用了，可以尝试更换嵌入字体文件为字符集较大的，比如“方正准雅宋GBK”等。
 
-# Number of historical stars
+## To-Do
+
+- [] 支持[阅读](https://github.com/gedoor/legado)最新的书源格式
+
+## Number of historical stars
 ![](https://starchart.cc/missdeer/getnovel.svg)
