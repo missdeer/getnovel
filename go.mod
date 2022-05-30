@@ -6,17 +6,15 @@ require (
 	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/bmaupin/go-epub v0.11.0
 	github.com/gabriel-vasile/mimetype v1.4.0 // indirect
-	github.com/gin-gonic/gin v1.7.7
+	github.com/gin-gonic/gin v1.8.0
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
-	github.com/golang/protobuf v1.3.5 // indirect
 	github.com/google/uuid v1.3.0
 	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/missdeer/golib v1.0.4
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
-	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/mozillazg/go-pinyin v0.19.0
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/phpdave11/gofpdi v1.0.13 // indirect
