@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
-	github.com/bmaupin/go-epub v1.0.0
+	github.com/bmaupin/go-epub v1.0.1
 	github.com/gabriel-vasile/mimetype v1.4.0 // indirect
 	github.com/gin-gonic/gin v1.8.1
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
