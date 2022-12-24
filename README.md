@@ -43,8 +43,8 @@ go install github.com/missdeer/getnovel@latest
 
 ## To-Do
 
-- [] 使用Lua配置小说网站支持
-- [] 支持[阅读](https://github.com/gedoor/legado)最新的书源格式
+- [ ] 使用Lua配置小说网站支持
+- [ ] 支持[阅读](https://github.com/gedoor/legado)最新的书源格式
 
 ## Number of historical stars
 ![](https://starchart.cc/missdeer/getnovel.svg)
