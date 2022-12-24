@@ -34,12 +34,9 @@ go install github.com/missdeer/getnovel@latest
 
 ## Supported websites
 
-* 少年文学网: https://www.snwx8.com
-* 燃文小说: http://www.ranwena.net
 * 笔趣阁系列: http://www.biqugezw.com, http://www.630zw.com, http://www.biquge.lu, http://www.biquge5200.com, http://www.biqudu.com, http://www.biquge.cm, http://www.qu.la, http://www.xxbiquge.com, https://www.biqugev.com
 * 飘天: http://www.ptwxz.com
 * 书迷楼: http://www.shumil.com
-* 无图小说: http://www.wutuxs.com
 
 ## Notice
 
@@ -47,6 +44,7 @@ go install github.com/missdeer/getnovel@latest
 
 ## To-Do
 
+- [] 使用Lua配置小说网站支持
 - [] 支持[阅读](https://github.com/gedoor/legado)最新的书源格式
 
 ## Number of historical stars
