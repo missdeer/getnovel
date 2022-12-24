@@ -6,173 +6,191 @@ import (
 	"io/ioutil"
 	"log"
 	"math"
+	"net/http"
+	"net/url"
 	"os"
 	"sync/atomic"
+	"time"
 
-	"github.com/missdeer/getnovel/ebook"
 	"github.com/google/uuid"
+	"github.com/missdeer/getnovel/ebook"
+	"github.com/missdeer/golib/httputil"
 	"golang.org/x/sync/semaphore"
 )
 
-type contentUtil struct {
-	index   int
-	title   string
-	link    string
-	content string
+type ContentUtil struct {
+	Index   int
+	Title   string
+	LinkURL string
+	Content string
 }
-type downloadUtil struct {
-	downloader   func(string) []byte
-	generator    ebook.IBook
-	tempDir      string
-	currentPage  int32
-	maxPage      int32
-	quit         chan bool
-	content      chan contentUtil
-	buffer       []contentUtil
-	startContent *contentUtil
-	endContent   *contentUtil
-	ctx          context.Context
-	semaphore    *semaphore.Weighted
+type DownloadUtil struct {
+	ContentExtractor func([]byte) []byte
+	Generator        ebook.IBook
+	TempDir          string
+	CurrentPage      int32
+	MaxPage          int32
+	Quit             chan bool
+	Content          chan ContentUtil
+	Buffer           []ContentUtil
+	StartContent     *ContentUtil
+	EndContent       *ContentUtil
+	Ctx              context.Context
+	Semaphore        *semaphore.Weighted
 }
 
-func newDownloadUtil(dl func(string) []byte, generator ebook.IBook) (du *downloadUtil) {
-	du = &downloadUtil{
-		downloader: dl,
-		generator:  generator,
-		quit:       make(chan bool),
-		ctx:        context.TODO(),
-		semaphore:  semaphore.NewWeighted(opts.ParallelCount),
-		content:    make(chan contentUtil),
+func NewDownloadUtil(extractor func([]byte) []byte, generator ebook.IBook) (du *DownloadUtil) {
+	du = &DownloadUtil{
+		ContentExtractor: extractor,
+		Generator:        generator,
+		Quit:             make(chan bool),
+		Ctx:              context.TODO(),
+		Semaphore:        semaphore.NewWeighted(opts.ParallelCount),
+		Content:          make(chan ContentUtil),
 	}
 	if opts.FromChapter != 0 {
-		du.startContent = &contentUtil{index: opts.FromChapter}
+		du.StartContent = &ContentUtil{Index: opts.FromChapter}
 	}
 	if opts.FromTitle != "" {
-		du.startContent = &contentUtil{title: opts.FromTitle, index: math.MaxInt32}
+		du.StartContent = &ContentUtil{Title: opts.FromTitle, Index: math.MaxInt32}
 	}
 	if opts.ToChapter != 0 {
-		du.endContent = &contentUtil{index: opts.ToChapter}
+		du.EndContent = &ContentUtil{Index: opts.ToChapter}
 	}
 	if opts.ToTitle != "" {
-		du.endContent = &contentUtil{title: opts.ToTitle}
+		du.EndContent = &ContentUtil{Title: opts.ToTitle}
 	}
 	var err error
-	du.tempDir, err = ioutil.TempDir("", uuid.New().String())
+	du.TempDir, err = ioutil.TempDir("", uuid.New().String())
 	if err != nil {
 		log.Fatal("creating temporary directory failed", err)
 	}
 	return
 }
 
-func (du *downloadUtil) wait() {
-	<-du.quit
-	os.RemoveAll(du.tempDir)
+func (du *DownloadUtil) Wait() {
+	<-du.Quit
+	os.RemoveAll(du.TempDir)
 }
 
-func (du *downloadUtil) preprocessURL(index int, title string, link string) (returnImmediately bool, reachEnd bool) {
-	atomic.StoreInt32(&du.maxPage, int32(index))
-	if du.startContent != nil {
-		if du.startContent.index == index {
-			du.startContent.title = title
-			du.startContent.link = link
-			atomic.StoreInt32(&du.currentPage, int32(index-1))
+func (du *DownloadUtil) PreprocessURL(index int, title string, link string) (returnImmediately bool, reachEnd bool) {
+	atomic.StoreInt32(&du.MaxPage, int32(index))
+	if du.StartContent != nil {
+		if du.StartContent.Index == index {
+			du.StartContent.Title = title
+			du.StartContent.LinkURL = link
+			atomic.StoreInt32(&du.CurrentPage, int32(index-1))
 		}
-		if du.startContent.title == title {
-			du.startContent.index = index
-			du.startContent.link = link
-			atomic.StoreInt32(&du.currentPage, int32(index-1))
+		if du.StartContent.Title == title {
+			du.StartContent.Index = index
+			du.StartContent.LinkURL = link
+			atomic.StoreInt32(&du.CurrentPage, int32(index-1))
 		}
 
-		if du.startContent.index > index {
+		if du.StartContent.Index > index {
 			return true, false
 		}
 	}
-	if du.endContent != nil {
-		if du.endContent.index == index {
-			du.endContent.title = title
-			du.endContent.link = link
+	if du.EndContent != nil {
+		if du.EndContent.Index == index {
+			du.EndContent.Title = title
+			du.EndContent.LinkURL = link
 		}
-		if du.endContent.title == title {
-			du.endContent.index = index
-			du.endContent.link = link
+		if du.EndContent.Title == title {
+			du.EndContent.Index = index
+			du.EndContent.LinkURL = link
 		}
-		atomic.StoreInt32(&du.maxPage, int32(du.endContent.index))
+		atomic.StoreInt32(&du.MaxPage, int32(du.EndContent.Index))
 
-		if index > du.endContent.index && du.endContent.index != 0 {
+		if index > du.EndContent.Index && du.EndContent.Index != 0 {
 			return true, true
 		}
 	}
 	return false, false
 }
 
-func (du *downloadUtil) addURL(index int, title string, link string) (reachEnd bool) {
-	if r, e := du.preprocessURL(index, title, link); r == true {
+func (du *DownloadUtil) AddURL(index int, title string, link string) (reachEnd bool) {
+	if r, e := du.PreprocessURL(index, title, link); r == true {
 		return e
 	}
 	// semaphore
-	du.semaphore.Acquire(du.ctx, 1)
+	du.Semaphore.Acquire(du.Ctx, 1)
 	go func() {
-		filePath := fmt.Sprintf("%s/%d.txt", du.tempDir, index)
+		filePath := fmt.Sprintf("%s/%d.txt", du.TempDir, index)
 		contentFd, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 		if err != nil {
 			log.Println("opening file", filePath, "for writing failed ", err)
 			return
 		}
-		contentFd.Write(du.downloader(link))
+
+		theURL, _ := url.Parse(link)
+		headers := http.Header{
+			"Referer":                   []string{fmt.Sprintf("%s://%s", theURL.Scheme, theURL.Host)},
+			"User-Agent":                []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"},
+			"Accept":                    []string{"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
+			"Accept-Language":           []string{`en-US,en;q=0.8`},
+			"Upgrade-Insecure-Requests": []string{"1"},
+		}
+		rawPageContent, err := httputil.GetBytes(link, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
+		if err != nil {
+			log.Println("getting chapter content from", link, "failed ", err)
+			return
+		}
+		contentFd.Write(du.ContentExtractor(rawPageContent))
 		contentFd.Close()
 
-		du.content <- contentUtil{
-			index:   index,
-			title:   title,
-			link:    link,
-			content: filePath,
+		du.Content <- ContentUtil{
+			Index:   index,
+			Title:   title,
+			LinkURL: link,
+			Content: filePath,
 		}
-		du.semaphore.Release(1)
+		du.Semaphore.Release(1)
 	}()
 	return false
 }
 
-func (du *downloadUtil) bufferHandler(cu contentUtil) (exit bool) {
-	fmt.Println(cu.title, cu.link)
+func (du *DownloadUtil) BufferHandler(cu ContentUtil) (exit bool) {
+	fmt.Println(cu.Title, cu.LinkURL)
 	// insert into local buffer
-	if len(du.buffer) == 0 || du.buffer[0].index > cu.index {
+	if len(du.Buffer) == 0 || du.Buffer[0].Index > cu.Index {
 		// push front
-		du.buffer = append([]contentUtil{cu}, du.buffer...)
+		du.Buffer = append([]ContentUtil{cu}, du.Buffer...)
 		// check local buffer to pick items to generator
-		for ; len(du.buffer) > 0 && int32(du.buffer[0].index) == atomic.LoadInt32(&du.currentPage)+1; du.buffer = du.buffer[1:] {
-			contentFd, err := os.OpenFile(du.buffer[0].content, os.O_RDONLY, 0644)
+		for ; len(du.Buffer) > 0 && int32(du.Buffer[0].Index) == atomic.LoadInt32(&du.CurrentPage)+1; du.Buffer = du.Buffer[1:] {
+			contentFd, err := os.OpenFile(du.Buffer[0].Content, os.O_RDONLY, 0644)
 			if err != nil {
-				log.Println("opening file ", du.buffer[0].content, " for reading failed ", err)
+				log.Println("opening file ", du.Buffer[0].Content, " for reading failed ", err)
 				continue
 			}
 
 			contentC, err := ioutil.ReadAll(contentFd)
 			contentFd.Close()
 			if err != nil {
-				log.Println("reading file ", du.buffer[0].content, " failed ", err)
+				log.Println("reading file ", du.Buffer[0].Content, " failed ", err)
 				continue
 			}
-			os.Remove(du.buffer[0].content)
+			os.Remove(du.Buffer[0].Content)
 
-			du.generator.AppendContent(du.buffer[0].title, du.buffer[0].link, string(contentC))
-			atomic.AddInt32(&du.currentPage, 1)
+			du.Generator.AppendContent(du.Buffer[0].Title, du.Buffer[0].LinkURL, string(contentC))
+			atomic.AddInt32(&du.CurrentPage, 1)
 		}
 
-		if atomic.LoadInt32(&du.currentPage) == atomic.LoadInt32(&du.maxPage) {
-			du.quit <- true
+		if atomic.LoadInt32(&du.CurrentPage) == atomic.LoadInt32(&du.MaxPage) {
+			du.Quit <- true
 			return true
 		}
 		return false
 	}
-	if du.buffer[len(du.buffer)-1].index < cu.index {
+	if du.Buffer[len(du.Buffer)-1].Index < cu.Index {
 		// push back
-		du.buffer = append(du.buffer, cu)
+		du.Buffer = append(du.Buffer, cu)
 		return false
 	}
-	for i := 0; i < len(du.buffer)-1; i++ {
-		if du.buffer[i].index < cu.index && du.buffer[i+1].index > cu.index {
+	for i := 0; i < len(du.Buffer)-1; i++ {
+		if du.Buffer[i].Index < cu.Index && du.Buffer[i+1].Index > cu.Index {
 			// insert at i+1
-			du.buffer = append(du.buffer[:i+1], append([]contentUtil{cu}, du.buffer[i+1:]...)...)
+			du.Buffer = append(du.Buffer[:i+1], append([]ContentUtil{cu}, du.Buffer[i+1:]...)...)
 			return false
 		}
 	}
@@ -180,12 +198,12 @@ func (du *downloadUtil) bufferHandler(cu contentUtil) (exit bool) {
 	return false
 }
 
-func (du *downloadUtil) process() {
+func (du *DownloadUtil) Process() {
 	go func() {
 		for {
 			select {
-			case cu := <-du.content:
-				if du.bufferHandler(cu) {
+			case cu := <-du.Content:
+				if du.BufferHandler(cu) {
 					return
 				}
 			}

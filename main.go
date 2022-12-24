@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/jessevdk/go-flags"
 	"github.com/missdeer/getnovel/ebook"
@@ -44,37 +45,15 @@ type Options struct {
 	ToTitle            string  `long:"toTitle" description:"to title"`
 }
 
-type tocPattern struct {
-	host            string
-	bookTitle       string
-	bookTitlePos    int
-	item            string
-	articleTitlePos int
-	articleURLPos   int
-	isAbsoluteURL   bool
-}
-
-type pageContentMarker struct {
-	host  string
-	start []byte
-	end   []byte
-}
-
-type novelSiteHandler struct {
-	Title         string
-	MatchPatterns []string
-	Download      func(string, ebook.IBook)
-}
-
 var (
-	novelSiteHandlers []*novelSiteHandler
+	novelSiteHandlers []*NovelSiteHandler
 	opts              Options
 	sha1ver           string // sha1 revision used to build the program
 	buildTime         string // when the executable was built
 )
 
-func registerNovelSiteHandler(h *novelSiteHandler) {
-	novelSiteHandlers = append(novelSiteHandlers, h)
+func registerNovelSiteHandler(handler *NovelSiteHandler) {
+	novelSiteHandlers = append(novelSiteHandlers, handler)
 }
 
 func listCommandHandler() {
@@ -97,10 +76,10 @@ func listCommandHandler() {
 }
 
 func downloadBook(novelURL string, ch chan bool) {
-	for _, h := range novelSiteHandlers {
-		for _, pattern := range h.MatchPatterns {
-			r, _ := regexp.Compile(pattern)
-			if r.MatchString(novelURL) {
+	for _, handler := range novelSiteHandlers {
+		for _, pattern := range handler.MatchPatterns {
+			reg := regexp.MustCompile(pattern)
+			if reg.MatchString(novelURL) {
 				gen := ebook.NewBook(opts.Format)
 				gen.SetFontSize(opts.TitleFontSize, opts.ContentFontSize)
 				gen.SetLineSpacing(opts.LineSpacing)
@@ -111,8 +90,43 @@ func downloadBook(novelURL string, ch chan bool) {
 				gen.SetPageSize(opts.PageWidth, opts.PageHeight)
 				gen.SetFontFile(opts.FontFile)
 				gen.Output(opts.OutputFile)
+				if handler.PreprocessChapterListURL != nil {
+					novelURL = handler.PreprocessChapterListURL(novelURL)
+				}
+				theURL, _ := url.Parse(novelURL)
+				headers := http.Header{
+					"Referer":                   []string{fmt.Sprintf("%s://%s", theURL.Scheme, theURL.Host)},
+					"User-Agent":                []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"},
+					"Accept":                    []string{"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
+					"Accept-Language":           []string{`en-US,en;q=0.8`},
+					"Upgrade-Insecure-Requests": []string{"1"},
+				}
+				rawPageContent, err := httputil.GetBytes(novelURL, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
+				if err != nil {
+					ch <- false
+					return
+				}
+				title, chapters := handler.ExtractChapterList(novelURL, rawPageContent)
+				if len(chapters) == 0 {
+					ch <- false
+					return
+				}
+
 				gen.Info()
-				h.Download(novelURL, gen)
+				gen.Begin()
+
+				gen.SetTitle(title)
+				dlutil := NewDownloadUtil(handler.ExtractChapterContent, gen)
+				dlutil.Process()
+				for _, chapter := range chapters {
+					if dlutil.AddURL(chapter.Index, chapter.Title, chapter.URL) {
+						break
+					}
+				}
+				dlutil.Wait()
+				gen.End()
+
+				//handler.Download(novelURL, gen)
 				fmt.Println("downloaded", novelURL)
 				ch <- true
 				return
@@ -170,6 +184,9 @@ func main() {
 			log.Fatal(err)
 		}
 		ifaces, err := net.Interfaces()
+		if err != nil {
+			log.Fatal(err)
+		}
 		var ips []string
 		for _, i := range ifaces {
 
