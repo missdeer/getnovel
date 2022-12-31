@@ -89,9 +89,19 @@ func extractPtrwxzChapterContent(rawPageContent []byte) (c []byte) {
 func init() {
 	registerNovelSiteHandler(&NovelSiteHandler{
 		Title: `飘天文学`,
-		MatchPatterns: []string{
-			`https://www\.ptwxz\.com/html/[0-9]+/[0-9]+/`,
-			`https://www\.ptwxz\.com/bookinfo/[0-9]+/[0-9]+\.html`,
+		Urls:  []string{`https://www.ptwxz.com/`},
+		CanHandle: func(u string) bool {
+			patterns := []string{
+				`https://www\.ptwxz\.com/html/[0-9]+/[0-9]+/`,
+				`https://www\.ptwxz\.com/bookinfo/[0-9]+/[0-9]+\.html`,
+			}
+			for _, pattern := range patterns {
+				reg := regexp.MustCompile(pattern)
+				if reg.MatchString(u) {
+					return true
+				}
+			}
+			return false
 		},
 		PreprocessChapterListURL: preprocessPtwxzChapterListURL,
 		ExtractChapterList:       extractPtrwxzChapterList,

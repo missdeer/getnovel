@@ -26,7 +26,8 @@ type NovelChapterInfo struct {
 
 type NovelSiteHandler struct {
 	Title                    string
-	MatchPatterns            []string
+	Urls                     []string
+	CanHandle                func(string) bool                                  // (url) -> can handle
 	PreprocessChapterListURL func(string) string                                // (original url) -> final url
 	ExtractChapterList       func(string, []byte) (string, []*NovelChapterInfo) // (url, raw page content) (title, chapters)
 	ExtractChapterContent    func([]byte) []byte                                // (raw page content) -> cleanup content

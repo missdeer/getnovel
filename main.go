@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
@@ -59,78 +58,63 @@ func registerNovelSiteHandler(handler *NovelSiteHandler) {
 func listCommandHandler() {
 	fmt.Println("内建支持小说网站：")
 	for _, h := range novelSiteHandlers {
-		urlMap := make(map[string]struct{})
-		for _, p := range h.MatchPatterns {
-			u := strings.Replace(p, `\`, ``, -1)
-			idxStart := strings.Index(u, `www.`)
-			idxEnd := strings.Index(u[idxStart:], `/`)
-			u = u[:idxStart+idxEnd]
-			urlMap[u] = struct{}{}
-		}
-		var urls []string
-		for u := range urlMap {
-			urls = append(urls, u)
-		}
-		fmt.Println("\t" + h.Title + ": " + strings.Join(urls, ", "))
+		fmt.Println("\t" + h.Title + ": " + strings.Join(h.Urls, ", "))
 	}
 }
 
 func downloadBook(novelURL string, ch chan bool) {
 	for _, handler := range novelSiteHandlers {
-		for _, pattern := range handler.MatchPatterns {
-			reg := regexp.MustCompile(pattern)
-			if reg.MatchString(novelURL) {
-				gen := ebook.NewBook(opts.Format)
-				gen.SetFontSize(opts.TitleFontSize, opts.ContentFontSize)
-				gen.SetLineSpacing(opts.LineSpacing)
-				gen.PagesPerFile(opts.PagesPerFile)
-				gen.ChaptersPerFile(opts.ChaptersPerFile)
-				gen.SetMargins(opts.LeftMargin, opts.TopMargin)
-				gen.SetPageType(opts.PageType)
-				gen.SetPageSize(opts.PageWidth, opts.PageHeight)
-				gen.SetFontFile(opts.FontFile)
-				gen.Output(opts.OutputFile)
-				if handler.PreprocessChapterListURL != nil {
-					novelURL = handler.PreprocessChapterListURL(novelURL)
-				}
-				theURL, _ := url.Parse(novelURL)
-				headers := http.Header{
-					"Referer":                   []string{fmt.Sprintf("%s://%s", theURL.Scheme, theURL.Host)},
-					"User-Agent":                []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"},
-					"Accept":                    []string{"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
-					"Accept-Language":           []string{`en-US,en;q=0.8`},
-					"Upgrade-Insecure-Requests": []string{"1"},
-				}
-				rawPageContent, err := httputil.GetBytes(novelURL, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
-				if err != nil {
-					ch <- false
-					return
-				}
-				title, chapters := handler.ExtractChapterList(novelURL, rawPageContent)
-				if len(chapters) == 0 {
-					ch <- false
-					return
-				}
-
-				gen.Info()
-				gen.Begin()
-
-				gen.SetTitle(title)
-				dlutil := NewDownloadUtil(handler.ExtractChapterContent, gen)
-				dlutil.Process()
-				for _, chapter := range chapters {
-					if dlutil.AddURL(chapter.Index, chapter.Title, chapter.URL) {
-						break
-					}
-				}
-				dlutil.Wait()
-				gen.End()
-
-				//handler.Download(novelURL, gen)
-				fmt.Println("downloaded", novelURL)
-				ch <- true
+		if handler.CanHandle(novelURL) {
+			gen := ebook.NewBook(opts.Format)
+			gen.SetFontSize(opts.TitleFontSize, opts.ContentFontSize)
+			gen.SetLineSpacing(opts.LineSpacing)
+			gen.PagesPerFile(opts.PagesPerFile)
+			gen.ChaptersPerFile(opts.ChaptersPerFile)
+			gen.SetMargins(opts.LeftMargin, opts.TopMargin)
+			gen.SetPageType(opts.PageType)
+			gen.SetPageSize(opts.PageWidth, opts.PageHeight)
+			gen.SetFontFile(opts.FontFile)
+			gen.Output(opts.OutputFile)
+			if handler.PreprocessChapterListURL != nil {
+				novelURL = handler.PreprocessChapterListURL(novelURL)
+			}
+			theURL, _ := url.Parse(novelURL)
+			headers := http.Header{
+				"Referer":                   []string{fmt.Sprintf("%s://%s", theURL.Scheme, theURL.Host)},
+				"User-Agent":                []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"},
+				"Accept":                    []string{"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
+				"Accept-Language":           []string{`en-US,en;q=0.8`},
+				"Upgrade-Insecure-Requests": []string{"1"},
+			}
+			rawPageContent, err := httputil.GetBytes(novelURL, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
+			if err != nil {
+				ch <- false
 				return
 			}
+			title, chapters := handler.ExtractChapterList(novelURL, rawPageContent)
+			if len(chapters) == 0 {
+				ch <- false
+				return
+			}
+
+			gen.Info()
+			gen.Begin()
+
+			gen.SetTitle(title)
+			dlutil := NewDownloadUtil(handler.ExtractChapterContent, gen)
+			dlutil.Process()
+			for _, chapter := range chapters {
+				if dlutil.AddURL(chapter.Index, chapter.Title, chapter.URL) {
+					break
+				}
+			}
+			dlutil.Wait()
+			gen.End()
+
+			//handler.Download(novelURL, gen)
+			fmt.Println("downloaded", novelURL)
+			ch <- true
+			return
 		}
 	}
 
