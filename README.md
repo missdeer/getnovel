@@ -3,7 +3,6 @@
 顾名思义~
 
 [![Appveyor Build status](https://ci.appveyor.com/api/projects/status/jbcqh6a7jgmonaf1?svg=true)](https://ci.appveyor.com/project/missdeer/getnovel-6xgd2)
-[![Travis Build Status](https://secure.travis-ci.org/missdeer/getnovel.png)](https://travis-ci.org/missdeer/getnovel) 
 [![GitHub Releases](https://img.shields.io/github/release/missdeer/getnovel.svg?maxAge=2592000)](https://github.com/missdeer/getnovel/releases) 
 [![Github All Releases Download Count](https://img.shields.io/github/downloads/missdeer/getnovel/total.svg)](https://github.com/missdeer/getnovel/releases) 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/missdeer/getnovel/master/LICENSE)
