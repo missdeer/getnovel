@@ -9,7 +9,7 @@ branches:
         - master
 
 environment:
-    GOVERSION: 1.19.4
+    GOVERSION: 1.20.1
     matrix:
         - GOOS: windows
           GOARCH: amd64
