@@ -15,7 +15,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/missdeer/golib v1.0.4
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
-	github.com/mozillazg/go-pinyin v0.19.0
+	github.com/mozillazg/go-pinyin v0.20.0
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/phpdave11/gofpdi v1.0.13 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
