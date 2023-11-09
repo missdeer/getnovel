@@ -41,6 +41,7 @@ jobs:
       uses: actions/upload-artifact@v1.0.0
       with:
         name: getnovel-darwin-universal
+        path: darwin-universal
      
     - name: Upload artifact getnovel-linux-amd64
       uses: actions/upload-artifact@v1.0.0
