@@ -72,7 +72,7 @@ func parseConfigurations(content []byte, opts *Options) bool {
 }
 
 func readRemotePreset(opts *Options) bool {
-	u := "https://cdn.jsdelivr.net/gh/missdeer/getnovel/preset/" + opts.ConfigFile
+	u := "https://raw.githubusercontent.com/missdeer/getnovel/master/preset/" + opts.ConfigFile
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
