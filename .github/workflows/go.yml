@@ -37,7 +37,7 @@ jobs:
         env GOOS=dragonfly GOARCH=amd64 go build -o dragonfly-amd64/getnovel -ldflags="-s -w" .
         cp -r preset dragonfly-amd64/
       
-    - name: Upload artifact getnovel-darwin-amd64
+    - name: Upload artifact getnovel-darwin-universal
       uses: actions/upload-artifact@v1.0.0
       with:
         name: getnovel-darwin-universal
