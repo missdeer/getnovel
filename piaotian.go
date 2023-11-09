@@ -11,11 +11,11 @@ import (
 )
 
 func preprocessPtwxzChapterListURL(u string) string {
-	reg := regexp.MustCompile(`https://www\.ptwxz\.com/bookinfo/([0-9]+)/([0-9]+)\.html`)
+	reg := regexp.MustCompile(`https://www\.piaotia\.com/bookinfo/([0-9]+)/([0-9]+)\.html`)
 	if reg.MatchString(u) {
 		ss := reg.FindAllStringSubmatch(u, -1)
 		s := ss[0]
-		return fmt.Sprintf("https://www.ptwxz.com/html/%s/%s/", s[1], s[2])
+		return fmt.Sprintf("https://www.piaotia.com/html/%s/%s/", s[1], s[2])
 	}
 	return u
 }
@@ -89,11 +89,11 @@ func extractPtrwxzChapterContent(rawPageContent []byte) (c []byte) {
 func init() {
 	registerNovelSiteHandler(&NovelSiteHandler{
 		Title: `飘天文学`,
-		Urls:  []string{`https://www.ptwxz.com/`},
+		Urls:  []string{`https://www.piaotia.com/`},
 		CanHandle: func(u string) bool {
 			patterns := []string{
-				`https://www\.ptwxz\.com/html/[0-9]+/[0-9]+/`,
-				`https://www\.ptwxz\.com/bookinfo/[0-9]+/[0-9]+\.html`,
+				`https://www\.piaotia\.com/html/[0-9]+/[0-9]+/`,
+				`https://www\.piaotia\.com/bookinfo/[0-9]+/[0-9]+\.html`,
 			}
 			for _, pattern := range patterns {
 				reg := regexp.MustCompile(pattern)
