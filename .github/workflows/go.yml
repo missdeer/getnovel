@@ -1,12 +1,34 @@
 name: Go
 on: [push]
 jobs:
+  Build-on-macOS:
+    runs-on: macos-latest
+    steps:
+    - name: Set up Go 
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.21
+      id: go
+      
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
 
-  build:
-    name: Build
+    - name: Build
+      run: |
+        env GOOS=darwin GOARCH=amd64 go build -o getnovel-amd64 -ldflags="-s -w" .
+        env GOOS=darwin GOARCH=arm64 go build -o getnovel-arm64 -ldflags="-s -w" .
+        mkdir darwin-universal
+        lipo -create -output darwin-universal/getnovel getnovel-amd64 getnovel-arm64
+      
+    - name: Upload artifact getnovel-darwin-amd64
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: getnovel-darwin-universal
+        path: darwin-universal
+        
+  Build-on-Linux:
     runs-on: ubuntu-latest
     steps:
-
     - name: Set up Go 
       uses: actions/setup-go@v3
       with:
@@ -21,8 +43,6 @@ jobs:
         env GOOS=linux GOARCH=amd64 go build -o linux-amd64/getnovel -ldflags="-s -w" .
         env GOOS=linux GOARCH=arm go build -o linux-arm/getnovel -ldflags="-s -w" .
         env GOOS=linux GOARCH=arm64 go build -o linux-arm64/getnovel -ldflags="-s -w" .
-        env GOOS=darwin GOARCH=amd64 go build -o darwin-amd64/getnovel -ldflags="-s -w" .
-        env GOOS=darwin GOARCH=arm64 go build -o darwin-arm64/getnovel -ldflags="-s -w" .
         env GOOS=windows GOARCH=amd64 go build -o windows-amd64/getnovel.exe -ldflags="-s -w" .
         env GOOS=freebsd GOARCH=amd64 go build -o freebsd-amd64/getnovel -ldflags="-s -w" .
         env GOOS=openbsd GOARCH=amd64 go build -o openbsd-amd64/getnovel -ldflags="-s -w" .
@@ -46,18 +66,6 @@ jobs:
       with:
         name: getnovel-linux-arm64
         path: linux-arm64
-
-    - name: Upload artifact getnovel-darwin-amd64
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: getnovel-darwin-amd64
-        path: darwin-amd64
-
-    - name: Upload artifact getnovel-darwin-arm64
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: getnovel-darwin-arm64
-        path: darwin-arm64
 
     - name: Upload artifact getnovel-dragonfly-amd64
       uses: actions/upload-artifact@v1.0.0
