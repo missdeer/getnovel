@@ -83,6 +83,7 @@ jobs:
       uses: actions/upload-artifact@v1.0.0
       with:
         name: getnovel-freebsd-amd64
+        path: freebsd-amd64
 
     - name: Upload artifact getnovel-windows-amd64
       uses: actions/upload-artifact@v1.0.0
