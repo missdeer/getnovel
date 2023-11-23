@@ -20,7 +20,7 @@ import (
 type Options struct {
 	InsecureSkipVerify bool    `long:"insecureSkipVerify" description:"if true, TLS accepts any certificate"`
 	ListenAndServe     string  `long:"listenAndServe" description:"set http listen and serve address, example: :8080"`
-	Format             string  `short:"f" long:"format" description:"set generated file format, candidate values: mobi, epub, pdf"`
+	Format             string  `short:"f" long:"format" description:"set generated file format, candidate values: mobi, epub, pdf, html, txt"`
 	List               bool    `short:"l" long:"list" description:"list supported novel websites"`
 	LeftMargin         float64 `long:"leftMargin" description:"set left margin for PDF format"`
 	TopMargin          float64 `long:"topMargin" description:"set top margin for PDF format"`

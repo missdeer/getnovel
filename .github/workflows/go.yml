@@ -19,23 +19,23 @@ jobs:
         env GOOS=darwin GOARCH=arm64 go build -o getnovel-arm64 -ldflags="-s -w" .
         mkdir darwin-universal
         lipo -create -output darwin-universal/getnovel getnovel-amd64 getnovel-arm64
-        cp -r preset darwin-universal/
+        cp -r pdfpresets darwin-universal/
         env GOOS=linux GOARCH=amd64 go build -o linux-amd64/getnovel -ldflags="-s -w" .
-        cp -r preset linux-amd64/
+        cp -r pdfpresets linux-amd64/
         env GOOS=linux GOARCH=arm go build -o linux-arm/getnovel -ldflags="-s -w" .
-        cp -r preset linux-arm/
+        cp -r pdfpresets linux-arm/
         env GOOS=linux GOARCH=arm64 go build -o linux-arm64/getnovel -ldflags="-s -w" .
-        cp -r preset linux-arm64/
+        cp -r pdfpresets linux-arm64/
         env GOOS=windows GOARCH=amd64 go build -o windows-amd64/getnovel.exe -ldflags="-s -w" .
-        cp -r preset windows-amd64/
+        cp -r pdfpresets windows-amd64/
         env GOOS=freebsd GOARCH=amd64 go build -o freebsd-amd64/getnovel -ldflags="-s -w" .
-        cp -r preset freebsd-amd64/
+        cp -r pdfpresets freebsd-amd64/
         env GOOS=openbsd GOARCH=amd64 go build -o openbsd-amd64/getnovel -ldflags="-s -w" .
-        cp -r preset openbsd-amd64/
+        cp -r pdfpresets openbsd-amd64/
         env GOOS=netbsd GOARCH=amd64 go build -o netbsd-amd64/getnovel -ldflags="-s -w" .
-        cp -r preset netbsd-amd64/
+        cp -r pdfpresets netbsd-amd64/
         env GOOS=dragonfly GOARCH=amd64 go build -o dragonfly-amd64/getnovel -ldflags="-s -w" .
-        cp -r preset dragonfly-amd64/
+        cp -r pdfpresets dragonfly-amd64/
       
     - name: Upload artifact getnovel-darwin-universal
       uses: actions/upload-artifact@v1.0.0

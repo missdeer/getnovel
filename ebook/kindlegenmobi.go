@@ -5,7 +5,6 @@ package ebook
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -398,7 +397,7 @@ func (m *kindlegenMobiBook) writeContentHTML() {
 		log.Println("opening file toc.tmp for reading failed ", err)
 		return
 	}
-	tocC, err := ioutil.ReadAll(tocTmp)
+	tocC, err := io.ReadAll(tocTmp)
 	tocTmp.Close()
 	if err != nil {
 		log.Println("reading file toc.tmp failed ", err)
@@ -410,7 +409,7 @@ func (m *kindlegenMobiBook) writeContentHTML() {
 		log.Println("opening file content.tmp for reading failed ", err)
 		return
 	}
-	contentC, err := ioutil.ReadAll(contentTmp)
+	contentC, err := io.ReadAll(contentTmp)
 	contentTmp.Close()
 	if err != nil {
 		log.Println("reading file content.tmp failed ", err)
@@ -453,7 +452,7 @@ func (m *kindlegenMobiBook) writeTocNCX() {
 		log.Println("opening file nav.tmp for reading failed ", err)
 		return
 	}
-	navC, err := ioutil.ReadAll(navTmp)
+	navC, err := io.ReadAll(navTmp)
 	if err != nil {
 		log.Println("reading file nav.tmp failed ", err)
 		return

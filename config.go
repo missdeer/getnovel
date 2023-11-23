@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -27,7 +27,7 @@ func readLocalBookSource() {
 			continue
 		}
 
-		c, err := ioutil.ReadAll(fd)
+		c, err := io.ReadAll(fd)
 		if err != nil {
 			log.Println("reading book source file ", configFile, " failed ", err)
 			continue
@@ -72,7 +72,7 @@ func parseConfigurations(content []byte, opts *Options) bool {
 }
 
 func readRemotePreset(opts *Options) bool {
-	u := "https://raw.githubusercontent.com/missdeer/getnovel/master/preset/" + opts.ConfigFile
+	u := "https://raw.githubusercontent.com/missdeer/getnovel/master/pdfpresets/" + opts.ConfigFile
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
@@ -91,7 +91,7 @@ func readRemotePreset(opts *Options) bool {
 		return false
 	}
 
-	c, err := ioutil.ReadAll(resp.Body)
+	c, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Println("reading content failed")
 		return false
@@ -103,7 +103,7 @@ func readRemotePreset(opts *Options) bool {
 func readLocalConfigFile(opts *Options) bool {
 	configFile := opts.ConfigFile
 	if b, e := fsutil.FileExists(configFile); e != nil || !b {
-		configFile = filepath.Join("preset", opts.ConfigFile)
+		configFile = filepath.Join("pdfpresets", opts.ConfigFile)
 		if b, e = fsutil.FileExists(configFile); e != nil || !b {
 			log.Println("cannot find configuration file", opts.ConfigFile, "on local file system")
 			return false
@@ -116,7 +116,7 @@ func readLocalConfigFile(opts *Options) bool {
 		return false
 	}
 
-	contentC, err := ioutil.ReadAll(contentFd)
+	contentC, err := io.ReadAll(contentFd)
 	contentFd.Close()
 	if err != nil {
 		log.Println("reading config file", configFile, "failed", err)

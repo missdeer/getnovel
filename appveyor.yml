@@ -149,7 +149,7 @@ build_script:
 # scripts that run after build
 after_build:
     - mkdir -p "$APPVEYOR_BUILD_FOLDER/distrib/getnovel-$PREFIX"
-    - cp -r "$APPVEYOR_BUILD_FOLDER/preset" "$APPVEYOR_BUILD_FOLDER/distrib/getnovel-$PREFIX/"
+    - cp -r "$APPVEYOR_BUILD_FOLDER/pdfpresets" "$APPVEYOR_BUILD_FOLDER/distrib/getnovel-$PREFIX/"
     - cp "$APPVEYOR_BUILD_FOLDER/getnovel-$PREFIX$SUFFIX" "$APPVEYOR_BUILD_FOLDER/distrib/getnovel-$PREFIX/getnovel$SUFFIX"
     - cd $APPVEYOR_BUILD_FOLDER/distrib
     - zip -r -9 "getnovel-$PREFIX.zip" "getnovel-$PREFIX"

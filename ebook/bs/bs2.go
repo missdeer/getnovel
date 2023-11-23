@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/url"
 	"strings"
@@ -73,16 +72,16 @@ func (bs *BookSourceV2) SearchBook(title string) []*Book {
 		charEncoding = strings.ToLower(charEncoding)
 		switch charEncoding {
 		case "gbk":
-			data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), simplifiedchinese.GBK.NewEncoder()))
+			data, _ := io.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), simplifiedchinese.GBK.NewEncoder()))
 			title = string(data)
 		case "gb2312":
-			data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), simplifiedchinese.HZGB2312.NewEncoder()))
+			data, _ := io.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), simplifiedchinese.HZGB2312.NewEncoder()))
 			title = string(data)
 		case "gb18030":
-			data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), simplifiedchinese.GB18030.NewEncoder()))
+			data, _ := io.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), simplifiedchinese.GB18030.NewEncoder()))
 			title = string(data)
 		case "big5", "big-5":
-			data, _ := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), traditionalchinese.Big5.NewEncoder()))
+			data, _ := io.ReadAll(transform.NewReader(bytes.NewReader([]byte(title)), traditionalchinese.Big5.NewEncoder()))
 			title = string(data)
 		}
 	}

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"math"
@@ -164,7 +165,7 @@ func (du *DownloadUtil) BufferHandler(cu ContentUtil) (exit bool) {
 				continue
 			}
 
-			contentC, err := ioutil.ReadAll(contentFd)
+			contentC, err := io.ReadAll(contentFd)
 			contentFd.Close()
 			if err != nil {
 				log.Println("reading file ", du.Buffer[0].Content, " failed ", err)

@@ -2,7 +2,7 @@ package ebook
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"strconv"
@@ -78,7 +78,7 @@ func (m *pdfBook) SetFontFile(file string) {
 		return
 	}
 
-	fontContent, err := ioutil.ReadAll(fontFd)
+	fontContent, err := io.ReadAll(fontFd)
 	fontFd.Close()
 	if err != nil {
 		log.Fatalln("can't read font file", err)
