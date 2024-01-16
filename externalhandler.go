@@ -122,8 +122,8 @@ func init() {
 	handler := newExternalHandler()
 
 	registerNovelSiteHandler(&NovelSiteHandler{
-		Title:                    `飘天文学`,
-		Urls:                     []string{`https://www.piaotia.com/`},
+		Title:                    `外部脚本处理器`,
+		Urls:                     []string{},
 		CanHandle:                handler.canHandleExternalSite,
 		PreprocessChapterListURL: handler.preprocessExternalChapterListURL,
 		ExtractChapterList:       handler.extractExternalChapterList,
