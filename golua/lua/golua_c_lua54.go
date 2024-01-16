@@ -1,4 +1,5 @@
-//+build lua54
+//go:build lua54
+// +build lua54
 
 package lua
 
@@ -124,8 +125,8 @@ import "C"
 
 import "unsafe"
 
-func luaToInteger(s *C.lua_State, n C.int) C.longlong {
-	return C.lua_tointegerx(s, n, nil)
+func luaToInteger(s *C.lua_State, n C.int) C.int {
+	return C.int(C.lua_tointegerx(s, n, nil))
 }
 
 func luaToNumber(s *C.lua_State, n C.int) C.double {
