@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
+	github.com/aarzilli/golua v0.0.0-20210507130708-11106aa57765
 	github.com/bmaupin/go-epub v1.1.0
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-gonic/gin v1.9.1
@@ -27,4 +28,8 @@ require (
 	golang.org/x/sync v0.6.0
 	golang.org/x/text v0.14.0
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
+)
+
+replace (
+  github.com/aarzilli/golua => ./golua
 )
