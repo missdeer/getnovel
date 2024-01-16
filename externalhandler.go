@@ -30,13 +30,11 @@ func newExternalHandler() *ExternalHandler {
 	// traverse ./handler directory, find all .lua files and load them
 	directory := exePath + "/handlers"
 	files, err := os.ReadDir(directory)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, file := range files {
-		if filepath.Ext(file.Name()) == ".lua" {
-			h.l.DoFile(filepath.Join(directory, file.Name()))
+	if err == nil {
+		for _, file := range files {
+			if filepath.Ext(file.Name()) == ".lua" {
+				h.l.DoFile(filepath.Join(directory, file.Name()))
+			}
 		}
 	}
 
