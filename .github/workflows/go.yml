@@ -27,7 +27,7 @@ jobs:
     - name: Build on Unix
       if: matrix.os != 'windows'
       run: |
-        cd golua/lua/${{ matrix.lua-version }}
+        cd golua/lua
         ./buildlua.sh
         cd -
         go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }} .
@@ -41,7 +41,7 @@ jobs:
       if: matrix.os == 'windows'
       shell: msys2 {0}
       run: |
-        cd golua/lua/${{ matrix.lua-version }}
+        cd golua/lua
         env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin ./buildlua.sh
         cd -
         env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }} .
