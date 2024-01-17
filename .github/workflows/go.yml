@@ -26,6 +26,8 @@ jobs:
         mkdir ${{ matrix.os }}-amd64
         cp getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }} ${{ matrix.os }}-amd64/
         cp -r pdfpresets ${{ matrix.os }}-amd64/
+        cp -r handlers ${{ matrix.os }}-amd64/
+        cp -r lua ${{ matrix.os }}-amd64/
       
     - name: Upload artifact getnovel-${{ matrix.os }}-amd64
       uses: actions/upload-artifact@v1.0.0
