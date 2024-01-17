@@ -9,6 +9,7 @@ package lua
 #cgo lua53 LDFLAGS: -L ${SRCDIR}/lua53
 #cgo lua54 CFLAGS: -I ${SRCDIR}/lua54
 #cgo lua54 LDFLAGS: -L ${SRCDIR}/lua54
+#cgo LDFLAGS: -llua
 
 #include <lua.h>
 #include <lualib.h>
