@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/aarzilli/golua/lua"
+	"github.com/missdeer/golib/ic"
 	"gitlab.com/ambrevar/golua/unicode"
 )
 
@@ -13,10 +14,26 @@ type ExternalHandler struct {
 	l *lua.State
 }
 
+func ConvertEncoding(L *lua.State) int {
+	fromEncoding := L.CheckString(1)
+	toEncoding := L.CheckString(2)
+	fromStr := L.CheckString(3)
+	toStr := ic.ConvertString(fromEncoding, toEncoding, fromStr)
+	L.PushString(toStr)
+	return 1
+}
+
 func newExternalHandler() *ExternalHandler {
 	h := &ExternalHandler{}
 	h.l = lua.NewState()
 	h.l.OpenLibs()
+
+	// add string.convert(from, to, str) method
+	h.l.GetGlobal("string")
+	h.l.PushGoFunction(ConvertEncoding)
+	h.l.SetField(-2, "convert")
+	h.l.Pop(1)
+
 	unicode.GoLuaReplaceFuncs(h.l)
 
 	// get current executable path
