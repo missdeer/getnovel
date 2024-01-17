@@ -37,15 +37,25 @@ jobs:
         cp -r handlers ${{ matrix.os }}-amd64/
         cp -r lua ${{ matrix.os }}-amd64/
 
-    - name: Build on Windows
+    - name: Build Lua on Windows
       if: matrix.os == 'windows'
       shell: msys2 {0}
       run: |
-        alias make=/mingw64/bin/mingw32-make
-        cd golua/lua
-        env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin ./buildlua.sh
+        cd golua/lua/${{ matrix.lua-version }}
+        env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin mingw32-make mingw
         cd -
-        env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }} .
+          
+    - name: Build GetNovel on Windows
+      if: matrix.os == 'windows'
+      shell: cmd
+      run: |
+        set PATH=%PATH%;D:\a\_temp\setup-msys2\mingw64\bin
+        go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }} .
+          
+    - name: copy files on Windows
+      if: matrix.os == 'windows'
+      shell: msys2 {0}
+      run: |
         mkdir ${{ matrix.os }}-amd64
         cp getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }} ${{ matrix.os }}-amd64/
         cp -r pdfpresets ${{ matrix.os }}-amd64/
