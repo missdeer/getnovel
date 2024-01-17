@@ -1,8 +1,12 @@
 name: Go
 on: [push]
 jobs:
-  Build-on-macOS:
-    runs-on: macos-latest
+  Build-on-unix:
+    strategy:
+      matrix:
+        lua-version: [lua51, lua52, lua53, lua54]
+        os: [macos, ubuntu]
+    runs-on: ${{ matrix.os }}-latest
     steps:
     - name: Set up Go 
       uses: actions/setup-go@v3
@@ -15,79 +19,17 @@ jobs:
 
     - name: Build
       run: |
-        env GOOS=darwin GOARCH=amd64 go build -o getnovel-amd64 -ldflags="-s -w" .
-        env GOOS=darwin GOARCH=arm64 go build -o getnovel-arm64 -ldflags="-s -w" .
-        mkdir darwin-universal
-        lipo -create -output darwin-universal/getnovel getnovel-amd64 getnovel-arm64
-        cp -r pdfpresets darwin-universal/
-        env GOOS=linux GOARCH=amd64 go build -o linux-amd64/getnovel -ldflags="-s -w" .
-        cp -r pdfpresets linux-amd64/
-        env GOOS=linux GOARCH=arm go build -o linux-arm/getnovel -ldflags="-s -w" .
-        cp -r pdfpresets linux-arm/
-        env GOOS=linux GOARCH=arm64 go build -o linux-arm64/getnovel -ldflags="-s -w" .
-        cp -r pdfpresets linux-arm64/
-        env GOOS=windows GOARCH=amd64 go build -o windows-amd64/getnovel.exe -ldflags="-s -w" .
-        cp -r pdfpresets windows-amd64/
-        env GOOS=freebsd GOARCH=amd64 go build -o freebsd-amd64/getnovel -ldflags="-s -w" .
-        cp -r pdfpresets freebsd-amd64/
-        env GOOS=openbsd GOARCH=amd64 go build -o openbsd-amd64/getnovel -ldflags="-s -w" .
-        cp -r pdfpresets openbsd-amd64/
-        env GOOS=netbsd GOARCH=amd64 go build -o netbsd-amd64/getnovel -ldflags="-s -w" .
-        cp -r pdfpresets netbsd-amd64/
-        env GOOS=dragonfly GOARCH=amd64 go build -o dragonfly-amd64/getnovel -ldflags="-s -w" .
-        cp -r pdfpresets dragonfly-amd64/
+        cd golua/lua
+        ./buildlua.sh
+        cd -
+        go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }} .
+        mkdir ${{ matrix.os }}-amd64
+        cp getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }} ${{ matrix.os }}-amd64/
+        cp -r pdfpresets ${{ matrix.os }}-amd64/
       
-    - name: Upload artifact getnovel-darwin-universal
+    - name: Upload artifact getnovel-${{ matrix.os }}-amd64
       uses: actions/upload-artifact@v1.0.0
       with:
-        name: getnovel-darwin-universal
-        path: darwin-universal
+        name: getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }}
+        path: ${{ matrix.os }}-amd64
      
-    - name: Upload artifact getnovel-linux-amd64
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: getnovel-linux-amd64
-        path: linux-amd64
-
-    - name: Upload artifact getnovel-linux-arm
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: getnovel-linux-arm
-        path: linux-arm
-
-    - name: Upload artifact getnovel-linux-arm64
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: getnovel-linux-arm64
-        path: linux-arm64
-
-    - name: Upload artifact getnovel-dragonfly-amd64
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: getnovel-dragonfly-amd64
-        path: dragonfly-amd64
-
-    - name: Upload artifact getnovel-openbsd-amd64
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: getnovel-openbsd-amd64
-        path: openbsd-amd64
-
-    - name: Upload artifact getnovel-netbsd-amd64
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: getnovel-netbsd-amd64
-        path: netbsd-amd64
-
-    - name: Upload artifact getnovel-freebsd-amd64
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: getnovel-freebsd-amd64
-        path: freebsd-amd64
-
-    - name: Upload artifact getnovel-windows-amd64
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: getnovel-windows-amd64
-        path: windows-amd64
-
