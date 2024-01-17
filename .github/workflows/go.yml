@@ -49,7 +49,7 @@ jobs:
       if: matrix.os == 'windows'
       shell: cmd
       run: |
-        set PATH=%PATH%;D:\a\_temp\setup-msys2\mingw64\bin
+        set PATH=D:\a\_temp\setup-msys2\mingw64\bin;%PATH%
         go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }} .
           
     - name: copy files on Windows
