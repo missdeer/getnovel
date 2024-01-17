@@ -1,11 +1,11 @@
 name: Go
 on: [push]
 jobs:
-  Build-on-unix:
+  Build:
     strategy:
       matrix:
         lua-version: [lua51, lua52, lua53, lua54]
-        os: [macos, ubuntu]
+        os: [macos, ubuntu, windows]
     runs-on: ${{ matrix.os }}-latest
     steps:
     - name: Set up Go 
@@ -13,16 +13,38 @@ jobs:
       with:
         go-version: 1.21
       id: go
-      
+    
+    - uses: msys2/setup-msys2@v2
+      if: matrix.os == 'windows'
+      with:
+        update: true
+        msystem: MINGW64
+        install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make
+
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
-    - name: Build
+    - name: Build on Unix
+      if: matrix.os != 'windows'
       run: |
-        cd golua/lua
-        ./buildlua.sh
+        cd golua/lua/${{ matrix.lua-version }}
+        make mingw
         cd -
         go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }} .
+        mkdir ${{ matrix.os }}-amd64
+        cp getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }} ${{ matrix.os }}-amd64/
+        cp -r pdfpresets ${{ matrix.os }}-amd64/
+        cp -r handlers ${{ matrix.os }}-amd64/
+        cp -r lua ${{ matrix.os }}-amd64/
+
+    - name: Build on Windows
+      if: matrix.os == 'windows'
+      shell: msys2 {0}
+      run: |
+        cd golua/lua/${{ matrix.lua-version }}
+        env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin make mingw
+        cd -
+        env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }} .
         mkdir ${{ matrix.os }}-amd64
         cp getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }} ${{ matrix.os }}-amd64/
         cp -r pdfpresets ${{ matrix.os }}-amd64/
