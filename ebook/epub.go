@@ -124,7 +124,7 @@ func (m *epubBook) SetFontSize(titleFontSize int, contentFontSize int) {
 // Begin prepare book environment
 func (m *epubBook) Begin() {
 	m.e = epub.NewEpub(m.title)
-	m.e.SetAuthor(`GetNovel用户制作成epub，并非小说原作者`)
+	m.e.SetAuthor(`GetNovel用户制作成epub，并非一定是作品原作者`)
 	m.e.SetTitle(m.title)
 	if m.fontFile != "" {
 		f, err := m.e.AddFont(m.fontFile, "")

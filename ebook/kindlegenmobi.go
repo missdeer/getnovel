@@ -122,7 +122,7 @@ var (
 	<meta name="dtb:maxPageNumber" content="0" />
 	</head>
 	<docTitle><text>%s</text></docTitle>
-	<docAuthor><text>类库大魔王</text></docAuthor>
+	<docAuthor><text>GetNovel用户</text></docAuthor>
 	<navMap>
 		<navPoint class="book">
 			<navLabel><text>%s</text></navLabel>
@@ -346,7 +346,7 @@ func (m *kindlegenMobiBook) SetTitle(title string) {
 	for len(t) > 0 {
 		r, size := utf8.DecodeRuneInString(t)
 		if size == 1 {
-			if isCJK == true {
+			if isCJK {
 				isCJK = false
 				finalName += "-"
 			}
