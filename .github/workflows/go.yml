@@ -50,7 +50,7 @@ jobs:
       shell: cmd
       run: |
         set PATH=D:\a\_temp\msys64\mingw64\bin;%PATH%
-        go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }} .
+        go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }}.exe .
           
     - name: copy files on Windows
       if: matrix.os == 'windows'
