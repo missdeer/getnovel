@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/aarzilli/golua/lua"
+	"gitlab.com/ambrevar/golua/unicode"
 )
 
 type ExternalHandler struct {
@@ -16,6 +17,7 @@ func newExternalHandler() *ExternalHandler {
 	h := &ExternalHandler{}
 	h.l = lua.NewState()
 	h.l.OpenLibs()
+	unicode.GoLuaReplaceFuncs(h.l)
 
 	// get current executable path
 	exePath, err := os.Executable()
