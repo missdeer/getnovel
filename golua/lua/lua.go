@@ -12,6 +12,7 @@ package lua
 #cgo lua54 CFLAGS: -I ${SRCDIR}/lua54
 
 #cgo windows LDFLAGS: -L${SRCDIR} -lmingwex -lmingw32
+#cgo linux LDFLAGS: -lm
 
 #include <lua.h>
 #include <stdlib.h>
