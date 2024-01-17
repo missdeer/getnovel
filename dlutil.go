@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
@@ -62,7 +61,7 @@ func NewDownloadUtil(extractor func([]byte) []byte, generator ebook.IBook) (du *
 		du.EndContent = &ContentUtil{Title: opts.ToTitle}
 	}
 	var err error
-	du.TempDir, err = ioutil.TempDir("", uuid.New().String())
+	du.TempDir, err = os.MkdirTemp("", uuid.New().String())
 	if err != nil {
 		log.Fatal("creating temporary directory failed", err)
 	}

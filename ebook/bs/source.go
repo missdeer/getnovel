@@ -2,9 +2,9 @@ package bs
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"sort"
 	"strings"
 	"time"
@@ -219,7 +219,7 @@ func CollectBookSources(bss2 []BookSourceV2) {
 }
 
 // ReadBookSourceFromBytes book source is stored as bytes, read and parse it
-func ReadBookSourceFromBytes(c []byte)(bss2 []BookSourceV2) {
+func ReadBookSourceFromBytes(c []byte) (bss2 []BookSourceV2) {
 	e := json.Unmarshal(c, &bss2)
 	if e != nil || len(bss2) == 0 || bss2[0].RuleChapterList == "" {
 		// try v3
@@ -254,7 +254,7 @@ func ReadBookSourceFromBytes(c []byte)(bss2 []BookSourceV2) {
 
 // ReadBookSourceFromLocalFileSystem book source is stored in local file, read and parse it
 func ReadBookSourceFromLocalFileSystem(fileName string) (bss2 []BookSourceV2) {
-	c, e := ioutil.ReadFile(fileName)
+	c, e := os.ReadFile(fileName)
 
 	if e != nil {
 		log.Println(e)
