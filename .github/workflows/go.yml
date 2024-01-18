@@ -84,12 +84,20 @@ jobs:
         name: getnovel-${{ matrix.os }}-${{ matrix.lua-version }}
         path: ${{ matrix.os }}-amd64
  
-    - name: upload getnovel Release
+    - name: Pack release
+      if: startsWith(github.event.ref, 'refs/tags/')
+      uses: vimtor/action-zip@v1.1
+      with:
+        files: ${{ matrix.os }}-amd64/ 
+        recursive: true
+        dest: getnovel-${{ matrix.os }}-${{ matrix.lua-version }}.zip
+
+    - name: upload Release
+      if: startsWith(github.event.ref, 'refs/tags/')
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GH_TOKEN }}
-        file: ${{ matrix.os }}-amd64
-        asset_name: getnovel-${{ matrix.os }}-${{ matrix.lua-version }}
+        file: getnovel-${{ matrix.os }}-${{ matrix.lua-version }}.zip
+        asset_name: getnovel-${{ matrix.os }}-${{ matrix.lua-version }}.zip
         tag: ${{ github.ref }}
-        release_name: ${{ github.ref_name }}
         overwrite: true
