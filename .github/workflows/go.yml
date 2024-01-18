@@ -30,7 +30,23 @@ jobs:
         cd golua/lua
         ./buildlua.sh
         cd -
+
+    - name: Build on Unix
+      if: matrix.os != 'macos' && matrix.os != 'windows'
+      run: |
         go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel .
+        mkdir ${{ matrix.os }}-amd64
+        cp getnovel ${{ matrix.os }}-amd64/
+        cp -r pdfpresets ${{ matrix.os }}-amd64/
+        cp -r handlers ${{ matrix.os }}-amd64/
+        cp -r lua ${{ matrix.os }}-amd64/
+
+    - name: Build on macOS
+      if: matrix.os == 'macos'
+      run: |
+        env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-amd64 .
+        env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-arm64 .
+        lipo -create -output getnovel getnovel-amd64 getnovel-arm64
         mkdir ${{ matrix.os }}-amd64
         cp getnovel ${{ matrix.os }}-amd64/
         cp -r pdfpresets ${{ matrix.os }}-amd64/
@@ -65,7 +81,7 @@ jobs:
     - name: Upload artifact getnovel-${{ matrix.os }}-amd64
       uses: actions/upload-artifact@v1.0.0
       with:
-        name: getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }}
+        name: getnovel-${{ matrix.os }}-${{ matrix.lua-version }}
         path: ${{ matrix.os }}-amd64
  
     - name: upload getnovel Release
@@ -73,6 +89,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GH_TOKEN }}
         file: ${{ matrix.os }}-amd64
-        asset_name: getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }}
+        asset_name: getnovel-${{ matrix.os }}-${{ matrix.lua-version }}
         tag: ${{ github.ref }}
+        release_name: ${{ github.ref_name }}
         overwrite: true
