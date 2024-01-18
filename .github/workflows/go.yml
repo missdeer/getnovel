@@ -67,4 +67,12 @@ jobs:
       with:
         name: getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }}
         path: ${{ matrix.os }}-amd64
-     
+ 
+    - name: upload getnovel Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GH_TOKEN }}
+        file: ${{ matrix.os }}-amd64
+        asset_name: getnovel-${{ matrix.os }}-amd64-${{ matrix.lua-version }}
+        tag: ${{ github.ref }}
+        overwrite: true
