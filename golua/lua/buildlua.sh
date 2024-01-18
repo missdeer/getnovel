@@ -27,6 +27,10 @@ find . -name 'lua*' -type d | while read dir; do
 	echo $dir $PLAT
 	cd $dir
 	make clean
-	make $PLAT -j $CoreCount
+	if [ "$OS" == "Darwin" ]; then
+		make MYCFLAGS="-arch x86_64 -arch arm64" MYLDFLAGS="-arch x86_64 -arch arm64" $PLAT -j $CoreCount
+	else
+		make $PLAT -j $CoreCount
+	fi
 	cd ..
 done
