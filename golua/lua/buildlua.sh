@@ -49,6 +49,6 @@ if [ "$OS" == "Darwin" ]; then
     lipo -create -output libluajit.a libluajit-arm64.a libluajit-amd64.a
 else
 	make -j $CoreCount
-    mv src/libluajit.a ./
+    mv src/*.a ./libluajit.a
 fi
 cd ..
