@@ -6,13 +6,6 @@
 package lua
 
 /*
-#cgo !lua52,!lua53,!lua54 CFLAGS: -I ${SRCDIR}/lua51
-#cgo lua52 CFLAGS: -I ${SRCDIR}/lua52
-#cgo lua53 CFLAGS: -I ${SRCDIR}/lua53
-#cgo lua54 CFLAGS: -I ${SRCDIR}/lua54
-
-#cgo windows LDFLAGS: -L${SRCDIR} -lmingwex -lmingw32
-#cgo linux LDFLAGS: -lm
 
 #include <lua.h>
 #include <stdlib.h>
@@ -67,7 +60,7 @@ func (L *State) getFreeIndex() (index uint, ok bool) {
 	return 0, false
 }
 
-//returns the registered function id
+// returns the registered function id
 func (L *State) register(f interface{}) uint {
 	//fmt.Printf("Registering %v\n")
 	index, ok := L.getFreeIndex()
@@ -119,14 +112,14 @@ func (L *State) PushGoClosure(f LuaGoFunction) {
 //
 // The code:
 //
-// 	L.LGetMetaTable(tableName)
-// 	L.SetMetaMethod(methodName, function)
+//	L.LGetMetaTable(tableName)
+//	L.SetMetaMethod(methodName, function)
 //
 // is the logical equivalent of:
 //
-// 	L.LGetMetaTable(tableName)
-// 	L.PushGoFunction(function)
-// 	L.SetField(-2, methodName)
+//	L.LGetMetaTable(tableName)
+//	L.PushGoFunction(function)
+//	L.SetField(-2, methodName)
 //
 // except this wouldn't work because pushing a go function results in user data not a cfunction
 func (L *State) SetMetaMethod(methodName string, f LuaGoFunction) {
