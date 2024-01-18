@@ -35,20 +35,20 @@ find . -name 'lua*' -type d | while read dir; do
 	cd ..
 done
 
-if [ ! -d luajit ]; then 
-    git clone --depth 1 https://github.com/LuaJIT/LuaJIT.git luajit
+if [ ! -d luajit ]; then
+	git clone --depth 1 https://github.com/LuaJIT/LuaJIT.git luajit
 fi
 cd luajit
 if [ "$OS" == "Darwin" ]; then
 	env MACOSX_DEPLOYMENT_TARGET=12.0 make clean
 	env MACOSX_DEPLOYMENT_TARGET=12.0 CFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" make -j $CoreCount
-    mv src/libluajit.a ./libluajit-amd64.a
+	mv src/libluajit.a ./libluajit-amd64.a
 	env MACOSX_DEPLOYMENT_TARGET=12.0 make clean
 	env MACOSX_DEPLOYMENT_TARGET=12.0 CFLAGS="-arch arm64" LDFLAGS="-arch arm64" make -j $CoreCount
-    mv src/libluajit.a ./libluajit-arm64.a
-    lipo -create -output libluajit.a libluajit-arm64.a libluajit-amd64.a
+	mv src/libluajit.a ./libluajit-arm64.a
+	lipo -create -output libluajit.a libluajit-arm64.a libluajit-amd64.a
 else
 	make -j $CoreCount
-    mv src/*.a ./libluajit.a
+	mv src/*.a ./libluajit.a
 fi
 cd ..
