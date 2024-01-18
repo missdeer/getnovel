@@ -19,7 +19,7 @@ jobs:
       with:
         update: true
         msystem: MINGW64
-        install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make make
+        install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make make curl unzip
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
@@ -47,8 +47,11 @@ jobs:
         env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-amd64 .
         env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-arm64 .
         lipo -create -output getnovel getnovel-amd64 getnovel-arm64
+        curl -sSL -o kindlegen.zip https://github.com/ystyle/kaf-cli/releases/download/kindlegen/KindleGen_Mac_64bit_v2_9.zip
+        unzip kindlegen.zip
         mkdir ${{ matrix.os }}-amd64
         cp getnovel ${{ matrix.os }}-amd64/
+        cp kindlegen ${{ matrix.os }}-amd64/
         cp -r pdfpresets ${{ matrix.os }}-amd64/
         cp -r handlers ${{ matrix.os }}-amd64/
         cp -r lua ${{ matrix.os }}-amd64/
@@ -72,8 +75,11 @@ jobs:
       if: matrix.os == 'windows'
       shell: msys2 {0}
       run: |
+        curl -sSL -o kindlegen.zip https://github.com/ystyle/kaf-cli/releases/download/kindlegen/kindlegen_win32_v2_9.zip
+        unzip kindlegen.zip
         mkdir ${{ matrix.os }}-amd64
         cp getnovel.exe ${{ matrix.os }}-amd64/
+        cp kindlegen.exe ${{ matrix.os }}-amd64/
         cp -r pdfpresets ${{ matrix.os }}-amd64/
         cp -r handlers ${{ matrix.os }}-amd64/
         cp -r lua ${{ matrix.os }}-amd64/
