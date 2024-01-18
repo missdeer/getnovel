@@ -19,12 +19,12 @@ jobs:
       with:
         update: true
         msystem: MINGW64
-        install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make
+        install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make make
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
-    - name: Build on Unix
+    - name: Build Lua on Unix
       if: matrix.os != 'windows'
       run: |
         cd golua/lua
@@ -58,7 +58,7 @@ jobs:
       shell: msys2 {0}
       run: |
         cd golua/lua/${{ matrix.lua-version }}
-        env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin mingw32-make mingw
+        env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin make mingw
         cd -
           
     - name: Build GetNovel on Windows
