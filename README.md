@@ -39,7 +39,7 @@ https://github.com/missdeer/getnovel/releases
 ## 内建支持网站
 
 * 飘天: https://www.piaotia.com
-* UU看书: https://www.uukanshu.com
+* UU看书: https://www.uukanshu.net
 
 ## 注意
 

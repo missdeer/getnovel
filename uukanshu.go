@@ -99,9 +99,9 @@ func extractUukanshuChapterContent(rawPageContent []byte) (c []byte) {
 func init() {
 	registerNovelSiteHandler(&NovelSiteHandler{
 		Title: `UU看书`,
-		Urls:  []string{`https://www.uukanshu.com/`},
+		Urls:  []string{`https://www.uukanshu.net/`},
 		CanHandle: func(u string) bool {
-			reg := regexp.MustCompile(`https://www\.uukanshu\.com/b/[0-9]+/`)
+			reg := regexp.MustCompile(`https://www\.uukanshu\.net/b/[0-9]+/`)
 			return reg.MatchString(u)
 		},
 		ExtractChapterList:    extractUukanshuChapterList,
