@@ -5,17 +5,7 @@ jobs:
     strategy:
       matrix:
         lua-version: [lua51, lua52, lua53, lua54]
-        include:
-        - os: ubuntu
-          shell: bash
-          executable: getnovel
-        - os: macos
-          shell: bash
-          executable: getnovel
-        - os: windows
-          shell: "msys {0}"
-          executable: getnovel.exe
-
+        os: [macos, ubuntu, windows]
     runs-on: ${{ matrix.os }}-latest
     steps:
     - name: Set up Go 
@@ -34,37 +24,56 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
-    - name: Build Lua
-      shell: ${{ matrix.shell }}
+    - name: Build Lua on Unix
+      if: matrix.os != 'windows'
       run: |
         cd golua/lua
-        env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin ./buildlua.sh
+        ./buildlua.sh
         cd -
 
-    - name: Build GetNovel on Unix
-      if: matrix.os == 'ubuntu'
+    - name: Build on Unix
+      if: matrix.os != 'macos' && matrix.os != 'windows'
       run: |
-        go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o ${{ matrix.executable }} .
+        go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel .
+        mkdir ${{ matrix.os }}-amd64
+        cp getnovel ${{ matrix.os }}-amd64/
+        cp -r pdfpresets ${{ matrix.os }}-amd64/
+        cp -r handlers ${{ matrix.os }}-amd64/
+        cp -r lua ${{ matrix.os }}-amd64/
 
-    - name: Build GetNovel on macOS
+    - name: Build on macOS
       if: matrix.os == 'macos'
       run: |
         env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-amd64 .
         env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-arm64 .
-        lipo -create -output ${{ matrix.executable }} getnovel-amd64 getnovel-arm64
+        lipo -create -output getnovel getnovel-amd64 getnovel-arm64
+        mkdir ${{ matrix.os }}-amd64
+        cp getnovel ${{ matrix.os }}-amd64/
+        cp -r pdfpresets ${{ matrix.os }}-amd64/
+        cp -r handlers ${{ matrix.os }}-amd64/
+        cp -r lua ${{ matrix.os }}-amd64/
+
+    - name: Build Lua on Windows
+      if: matrix.os == 'windows'
+      shell: msys2 {0}
+      run: |
+        cd golua/lua/${{ matrix.lua-version }}
+        env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin make mingw
+        cd -
           
     - name: Build GetNovel on Windows
       if: matrix.os == 'windows'
       shell: cmd
       run: |
         set PATH=D:\a\_temp\msys64\mingw64\bin;%PATH%
-        go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o ${{ matrix.executable }} .
+        go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel.exe .
           
-    - name: copy files
-      shell: ${{ matrix.shell }}
+    - name: copy files on Windows
+      if: matrix.os == 'windows'
+      shell: msys2 {0}
       run: |
         mkdir ${{ matrix.os }}-amd64
-        cp ${{ matrix.executable }} ${{ matrix.os }}-amd64/
+        cp getnovel.exe ${{ matrix.os }}-amd64/
         cp -r pdfpresets ${{ matrix.os }}-amd64/
         cp -r handlers ${{ matrix.os }}-amd64/
         cp -r lua ${{ matrix.os }}-amd64/
