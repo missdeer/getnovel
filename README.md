@@ -8,6 +8,8 @@
 
 ## 编译
 
+以macOS或Linux平台为例：
+
 ```bash
 git clone https://github.com/missdeer/getnovel.git
 cd getnovel/golua/lua
@@ -16,7 +18,9 @@ cd ../..
 go build -ldflags="-s -w" -tags lua51
 ```
 
-`tags`可选值为`lua51`，`lua52`，`lua53`，`lua54`，表示集成哪个版本的Lua解释器。
+`tags`可选值为`lua51`，`lua52`，`lua53`，`lua54`，`luajit`表示集成哪个版本的Lua解释器。
+
+Windows平台编译需要MinGW。
 
 ## 下载
 
