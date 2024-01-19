@@ -5,6 +5,7 @@ type IBook interface {
 	Info()
 	Begin()
 	End()
+	SetAuthor(string)
 	SetTitle(string)
 	AppendContent(string, string, string)
 	SetMargins(float64, float64)
@@ -17,6 +18,10 @@ type IBook interface {
 	ChaptersPerFile(int)
 	Output(string)
 }
+
+const (
+	creator = `GetNovel，仅限个人研究学习，对其造成的所有后果，软件/库作者不承担任何责任`
+)
 
 // NewBook create an instance and return as an interface
 func NewBook(bookType string) IBook {

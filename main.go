@@ -42,6 +42,7 @@ type Options struct {
 	FromTitle          string  `long:"fromTitle" description:"from title"`
 	ToChapter          int     `long:"toChapter" description:"to chapter"`
 	ToTitle            string  `long:"toTitle" description:"to title"`
+	Author             string  `long:"author" description:"author"`
 }
 
 var (
@@ -101,6 +102,7 @@ func downloadBook(novelURL string, ch chan bool) {
 			gen.Begin()
 
 			gen.SetTitle(title)
+			gen.SetAuthor(opts.Author)
 			dlutil := NewDownloadUtil(handler.ExtractChapterContent, gen)
 			dlutil.Process()
 			for _, chapter := range chapters {
@@ -147,6 +149,7 @@ func main() {
 		RetryCount:         3,
 		Timeout:            60,
 		ParallelCount:      10,
+		Author:             "GetNovel用户",
 	}
 
 	args, err := flags.Parse(&opts)

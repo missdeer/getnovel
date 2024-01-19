@@ -21,6 +21,7 @@ import (
 // kindlegenMobiBook generate files that used to make a mobi file by kindlegen
 type kindlegenMobiBook struct {
 	title        string
+	author       string
 	uid          int64
 	count        int
 	output       string
@@ -122,7 +123,7 @@ var (
 	<meta name="dtb:maxPageNumber" content="0" />
 	</head>
 	<docTitle><text>%s</text></docTitle>
-	<docAuthor><text>GetNovel用户</text></docAuthor>
+	<docAuthor><text>%s</text></docAuthor>
 	<navMap>
 		<navPoint class="book">
 			<navLabel><text>%s</text></navLabel>
@@ -139,8 +140,8 @@ var (
 		<dc:title>%s</dc:title>
 		<dc:language>zh-CN</dc:language>
 		<dc:identifier id="uid">%d%s</dc:identifier>
-		<dc:creator>GetNovel用户制作</dc:creator>
-		<dc:publisher>GetNovel，仅限个人研究学习，对其造成的任何后果，软件作者不负任何责任</dc:publisher>
+		<dc:creator>%s</dc:creator>
+		<dc:publisher>%s</dc:publisher>
 		<dc:subject>%s</dc:subject>
 		<dc:date>%s</dc:date>
 		<dc:description></dc:description>
@@ -336,6 +337,11 @@ func (m *kindlegenMobiBook) AppendContent(articleTitle, articleURL, articleConte
 	m.count++
 }
 
+// SetAuthor set book author
+func (m *kindlegenMobiBook) SetAuthor(author string) {
+	m.author = author
+}
+
 // SetTitle set book title
 func (m *kindlegenMobiBook) SetTitle(title string) {
 	m.title = title
@@ -434,7 +440,7 @@ func (m *kindlegenMobiBook) writeContentOPF() {
 		return
 	}
 	contentOPF.WriteString(fmt.Sprintf(contentOPFTemplate,
-		m.title, m.uid, time.Now().String(), m.title, time.Now().String()))
+		m.title, m.uid, time.Now().String(), m.author, creator, m.title, time.Now().String()))
 	contentOPF.Close()
 }
 
@@ -457,7 +463,7 @@ func (m *kindlegenMobiBook) writeTocNCX() {
 		log.Println("reading file nav.tmp failed ", err)
 		return
 	}
-	tocNCX.WriteString(fmt.Sprintf(tocNCXTemplate, m.uid, m.title, m.title, string(navC)))
+	tocNCX.WriteString(fmt.Sprintf(tocNCXTemplate, m.uid, m.title, m.author, m.title, string(navC)))
 	tocNCX.Close()
 	navTmp.Close()
 }

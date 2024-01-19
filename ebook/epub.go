@@ -71,6 +71,7 @@ var (
 
 type epubBook struct {
 	e        *epub.Epub
+	author   string
 	title    string
 	fontFile string
 	output   string
@@ -124,7 +125,7 @@ func (m *epubBook) SetFontSize(titleFontSize int, contentFontSize int) {
 // Begin prepare book environment
 func (m *epubBook) Begin() {
 	m.e = epub.NewEpub(m.title)
-	m.e.SetAuthor(`GetNovel用户制作成epub，并非一定是作品原作者`)
+	m.e.SetAuthor(m.author)
 	m.e.SetTitle(m.title)
 	if m.fontFile != "" {
 		f, err := m.e.AddFont(m.fontFile, "")
@@ -174,4 +175,9 @@ func (m *epubBook) AppendContent(articleTitle, articleURL, articleContent string
 // SetTitle set book title
 func (m *epubBook) SetTitle(title string) {
 	m.title = title
+}
+
+// SetAuthor set book author
+func (m *epubBook) SetAuthor(author string) {
+	m.author = author
 }

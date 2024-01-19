@@ -18,6 +18,7 @@ import (
 // pdfBook generate PDF file
 type pdfBook struct {
 	title           string
+	author          string
 	height          float64
 	pdf             *gopdf.GoPdf
 	config          *gopdf.Config
@@ -172,9 +173,9 @@ func (m *pdfBook) End() {
 func (m *pdfBook) endBook() {
 	m.pdf.SetInfo(gopdf.PdfInfo{
 		Title:        m.title,
-		Author:       `GetNovel用户制作成PDF，并非一定是作品原作者`,
-		Creator:      `GetNovel，仅限个人研究学习，对其造成的所有后果，软件/库作者不承担任何责任`,
-		Producer:     `GetNovel，仅限个人研究学习，对其造成的所有后果，软件/库作者不承担任何责任`,
+		Author:       m.author,
+		Creator:      creator,
+		Producer:     creator,
 		Subject:      m.title,
 		CreationDate: time.Now(),
 	})
@@ -278,6 +279,11 @@ func (m *pdfBook) SetTitle(title string) {
 	m.title = title
 	m.writeCover()
 	m.newPage()
+}
+
+// SetAuthor set book author
+func (m *pdfBook) SetAuthor(author string) {
+	m.author = author
 }
 
 func (m *pdfBook) writePageNumber() {

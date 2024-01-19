@@ -18,6 +18,7 @@ import (
 
 // singleHTMLBook generate files that used to make a mobi file by kindlegen
 type singleHTMLBook struct {
+	author       string
 	title        string
 	uid          int64
 	count        int
@@ -106,6 +107,11 @@ func (m *singleHTMLBook) AppendContent(articleTitle, articleURL, articleContent 
 		m.count, articleURL, articleTitle, articleContent))
 
 	m.count++
+}
+
+// SetAuthor set book author
+func (m *singleHTMLBook) SetAuthor(author string) {
+	m.author = author
 }
 
 // SetTitle set book title
