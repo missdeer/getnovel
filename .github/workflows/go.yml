@@ -4,7 +4,7 @@ jobs:
   Build:
     strategy:
       matrix:
-        lua-version: [lua51, lua52, lua53, lua54]
+        lua-version: [lua51, lua52, lua53, lua54, luajit]
         os: [macos, ubuntu, windows]
     runs-on: ${{ matrix.os }}-latest
     steps:
@@ -45,8 +45,12 @@ jobs:
       if: matrix.os == 'macos'
       run: |
         env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" -tags ${{ matrix.lua-version }} -o getnovel-amd64 .
-        env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" -tags ${{ matrix.lua-version }} -o getnovel-arm64 .
-        lipo -create -output getnovel getnovel-amd64 getnovel-arm64
+        if [ "${{ matrix.lua-version }}" == "luajit" ]; then
+          mv getnovel-amd64 getnovel
+        else
+          env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" -tags ${{ matrix.lua-version }} -o getnovel-arm64 .
+          lipo -create -output getnovel getnovel-amd64 getnovel-arm64
+        fi
         curl -sSL -o kindlegen.zip https://github.com/ystyle/kaf-cli/releases/download/kindlegen/KindleGen_Mac_64bit_v2_9.zip
         unzip kindlegen.zip
         mkdir ${{ matrix.os }}-amd64
