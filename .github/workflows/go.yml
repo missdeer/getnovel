@@ -60,12 +60,19 @@ jobs:
         cp -r handlers ${{ matrix.os }}-amd64/
         cp -r lua ${{ matrix.os }}-amd64/
 
+    - name: Download LuaJIT on Windows
+      if: matrix.os == 'windows' && matrix.lua-version == 'luajit'
+      run: |
+        cd golua/lua
+        git clone --depth 1 https://github.com/LuaJIT/LuaJIT.git luajit
+        cd -
+
     - name: Build Lua on Windows
       if: matrix.os == 'windows'
       shell: msys2 {0}
       run: |
-        cd golua/lua
-        env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin ./buildlua.sh
+        cd golua/lua/${{ matrix.lua-version }}
+        if [ "${{ matrix.lua-version }}" == "luajit" ]; then env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin make BUILDMODE=static; else env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin make mingw; fi
         cd -
           
     - name: Build GetNovel on Windows
