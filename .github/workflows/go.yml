@@ -64,8 +64,8 @@ jobs:
       if: matrix.os == 'windows'
       shell: msys2 {0}
       run: |
-        cd golua/lua/${{ matrix.lua-version }}
-        env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin make mingw
+        cd golua/lua
+        env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin ./buildlua.sh
         cd -
           
     - name: Build GetNovel on Windows
