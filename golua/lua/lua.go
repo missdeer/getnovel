@@ -12,6 +12,23 @@ package lua
 
 #include "golua.h"
 
+const char* getLuaRelease() {
+    return LUA_RELEASE;
+}
+
+#if defined(__has_include)
+  #if __has_include(<luajit.h>)
+    #include <luajit.h>
+  #endif
+#endif
+
+const char* getLuaJITVersion() {
+#ifdef LUAJIT_VERSION
+	return LUAJIT_VERSION;
+#else
+	return "";
+#endif
+}
 */
 import "C"
 import (
@@ -604,4 +621,14 @@ func (L *State) NewError(msg string) *LuaError {
 
 func (L *State) GetState() *C.lua_State {
 	return L.s
+}
+
+func GetLuaRelease() string {
+	cstr := C.getLuaRelease()
+	return C.GoString(cstr)
+}
+
+func GetLuaJITVersion() string {
+	cstr := C.getLuaJITVersion()
+	return C.GoString(cstr)
 }

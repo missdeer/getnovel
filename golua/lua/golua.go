@@ -1,7 +1,7 @@
 package lua
 
 /*
-#cgo !lua52,!lua53,!lua54 CFLAGS: -I ${SRCDIR}/lua51
+#cgo !lua52,!lua53,!lua54,!luajit CFLAGS: -I ${SRCDIR}/lua51
 #cgo !lua52,!lua53,!lua54,!luajit LDFLAGS: -L ${SRCDIR}/lua51
 #cgo lua52 CFLAGS: -I ${SRCDIR}/lua52
 #cgo lua52 LDFLAGS: -L ${SRCDIR}/lua52
@@ -10,6 +10,7 @@ package lua
 #cgo lua54 CFLAGS: -I ${SRCDIR}/lua54
 #cgo lua54 LDFLAGS: -L ${SRCDIR}/lua54
 #cgo !luajit LDFLAGS: -llua
+#cgo luajit CFLAGS: -I ${SRCDIR}/luajit/src
 #cgo luajit LDFLAGS: -L ${SRCDIR}/luajit -lluajit
 
 #cgo windows LDFLAGS: -L${SRCDIR} -lmingwex -lmingw32

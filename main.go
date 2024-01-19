@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aarzilli/golua/lua"
 	"github.com/jessevdk/go-flags"
 	"github.com/missdeer/getnovel/ebook"
 	"github.com/missdeer/golib/httputil"
@@ -138,7 +139,12 @@ func downloadBook(novelURL string, ch chan bool) {
 }
 
 func main() {
-	fmt.Println("getnovel SHA1:", sha1ver, "build at", buildTime)
+	luaVersion := lua.GetLuaRelease()
+	luajitVersion := lua.GetLuaJITVersion()
+	if luajitVersion != "" {
+		luaVersion = luajitVersion
+	}
+	fmt.Printf("GetNovel with %s\nCommit Id: %s\nBuilt at %s\n", luaVersion, sha1ver, buildTime)
 	if len(os.Args) < 2 {
 		fmt.Println("使用方法：\n\tgetnovel 小说目录网址")
 		listCommandHandler()

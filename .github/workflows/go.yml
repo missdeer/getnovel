@@ -34,7 +34,7 @@ jobs:
     - name: Build on Unix
       if: matrix.os != 'macos' && matrix.os != 'windows'
       run: |
-        go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel .
+        go build -ldflags="-s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X main.buildTime=$(date)" -tags ${{ matrix.lua-version }} -o getnovel .
         mkdir ${{ matrix.os }}-amd64
         cp getnovel ${{ matrix.os }}-amd64/
         cp -r pdfpresets ${{ matrix.os }}-amd64/
@@ -44,8 +44,8 @@ jobs:
     - name: Build on macOS
       if: matrix.os == 'macos'
       run: |
-        env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-amd64 .
-        env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel-arm64 .
+        env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X main.buildTime=$(date)" -tags ${{ matrix.lua-version }} -o getnovel-amd64 .
+        env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X main.buildTime=$(date)" -tags ${{ matrix.lua-version }} -o getnovel-arm64 .
         lipo -create -output getnovel getnovel-amd64 getnovel-arm64
         curl -sSL -o kindlegen.zip https://github.com/ystyle/kaf-cli/releases/download/kindlegen/KindleGen_Mac_64bit_v2_9.zip
         unzip kindlegen.zip
@@ -69,7 +69,13 @@ jobs:
       shell: cmd
       run: |
         set PATH=D:\a\_temp\msys64\mingw64\bin;%PATH%
-        go build -ldflags="-s -w" -tags ${{ matrix.lua-version }} -o getnovel.exe .
+        for /F "tokens=*" %%R in ('git rev-parse --short HEAD') do set REV=%%R
+        setlocal enabledelayedexpansion
+        for /L %%i in (0,1,31) do (
+            set "char=!mydate:~%%i,1!"
+            if not "!char!"==" " set "TODAY=!TODAY!!char!"
+        )
+        go build -ldflags="-s -w -X main.sha1ver=%REV% -X main.buildTime=%TODAY%" -tags ${{ matrix.lua-version }} -o getnovel.exe .
           
     - name: copy files on Windows
       if: matrix.os == 'windows'
