@@ -6,7 +6,7 @@ on:
         - '.github/workflows/md5sum.yml'
 
 jobs:
-  Build:
+  md5sum:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code 
