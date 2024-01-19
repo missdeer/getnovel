@@ -1,0 +1,28 @@
+name: md5sum
+on: 
+  push:
+    paths:
+        - 'handlers/*.lua'
+        - '.github/workflows/md5sum.yml'
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code 
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}        
+        run: |
+          git config user.name "auto-md5sum[bot]"
+          git config user.email "auto-md5sum[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+
+      - name: update
+        run: |
+          cd handlers
+          md5sum *.lua > md5sum.txt
+          git commit -m "auto update md5sum at $(date)" md5sum.txt
+          git push -f origin master
