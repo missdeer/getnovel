@@ -18,15 +18,24 @@ import (
 
 // singleHTMLBook generate files that used to make a mobi file by kindlegen
 type singleHTMLBook struct {
-	author       string
-	title        string
-	uid          int64
-	count        int
-	output       string
-	dirName      string
-	fontFilePath string
-	tocTmp       *os.File
-	contentTmp   *os.File
+	author         string
+	title          string
+	uid            int64
+	count          int
+	output         string
+	dirName        string
+	fontFilePath   string
+	h1FontFamily   string
+	h1FontSize     string
+	h2FontFamily   string
+	h2FontSize     string
+	bodyFontFamily string
+	bodyFontSize   string
+	paraFontFamily string
+	paraFontSize   string
+	paraLineHeight string
+	tocTmp         *os.File
+	contentTmp     *os.File
 }
 
 // Output set the output file path
@@ -63,9 +72,34 @@ func (m *singleHTMLBook) SetPageType(pageType string) {
 
 }
 
-// SetFontSize dummy funciton for interface
-func (m *singleHTMLBook) SetFontSize(titleFontSize int, contentFontSize int) {
+// SetPDFFontSize dummy funciton for interface
+func (m *singleHTMLBook) SetPDFFontSize(titleFontSize int, contentFontSize int) {
 
+}
+
+// SetHTMLBodyFont set body font
+func (m *singleHTMLBook) SetHTMLBodyFont(family string, size string) {
+	m.bodyFontFamily = family
+	m.bodyFontSize = size
+}
+
+// SetHTMLH1Font set H1 font
+func (m *singleHTMLBook) SetHTMLH1Font(family string, size string) {
+	m.h1FontFamily = family
+	m.h1FontSize = size
+}
+
+// SetHTMLH2Font set H2 font
+func (m *singleHTMLBook) SetHTMLH2Font(family string, size string) {
+	m.h2FontFamily = family
+	m.h2FontSize = size
+}
+
+// SetHTMLParaFont set paragraph font
+func (m *singleHTMLBook) SetHTMLParaFont(family string, size string, lineHeight string) {
+	m.paraFontFamily = family
+	m.paraFontSize = size
+	m.paraLineHeight = lineHeight
 }
 
 // SetFontFile set custom font file
@@ -193,7 +227,8 @@ func (m *singleHTMLBook) writeContentHTML() {
 		return
 	}
 
-	contentHTML.WriteString(fmt.Sprintf(contentHTMLTemplate, m.title, m.title, time.Now().String(),
+	contentHTML.WriteString(fmt.Sprintf(contentHTMLTemplate, m.bodyFontFamily, m.bodyFontSize, m.h1FontFamily, m.h1FontSize,
+		m.h2FontFamily, m.h2FontSize, m.paraFontFamily, m.paraFontSize, m.paraLineHeight, m.title, m.title, time.Now().String(),
 		string(tocC), string(contentC)))
 	contentHTML.Close()
 }

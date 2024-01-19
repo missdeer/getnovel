@@ -20,16 +20,25 @@ import (
 
 // kindlegenMobiBook generate files that used to make a mobi file by kindlegen
 type kindlegenMobiBook struct {
-	title        string
-	author       string
-	uid          int64
-	count        int
-	output       string
-	dirName      string
-	fontFilePath string
-	tocTmp       *os.File
-	contentTmp   *os.File
-	navTmp       *os.File
+	title          string
+	author         string
+	uid            int64
+	count          int
+	output         string
+	dirName        string
+	fontFilePath   string
+	h1FontFamily   string
+	h1FontSize     string
+	h2FontFamily   string
+	h2FontSize     string
+	bodyFontFamily string
+	bodyFontSize   string
+	paraFontFamily string
+	paraFontSize   string
+	paraLineHeight string
+	tocTmp         *os.File
+	contentTmp     *os.File
+	navTmp         *os.File
 }
 
 var (
@@ -41,20 +50,20 @@ var (
 		<style type="text/css">
 		@font-face{	font-family: "CustomFont";	src: url(fonts/CustomFont.ttf);	}
 		body{
-			font-family: "CustomFont";
-			font-size: 1.2em;
+			font-family: "%s";
+			font-size: %s;
 			margin:0 5px;
 		}
 
 		h1{
-			font-family: "CustomFont";
-			font-size:4em;
+			font-family: "%s";
+			font-size:%s;
 			font-weight:bold;
 		}
 
 		h2 {
-			font-family: "CustomFont";
-			font-size: 1.2em;
+			font-family: "%s";
+			font-size: %s;
 			font-weight: bold;
 			margin:0;
 		}
@@ -69,9 +78,10 @@ var (
 			cursor: pointer
 		}
 		p{
-			font-family: "CustomFont";
+			font-family: "%s";
+			font-size: %s;
 			text-indent:1.5em;
-			line-height:1.3em;
+			line-height:%s;
 			margin-top:0;
 			margin-bottom:0;
 		}
@@ -200,9 +210,33 @@ func (m *kindlegenMobiBook) SetPageType(pageType string) {
 
 }
 
-// SetFontSize dummy funciton for interface
-func (m *kindlegenMobiBook) SetFontSize(titleFontSize int, contentFontSize int) {
+// SetPDFFontSize dummy funciton for interface
+func (m *kindlegenMobiBook) SetPDFFontSize(titleFontSize int, contentFontSize int) {
+}
 
+// SetHTMLBodyFont set body font
+func (m *kindlegenMobiBook) SetHTMLBodyFont(family string, size string) {
+	m.bodyFontFamily = family
+	m.bodyFontSize = size
+}
+
+// SetHTMLH1Font set H1 font
+func (m *kindlegenMobiBook) SetHTMLH1Font(family string, size string) {
+	m.h1FontFamily = family
+	m.h1FontSize = size
+}
+
+// SetHTMLH2Font set H2 font
+func (m *kindlegenMobiBook) SetHTMLH2Font(family string, size string) {
+	m.h2FontFamily = family
+	m.h2FontSize = size
+}
+
+// SetHTMLParaFont set paragraph font
+func (m *kindlegenMobiBook) SetHTMLParaFont(family string, size string, lineHeight string) {
+	m.paraFontFamily = family
+	m.paraFontSize = size
+	m.paraLineHeight = lineHeight
 }
 
 // SetFontFile set custom font file
@@ -428,7 +462,9 @@ func (m *kindlegenMobiBook) writeContentHTML() {
 		return
 	}
 
-	contentHTML.WriteString(fmt.Sprintf(contentHTMLTemplate, m.title, m.title, time.Now().String(),
+	contentHTML.WriteString(fmt.Sprintf(contentHTMLTemplate, m.bodyFontFamily, m.bodyFontSize, m.h1FontFamily, m.h1FontSize,
+		m.h2FontFamily, m.h2FontSize, m.paraFontFamily, m.paraFontSize, m.paraLineHeight,
+		m.title, m.title, time.Now().String(),
 		string(tocC), string(contentC)))
 	contentHTML.Close()
 }

@@ -15,20 +15,20 @@ var (
 			src: url(%CustomFontFile%);
 		}
 		body{
-			font-family: "CustomFont";
-			font-size: 1.0em;
+			font-family: "%s";
+			font-size: %s;
 			margin:0 5px;
 		}
 
 		h1{
-			font-family: "CustomFont";
-			font-size:4em;
+			font-family: "%s";
+			font-size:%s;
 			font-weight: bold;
 		}
 
 		h2 {
-			font-family: "CustomFont";
-			font-size: 1.5em;
+			font-family: "%s";
+			font-size: %s;
 			font-weight: bold;
 			margin:0;
 		}
@@ -43,9 +43,9 @@ var (
 			cursor: pointer
 		}
 		p{
-			font-family: "CustomFont";
-			font-size: 1.0em;
-			text-indent:2.0em;
+			font-family: "%s";
+			font-size: %s;
+			text-indent:%s;
 			line-height:1.2em;
 			margin-top:0;
 			margin-bottom:0;
@@ -70,11 +70,20 @@ var (
 )
 
 type epubBook struct {
-	e        *epub.Epub
-	author   string
-	title    string
-	fontFile string
-	output   string
+	e              *epub.Epub
+	author         string
+	title          string
+	fontFile       string
+	output         string
+	h1FontFamily   string
+	h1FontSize     string
+	h2FontFamily   string
+	h2FontSize     string
+	bodyFontFamily string
+	bodyFontSize   string
+	paraFontFamily string
+	paraFontSize   string
+	paraLineHeight string
 }
 
 // Output set the output file path
@@ -118,8 +127,33 @@ func (m *epubBook) SetMargins(left float64, top float64) {
 func (m *epubBook) SetPageType(pageType string) {
 }
 
-// SetFontSize dummy funciton for interface
-func (m *epubBook) SetFontSize(titleFontSize int, contentFontSize int) {
+// SetPDFFontSize dummy funciton for interface
+func (m *epubBook) SetPDFFontSize(titleFontSize int, contentFontSize int) {
+}
+
+// SetHTMLBodyFont set body font
+func (m *epubBook) SetHTMLBodyFont(family string, size string) {
+	m.bodyFontFamily = family
+	m.bodyFontSize = size
+}
+
+// SetHTMLH1Font set H1 font
+func (m *epubBook) SetHTMLH1Font(family string, size string) {
+	m.h1FontFamily = family
+	m.h1FontSize = size
+}
+
+// SetHTMLH2Font set H2 font
+func (m *epubBook) SetHTMLH2Font(family string, size string) {
+	m.h2FontFamily = family
+	m.h2FontSize = size
+}
+
+// SetHTMLParaFont set paragraph font
+func (m *epubBook) SetHTMLParaFont(family string, size string, lineHeight string) {
+	m.paraFontFamily = family
+	m.paraFontSize = size
+	m.paraLineHeight = lineHeight
 }
 
 // Begin prepare book environment
@@ -135,6 +169,8 @@ func (m *epubBook) Begin() {
 		}
 		css = strings.Replace(css, "%CustomFontFile%", strings.Replace(f, "\\", "/", -1), -1)
 	}
+	css = fmt.Sprintf(css, m.bodyFontFamily, m.bodyFontSize, m.h1FontFamily, m.h1FontSize,
+		m.h2FontFamily, m.h2FontSize, m.paraFontFamily, m.paraFontSize, m.paraLineHeight)
 	cssFd, err := os.OpenFile("style.css", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		log.Println("opening file style.css for writing failed ", err)

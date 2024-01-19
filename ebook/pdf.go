@@ -138,10 +138,19 @@ func (m *pdfBook) SetPageType(pageType string) {
 	m.pageType = pageType
 }
 
-// SetFontSize dummy funciton for interface
-func (m *pdfBook) SetFontSize(titleFontSize int, contentFontSize int) {
+// SetPDFFontSize dummy funciton for interface
+func (m *pdfBook) SetPDFFontSize(titleFontSize int, contentFontSize int) {
 	m.titleFontSize = float64(titleFontSize)
 	m.contentFontSize = float64(contentFontSize)
+}
+
+func (m *pdfBook) SetHTMLBodyFont(family string, size string) {
+}
+func (m *pdfBook) SetHTMLH1Font(family string, size string) {
+}
+func (m *pdfBook) SetHTMLH2Font(family string, size string) {
+}
+func (m *pdfBook) SetHTMLParaFont(family string, size string, lineHeight string) {
 }
 
 // Begin prepare book environment
