@@ -36,7 +36,9 @@ find . -name 'lua*' -type d | while read dir; do
 done
 
 if [ ! -d luajit ]; then
-	git clone --depth 1 https://github.com/LuaJIT/LuaJIT.git luajit
+	curl -sSL -o LuaJIT.zip https://codeload.github.com/LuaJIT/LuaJIT/zip/refs/heads/v2.1
+	unzip -q LuaJIT.zip
+	mv LuaJIT-2.1 luajit
 fi
 cd luajit
 if [ "$OS" == "Darwin" ]; then
