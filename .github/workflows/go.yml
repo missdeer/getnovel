@@ -72,7 +72,7 @@ jobs:
       shell: msys2 {0}
       run: |
         cd golua/lua/${{ matrix.lua-version }}
-        if [ "${{ matrix.lua-version }}" == "luajit" ]; then env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin make BUILDMODE=static; else env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin make mingw; fi
+        if [ "${{ matrix.lua-version }}" == "luajit" ]; then env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin make BUILDMODE=static; mv src/libluajit.a ./ ; else env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin make mingw; fi
         cd -
           
     - name: Build GetNovel on Windows
