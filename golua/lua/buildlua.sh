@@ -41,14 +41,14 @@ fi
 cd luajit
 if [ "$OS" == "Darwin" ]; then
 	env MACOSX_DEPLOYMENT_TARGET=12.0 make clean
-	env MACOSX_DEPLOYMENT_TARGET=12.0 CFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" make -j $CoreCount
+	env MACOSX_DEPLOYMENT_TARGET=12.0 CFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" make -j $CoreCount BUILDMODE=static
 	mv src/libluajit.a ./libluajit-amd64.a
 	env MACOSX_DEPLOYMENT_TARGET=12.0 make clean
-	env MACOSX_DEPLOYMENT_TARGET=12.0 CFLAGS="-arch arm64" LDFLAGS="-arch arm64" make -j $CoreCount
+	env MACOSX_DEPLOYMENT_TARGET=12.0 CFLAGS="-arch arm64" LDFLAGS="-arch arm64" make -j $CoreCount BUILDMODE=static
 	mv src/libluajit.a ./libluajit-arm64.a
 	lipo -create -output libluajit.a libluajit-arm64.a libluajit-amd64.a
 else
-	make -j $CoreCount
+	make -j $CoreCount BUILDMODE=static
 	mv src/*.a ./libluajit.a
 fi
 cd ..
