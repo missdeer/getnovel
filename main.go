@@ -75,6 +75,8 @@ func listCommandHandler() {
 
 func downloadBook(novelURL string, ch chan bool) {
 	for _, handler := range novelSiteHandlers {
+		handler.Init()
+		defer handler.End()
 		if handler.CanHandle(novelURL) {
 			gen := ebook.NewBook(opts.Format)
 			gen.SetPDFFontSize(opts.TitleFontSize, opts.ContentFontSize)

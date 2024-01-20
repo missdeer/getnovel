@@ -10,10 +10,6 @@ import (
 	"gitlab.com/ambrevar/golua/unicode"
 )
 
-type ExternalHandler struct {
-	l *lua.State
-}
-
 func ConvertEncoding(L *lua.State) int {
 	fromEncoding := L.CheckString(1)
 	toEncoding := L.CheckString(2)
@@ -25,39 +21,52 @@ func ConvertEncoding(L *lua.State) int {
 
 func newExternalHandler() *ExternalHandler {
 	h := &ExternalHandler{}
-	h.l = lua.NewState()
-	h.l.OpenLibs()
-
-	// add string.convert(from, to, str) method
-	h.l.GetGlobal("string")
-	h.l.PushGoFunction(ConvertEncoding)
-	h.l.SetField(-2, "convert")
-	h.l.Pop(1)
-
-	unicode.GoLuaReplaceFuncs(h.l)
-
-	// get current executable path
-	exePath, err := os.Executable()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	exePath = filepath.Dir(exePath)
-
-	h.l.DoFile(exePath + `/lua/init.lua`)
-
-	// traverse ./handler directory, find all .lua files and load them
-	directory := exePath + "/handlers"
-	files, err := os.ReadDir(directory)
-	if err == nil {
-		for _, file := range files {
-			if filepath.Ext(file.Name()) == ".lua" {
-				h.l.DoFile(filepath.Join(directory, file.Name()))
-			}
-		}
-	}
 
 	return h
+}
+
+type ExternalHandler struct {
+	l *lua.State
+}
+
+func (h *ExternalHandler) Start() {
+	go func() {
+		h.l = lua.NewState()
+		h.l.OpenLibs()
+
+		// add string.convert(from, to, str) method
+		h.l.GetGlobal("string")
+		h.l.PushGoFunction(ConvertEncoding)
+		h.l.SetField(-2, "convert")
+		h.l.Pop(1)
+
+		unicode.GoLuaReplaceFuncs(h.l)
+
+		// get current executable path
+		exePath, err := os.Executable()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		exePath = filepath.Dir(exePath)
+
+		h.l.DoFile(exePath + `/lua/init.lua`)
+
+		// traverse ./handler directory, find all .lua files and load them
+		directory := exePath + "/handlers"
+		files, err := os.ReadDir(directory)
+		if err == nil {
+			for _, file := range files {
+				if filepath.Ext(file.Name()) == ".lua" {
+					h.l.DoFile(filepath.Join(directory, file.Name()))
+				}
+			}
+		}
+	}()
+}
+
+func (h *ExternalHandler) End() {
+	h.l.Close()
 }
 
 func (h *ExternalHandler) preprocessExternalChapterListURL(u string) string {
@@ -147,5 +156,7 @@ func init() {
 		PreprocessChapterListURL: handler.preprocessExternalChapterListURL,
 		ExtractChapterList:       handler.extractExternalChapterList,
 		ExtractChapterContent:    handler.extractExternalChapterContent,
+		Init:                     handler.Start,
+		End:                      handler.End,
 	})
 }

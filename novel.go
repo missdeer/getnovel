@@ -32,4 +32,6 @@ type NovelSiteHandler struct {
 	ExtractChapterList       func(string, []byte) (string, []*NovelChapterInfo) // (url, raw page content) (title, chapters)
 	ExtractChapterContent    func([]byte) []byte                                // (raw page content) -> cleanup content
 	Download                 func(string, ebook.IBook)
+	Init                     func()
+	End                      func()
 }
