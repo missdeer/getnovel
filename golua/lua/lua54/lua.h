@@ -420,7 +420,6 @@ LUA_API void (lua_closeslot) (lua_State *L, int idx);
 
 #endif
 
-#define lua_newuserdata(L,s)	lua_newuserdatauv(L,s,1)
 #define lua_getuservalue(L,idx)	lua_getiuservalue(L,idx,1)
 #define lua_setuservalue(L,idx)	lua_setiuservalue(L,idx,1)
 
