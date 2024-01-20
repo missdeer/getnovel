@@ -156,7 +156,7 @@ func init() {
 		PreprocessChapterListURL: handler.preprocessExternalChapterListURL,
 		ExtractChapterList:       handler.extractExternalChapterList,
 		ExtractChapterContent:    handler.extractExternalChapterContent,
-		Init:                     handler.Start,
+		Begin:                    handler.Start,
 		End:                      handler.End,
 	})
 }

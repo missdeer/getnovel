@@ -106,7 +106,5 @@ func init() {
 		},
 		ExtractChapterList:    extractUukanshuChapterList,
 		ExtractChapterContent: extractUukanshuChapterContent,
-		Init:                  func() {},
-		End:                   func() {},
 	})
 }
