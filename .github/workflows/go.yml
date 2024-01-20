@@ -31,8 +31,8 @@ jobs:
         ./buildlua.sh
         cd -
 
-    - name: Build on Unix
-      if: matrix.os != 'macos' && matrix.os != 'windows'
+    - name: Build GetNovel on Linux
+      if: matrix.os == 'ubuntu'
       run: |
         go build -ldflags="-s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" -tags ${{ matrix.lua-version }} -o getnovel .
         mkdir ${{ matrix.os }}-amd64
@@ -41,7 +41,7 @@ jobs:
         cp -r handlers ${{ matrix.os }}-amd64/
         cp -r lua ${{ matrix.os }}-amd64/
 
-    - name: Build on macOS
+    - name: Build GetNovel on macOS
       if: matrix.os == 'macos'
       run: |
         env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" -tags ${{ matrix.lua-version }} -o getnovel-amd64 .

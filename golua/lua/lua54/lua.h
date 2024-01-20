@@ -268,7 +268,6 @@ LUA_API int (lua_rawgetp) (lua_State *L, int idx, const void *p);
 
 LUA_API void  (lua_createtable) (lua_State *L, int narr, int nrec);
 LUA_API void *(lua_newuserdatauv) (lua_State *L, size_t sz, int nuvalue);
-LUA_API void *(lua_newuserdata) (lua_State *L, size_t sz);
 LUA_API int   (lua_getmetatable) (lua_State *L, int objindex);
 LUA_API int  (lua_getiuservalue) (lua_State *L, int idx, int n);
 
@@ -421,6 +420,7 @@ LUA_API void (lua_closeslot) (lua_State *L, int idx);
 
 #endif
 
+LUA_API void *(lua_newuserdata) (lua_State *L, size_t sz);
 #define lua_getuservalue(L,idx)	lua_getiuservalue(L,idx,1)
 #define lua_setuservalue(L,idx)	lua_setiuservalue(L,idx,1)
 
