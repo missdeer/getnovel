@@ -10,7 +10,7 @@ jobs:
           - os: ubuntu
             image: ubuntu-latest
           - os: macos
-            image: macos-14-arm64
+            image: macos-latest
           - os: windows
             image: windows-latest
 
