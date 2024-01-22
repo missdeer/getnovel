@@ -110,7 +110,7 @@ func (h *ExternalHandler) invokeExtractExternalChapterList(u string, rawPageCont
 	h.l.PushBytes(rawPageContent)
 	h.l.Call(2, 2)
 	if !h.l.IsString(-2) || !h.l.IsTable(-1) {
-		return "", []*NovelChapterInfo{}
+		return
 	}
 
 	title = h.l.ToString(-2)
@@ -144,7 +144,6 @@ func (h *ExternalHandler) invokeExtractExternalChapterList(u string, rawPageCont
 			chapters = append(chapters, chapter)
 		}
 		h.l.Pop(1)
-
 	}
 
 	return
@@ -155,7 +154,7 @@ func (h *ExternalHandler) invokeExtractExternalChapterContent(rawPageContent []b
 	h.l.PushBytes(rawPageContent)
 	h.l.Call(1, 1)
 	if !h.l.IsString(-1) {
-		return []byte{}
+		return
 	}
 	return []byte(h.l.ToString(-1))
 }
