@@ -5,8 +5,15 @@ jobs:
     strategy:
       matrix:
         lua-version: [lua51, lua52, lua53, lua54, luajit]
-        os: [macos, ubuntu, windows]
-    runs-on: ${{ matrix.os }}-latest
+        include:
+          - os: ubuntu
+            image: ubuntu-latest
+          - os: macos
+            image: macos-latest-xl
+          - os: windows
+            image: windows-latest
+
+    runs-on: ${{ matrix.image }}
     steps:
     - name: Set up Go 
       uses: actions/setup-go@v3
