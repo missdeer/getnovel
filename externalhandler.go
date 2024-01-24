@@ -1,11 +1,18 @@
 package main
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 
 	"github.com/aarzilli/golua/lua"
+	"github.com/missdeer/golib/httputil"
 	"github.com/missdeer/golib/ic"
 	"gitlab.com/ambrevar/golua/unicode"
 )
@@ -57,6 +64,73 @@ func newExternalHandler() *ExternalHandler {
 	}
 }
 
+var (
+	md5sumMap = make(map[string]string)
+)
+
+func readMD5SumMap() {
+	md5sum, err := httputil.GetBytes("https://cdn.jsdelivr.net/gh/missdeer/getnovel@master/handlers/md5sum.txt",
+		http.Header{"User-Agent": []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"}},
+		60*time.Second,
+		3)
+	if err != nil {
+		log.Println(err)
+	} else {
+		// 按行解析md5sum, 格式为 md5sum 文件名
+		lines := strings.Split(string(md5sum), "\n")
+		for _, line := range lines {
+			line = strings.TrimSpace(line)
+			if line == "" {
+				continue
+			}
+
+			parts := strings.Split(line, " ")
+			if len(parts) != 2 {
+				continue
+			}
+
+			md5sumMap[parts[1]] = parts[0]
+		}
+	}
+}
+
+// 本地lua文件与md5sumMap中的记录进行md5校验
+// 如果md5值不同，则从 https://cdn.jsdelivr.net/gh/missdeer/getnovel@master/handlers/ 下载新的lua文件
+func checkLuaFile(localDirPath string, fileName string) error {
+	f, err := os.Open(filepath.Join(localDirPath, fileName))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	h := md5.New()
+	if _, err := io.Copy(h, f); err != nil {
+		return err
+	}
+	sum := h.Sum(nil)
+	localMd5sum := hex.EncodeToString(sum)
+	if strings.ToLower(localMd5sum) != strings.ToLower(md5sumMap[fileName]) {
+		content, err := httputil.GetBytes("https://cdn.jsdelivr.net/gh/missdeer/getnovel@master/handlers/"+fileName,
+			http.Header{"User-Agent": []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"}},
+			60*time.Second,
+			3)
+		if err != nil {
+			return err
+		}
+		// save to local file
+		f, err := os.OpenFile(filepath.Join(localDirPath, fileName), os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+		if _, err := f.Write(content); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (h *ExternalHandler) initLuaEnv() {
 	h.l.OpenLibs()
 
@@ -81,12 +155,22 @@ func (h *ExternalHandler) initLuaEnv() {
 	// traverse ./handler directory, find all .lua files and load them
 	directory := exePath + "/handlers"
 	files, err := os.ReadDir(directory)
-	if err == nil {
-		for _, file := range files {
-			if filepath.Ext(file.Name()) == ".lua" {
-				h.l.DoFile(filepath.Join(directory, file.Name()))
+	if err != nil {
+		log.Println(err)
+	}
+
+	for _, file := range files {
+		if strings.ToLower(filepath.Ext(file.Name())) != ".lua" {
+			continue
+		}
+
+		if opts.AutoUpdateExternalHandlers {
+			if err := checkLuaFile(directory, file.Name()); err != nil {
+				log.Println(err)
 			}
 		}
+
+		h.l.DoFile(filepath.Join(directory, file.Name()))
 	}
 }
 
@@ -196,6 +280,9 @@ func (h *ExternalHandler) invokeMethodLoop() {
 }
 
 func (h *ExternalHandler) begin() {
+	if len(md5sumMap) == 0 {
+		readMD5SumMap()
+	}
 	go func() {
 		h.initLuaEnv()
 		h.invokeMethodLoop()
