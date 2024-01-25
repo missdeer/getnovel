@@ -185,7 +185,7 @@ func main() {
 		H2FontSize:                 "1.2em",
 		BodyFontSize:               "1.2em",
 		ParaFontSize:               "1.0em",
-		ParaLineHeight:             "0.8em",
+		ParaLineHeight:             "1.0em",
 		LineSpacing:                1.2,
 		PagesPerFile:               0,
 		ChaptersPerFile:            0,
