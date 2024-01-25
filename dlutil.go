@@ -126,7 +126,7 @@ func (du *DownloadUtil) AddURL(index int, title string, link string) (reachEnd b
 		theURL, _ := url.Parse(link)
 		headers := http.Header{
 			"Referer":                   []string{fmt.Sprintf("%s://%s", theURL.Scheme, theURL.Host)},
-			"User-Agent":                []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0"},
+			"User-Agent":                []string{"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0"},
 			"Accept":                    []string{"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
 			"Accept-Language":           []string{`en-US,en;q=0.8`},
 			"Upgrade-Insecure-Requests": []string{"1"},

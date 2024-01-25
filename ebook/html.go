@@ -227,8 +227,8 @@ func (m *singleHTMLBook) writeContentHTML() {
 		return
 	}
 
-	contentHTML.WriteString(fmt.Sprintf(contentHTMLTemplate, m.bodyFontFamily, m.bodyFontSize, m.h1FontFamily, m.h1FontSize,
-		m.h2FontFamily, m.h2FontSize, m.paraFontFamily, m.paraFontSize, m.paraLineHeight, m.title, m.title, time.Now().String(),
+	contentHTML.WriteString(fmt.Sprintf(contentHTMLTemplate, m.title, m.bodyFontFamily, m.bodyFontSize, m.h1FontFamily, m.h1FontSize,
+		m.h2FontFamily, m.h2FontSize, m.paraFontFamily, m.paraFontSize, m.paraLineHeight, m.title, time.Now().String(),
 		string(tocC), string(contentC)))
 	contentHTML.Close()
 }

@@ -10,7 +10,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"time"
 	"unicode/utf8"
 
@@ -251,11 +250,6 @@ func (m *kindlegenMobiBook) SetLineSpacing(float64) {
 
 // Begin prepare book environment
 func (m *kindlegenMobiBook) Begin() {
-	if b, e := fsutil.FileExists(m.fontFilePath); e != nil || !b {
-		contentHTMLTemplate = strings.Replace(contentHTMLTemplate, `@font-face{	font-family: "CustomFont";	src: url(fonts/CustomFont.ttf);	}";`, "", -1)
-		contentHTMLTemplate = strings.Replace(contentHTMLTemplate, `font-family: "CustomFont";`, "", -1)
-		return
-	}
 }
 
 // End generate files that kindlegen needs
@@ -462,9 +456,9 @@ func (m *kindlegenMobiBook) writeContentHTML() {
 		return
 	}
 
-	contentHTML.WriteString(fmt.Sprintf(contentHTMLTemplate, m.bodyFontFamily, m.bodyFontSize, m.h1FontFamily, m.h1FontSize,
+	contentHTML.WriteString(fmt.Sprintf(contentHTMLTemplate, m.title, m.bodyFontFamily, m.bodyFontSize, m.h1FontFamily, m.h1FontSize,
 		m.h2FontFamily, m.h2FontSize, m.paraFontFamily, m.paraFontSize, m.paraLineHeight,
-		m.title, m.title, time.Now().String(),
+		m.title, time.Now().String(),
 		string(tocC), string(contentC)))
 	contentHTML.Close()
 }
