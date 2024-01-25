@@ -58,14 +58,14 @@ func extractUukanshuChapterContent(rawPageContent []byte) (c []byte) {
 	c = bytes.Replace(c, []byte("\r"), []byte(""), -1)
 	c = bytes.Replace(c, []byte("\n"), []byte(""), -1)
 
-	startStr := []byte("<div class=\"ad_content\">")
+	startStr := []byte(`<div id="contentbox" class="uu_cont">`)
 	endStr := []byte(`</div>`)
 	idx := bytes.Index(c, startStr)
 	if idx > 1 {
 		idxEnd := bytes.Index(c[idx:], endStr)
 		if idxEnd > 1 {
-			b := c[idx:]
-			c = b[idxEnd+len(endStr):]
+			b := c[idx+len(startStr) : idx+idxEnd]
+			c = b
 		}
 	}
 
