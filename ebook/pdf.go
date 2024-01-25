@@ -259,6 +259,8 @@ func (m *pdfBook) AppendContent(articleTitle, articleURL, articleContent string)
 		log.Println("set title font failed", err)
 	}
 	m.writeTextLine(articleTitle, m.titleFontSize)
+	m.pdf.AddOutlineWithPosition(articleTitle)
+
 	if err := m.pdf.SetFont(m.fontFamily, "", int(m.contentFontSize)); err != nil {
 		log.Println("set content font failed", err)
 	}
