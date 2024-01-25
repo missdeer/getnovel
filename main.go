@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 
@@ -192,7 +193,7 @@ func main() {
 		FontFile:                   filepath.Join("fonts", "CustomFont.ttf"),
 		RetryCount:                 3,
 		Timeout:                    60,
-		ParallelCount:              10,
+		ParallelCount:              int64(runtime.NumCPU()) * 2, // get cpu logical core number
 		Author:                     "GetNovel用户",
 		AutoUpdateExternalHandlers: false,
 	}
