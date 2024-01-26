@@ -4,13 +4,20 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/missdeer/golib/ic"
 )
 
-func extractUukanshuChapterList(u string, rawPageContent []byte) (title string, chapters []*NovelChapterInfo) {
+type Uukanshu struct {
+	removeRegexp    *regexp.Regexp
+	canHandleRegexp *regexp.Regexp
+}
+
+func (uu *Uukanshu) extractChapterList(u string, rawPageContent []byte) (title string, chapters []*NovelChapterInfo) {
 	var lines []string
 	// 	<li><a href="/b/2816/52791.html" title="调教初唐 第一千零八十五章 调教完毕……" target="_blank">第一千零八十五章 调教完毕……</a></li>
 	r := regexp.MustCompile(`<li><a\shref="/b/[0-9]+/([0-9]+\.html)"\stitle="[^"]+"\starget="_blank">([^<]+)</a></li>$`)
@@ -52,37 +59,27 @@ func extractUukanshuChapterList(u string, rawPageContent []byte) (title string, 
 	return
 }
 
-func extractUukanshuChapterContent(rawPageContent []byte) (c []byte) {
+func (uu *Uukanshu) extractChapterContent(rawPageContent []byte) (c []byte) {
 	c = ic.Convert("gbk", "utf-8", rawPageContent)
 	c = bytes.Replace(c, []byte("\r\n"), []byte(""), -1)
 	c = bytes.Replace(c, []byte("\r"), []byte(""), -1)
 	c = bytes.Replace(c, []byte("\n"), []byte(""), -1)
 
-	startStr := []byte(`<div id="contentbox" class="uu_cont">`)
-	endStr := []byte(`</div>`)
-	idx := bytes.Index(c, startStr)
-	if idx > 1 {
-		idxEnd := bytes.Index(c[idx:], endStr)
-		if idxEnd > 1 {
-			b := c[idx+len(startStr) : idx+idxEnd]
-			c = b
-		}
+	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(c))
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	adStr := []byte(`<div class="ad_content"><!-- 桌面内容中2 -->`)
-	idx = bytes.Index(c, adStr)
-	if idx > 1 {
-		idxEnd := bytes.Index(c[idx:], endStr)
-		if idxEnd > 1 {
-			b := c[:idx]
-			c = append(b, c[idx+idxEnd+len(endStr):]...)
-		}
+	divSelection := doc.Find("div#contentbox.uu_cont")
+
+	divSelection.Find("div.ad_content").Remove()
+
+	divHtml, err := divSelection.Html()
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	idx = bytes.Index(c, endStr)
-	if idx > 1 {
-		c = c[:idx]
-	}
+	c = []byte(divHtml)
 
 	c = bytes.Replace(c, []byte(`</p><p>`), []byte(`<p>`), -1)
 	c = bytes.Replace(c, []byte(`<br />`), []byte(`<br/>`), -1)
@@ -93,18 +90,36 @@ func extractUukanshuChapterContent(rawPageContent []byte) (c []byte) {
 	c = bytes.Replace(c, []byte(`&nbsp;&nbsp;&nbsp;&nbsp;`), []byte(""), -1)
 	c = bytes.Replace(c, []byte(`<p>　　`), []byte(`<p>`), -1)
 	c = bytes.Replace(c, []byte(`<p>`), []byte(`</p><p>`), -1)
+	c = bytes.Replace(c, []byte(`<!--MC-->`), []byte(``), -1)
+	c = bytes.Replace(c, []byte(`手机用户请浏览阅读，掌上阅读更方便。`), []byte(``), -1)
+	// use regexp to remove <!--flag[a-zA-Z0-9_]*--><!--MC-->
+	c = uu.removeRegexp.ReplaceAll(c, []byte(""))
+
 	return
 }
 
+func (uu *Uukanshu) preprocessChapterListURL(u string) string {
+	if strings.HasSuffix(u, "#gsc.tab=0") {
+		return strings.TrimSuffix(u, "#gsc.tab=0")
+	}
+	return u
+}
+
+func (uu *Uukanshu) canHandle(u string) bool {
+	return uu.canHandleRegexp.MatchString(u)
+}
+
 func init() {
+	u := &Uukanshu{
+		removeRegexp:    regexp.MustCompile(`<!--flag[a-zA-Z0-9_]*-->`),
+		canHandleRegexp: regexp.MustCompile(`https://www\.uukanshu\.net/b/[0-9]+/`),
+	}
 	registerNovelSiteHandler(&NovelSiteHandler{
-		Title: `UU看书`,
-		Urls:  []string{`https://www.uukanshu.net/`},
-		CanHandle: func(u string) bool {
-			reg := regexp.MustCompile(`https://www\.uukanshu\.net/b/[0-9]+/`)
-			return reg.MatchString(u)
-		},
-		ExtractChapterList:    extractUukanshuChapterList,
-		ExtractChapterContent: extractUukanshuChapterContent,
+		Title:                    `UU看书`,
+		Urls:                     []string{`https://www.uukanshu.net/`},
+		CanHandle:                u.canHandle,
+		PreprocessChapterListURL: u.preprocessChapterListURL,
+		ExtractChapterList:       u.extractChapterList,
+		ExtractChapterContent:    u.extractChapterContent,
 	})
 }

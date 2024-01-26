@@ -208,6 +208,8 @@ func (m *pdfBook) preprocessContent(content string) string {
 	c = strings.Replace(c, `&#39;`, `'`, -1)
 	c = strings.Replace(c, `&nbsp;`, ` `, -1)
 	c = strings.Replace(c, `</p><p>`, "\n", -1)
+	c = strings.Replace(c, `</p>`, ``, -1)
+	c = strings.Replace(c, `<p>`, ``, -1)
 	for idx := strings.Index(c, "\n\n"); idx >= 0; idx = strings.Index(c, "\n\n") {
 		c = strings.Replace(c, "\n\n", "\n", -1)
 	}
