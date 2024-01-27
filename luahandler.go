@@ -339,8 +339,12 @@ func init() {
 	handler := newExternalHandler()
 
 	registerNovelSiteHandler(&NovelSiteHandler{
-		Title:                    `外部脚本处理器`,
-		Urls:                     []string{},
+		Sites: []NovelSite{
+			{
+				Title: `外部脚本处理器`,
+				Urls:  []string{},
+			},
+		},
 		CanHandle:                handler.canHandleExternalSite,
 		PreprocessChapterListURL: handler.preprocessExternalChapterListURL,
 		ExtractChapterList:       handler.extractExternalChapterList,

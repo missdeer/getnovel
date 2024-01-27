@@ -71,7 +71,9 @@ func registerNovelSiteHandler(handler *NovelSiteHandler) {
 func listCommandHandler() {
 	fmt.Println("内建支持小说网站：")
 	for _, h := range novelSiteHandlers {
-		fmt.Println("\t" + h.Title + ": " + strings.Join(h.Urls, ", "))
+		for _, site := range h.Sites {
+			fmt.Println("\t" + site.Title + ": " + strings.Join(site.Urls, ", "))
+		}
 	}
 }
 

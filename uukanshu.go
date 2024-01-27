@@ -115,8 +115,12 @@ func init() {
 		canHandleRegexp: regexp.MustCompile(`https://www\.uukanshu\.net/b/[0-9]+/`),
 	}
 	registerNovelSiteHandler(&NovelSiteHandler{
-		Title:                    `UU看书`,
-		Urls:                     []string{`https://www.uukanshu.net/`},
+		Sites: []NovelSite{
+			{
+				Title: `UU看书`,
+				Urls:  []string{`https://www.uukanshu.net/`},
+			},
+		},
 		CanHandle:                u.canHandle,
 		PreprocessChapterListURL: u.preprocessChapterListURL,
 		ExtractChapterList:       u.extractChapterList,

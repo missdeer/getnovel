@@ -24,9 +24,13 @@ type NovelChapterInfo struct {
 	URL   string
 }
 
+type NovelSite struct {
+	Title string
+	Urls  []string
+}
+
 type NovelSiteHandler struct {
-	Title                    string
-	Urls                     []string
+	Sites                    []NovelSite
 	CanHandle                func(string) bool                                  // (url) -> can handle
 	PreprocessChapterListURL func(string) string                                // (original url) -> final url
 	ExtractChapterList       func(string, []byte) (string, []*NovelChapterInfo) // (url, raw page content) (title, chapters)

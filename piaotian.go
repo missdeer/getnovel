@@ -88,8 +88,12 @@ func extractPtrwxzChapterContent(rawPageContent []byte) (c []byte) {
 
 func init() {
 	registerNovelSiteHandler(&NovelSiteHandler{
-		Title: `飘天文学`,
-		Urls:  []string{`https://www.piaotia.com/`},
+		Sites: []NovelSite{
+			{
+				Title: `飘天文学`,
+				Urls:  []string{`https://www.piaotia.com/`},
+			},
+		},
 		CanHandle: func(u string) bool {
 			patterns := []string{
 				`https://www\.piaotia\.com/html/[0-9]+/[0-9]+/`,
