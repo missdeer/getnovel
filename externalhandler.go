@@ -15,6 +15,7 @@ import (
 	"github.com/missdeer/golib/httputil"
 	"github.com/missdeer/golib/ic"
 	"gitlab.com/ambrevar/golua/unicode"
+	"golang.org/x/net/html/charset"
 )
 
 func ConvertEncoding(L *lua.State) int {
@@ -23,6 +24,17 @@ func ConvertEncoding(L *lua.State) int {
 	fromStr := L.CheckString(3)
 	toStr := ic.ConvertString(fromEncoding, toEncoding, fromStr)
 	L.PushString(toStr)
+	return 1
+}
+
+func DetectContentCharset(L *lua.State) int {
+	dataStr := L.CheckString(1)
+	data := []byte(dataStr)
+	if _, name, ok := charset.DetermineEncoding(data, ""); ok {
+		L.PushString(name)
+		return 1
+	}
+	L.PushString("utf-8")
 	return 1
 }
 
@@ -138,6 +150,11 @@ func (h *ExternalHandler) initLuaEnv() {
 	h.l.GetGlobal("string")
 	h.l.PushGoFunction(ConvertEncoding)
 	h.l.SetField(-2, "convert")
+	h.l.Pop(1)
+
+	h.l.GetGlobal("string")
+	h.l.PushGoFunction(DetectContentCharset)
+	h.l.SetField(-2, "charsetdet")
 	h.l.Pop(1)
 
 	unicode.GoLuaReplaceFuncs(h.l)
