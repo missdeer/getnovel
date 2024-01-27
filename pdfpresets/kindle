@@ -1,7 +1,7 @@
 {
     "format": "pdf",
+    "pageType": "kindle",
     "contentFontSize": 10,
-    "pageType": "kpw3",
     "pageWidth": 255.12,
     "pageHeight": 331.65
 }
