@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/aarzilli/golua v0.0.0-20210507130708-11106aa57765
+	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/bmaupin/go-epub v1.1.0
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-gonic/gin v1.9.1
