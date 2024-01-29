@@ -17,6 +17,11 @@ import (
 	"github.com/signintech/gopdf/fontmaker/core"
 )
 
+var (
+	tagRegex     = regexp.MustCompile(`</?[a-zA-Z]+[^>]*>`) // match html tag
+	newlineRegex = regexp.MustCompile(`\n\n+`)
+)
+
 // pdfBook generate PDF file
 type pdfBook struct {
 	title           string
@@ -205,18 +210,13 @@ func (m *pdfBook) preprocessContent(content string) string {
 	c := html.UnescapeString(content)
 	c = strings.Replace(c, `<br/>`, "\n", -1)
 	c = strings.Replace(c, `</p><p>`, "\n", -1)
-	re := regexp.MustCompile(`</?a-zA-Z[^>]+/?>`)
-	c = re.ReplaceAllString(c, "")
 
-	for idx := strings.Index(c, "\n\n"); idx >= 0; idx = strings.Index(c, "\n\n") {
-		c = strings.Replace(c, "\n\n", "\n", -1)
-	}
-	for len(c) > 0 && (c[0] == byte(' ') || c[0] == byte('\n')) {
-		c = c[1:]
-	}
-	for len(c) > 0 && strings.HasPrefix(c, `　`) {
-		c = c[len(`　`):]
-	}
+	c = tagRegex.ReplaceAllString(c, "")
+	c = newlineRegex.ReplaceAllString(c, "\n")
+
+	c = strings.TrimSpace(c)
+	c = strings.TrimLeft(c, "　")
+
 	return c
 }
 
