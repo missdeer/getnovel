@@ -2,9 +2,11 @@ package ebook
 
 import (
 	"fmt"
+	"html"
 	"io"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -200,16 +202,12 @@ func (m *pdfBook) endBook() {
 }
 
 func (m *pdfBook) preprocessContent(content string) string {
-	c := strings.Replace(content, `<br/>`, "\n", -1)
-	c = strings.Replace(c, `&amp;`, `&`, -1)
-	c = strings.Replace(c, `&lt;`, `<`, -1)
-	c = strings.Replace(c, `&gt;`, `>`, -1)
-	c = strings.Replace(c, `&quot;`, `"`, -1)
-	c = strings.Replace(c, `&#39;`, `'`, -1)
-	c = strings.Replace(c, `&nbsp;`, ` `, -1)
+	c := html.UnescapeString(content)
+	c = strings.Replace(c, `<br/>`, "\n", -1)
 	c = strings.Replace(c, `</p><p>`, "\n", -1)
-	c = strings.Replace(c, `</p>`, ``, -1)
-	c = strings.Replace(c, `<p>`, ``, -1)
+	re := regexp.MustCompile(`</?a-zA-Z[^>]+/?>`)
+	c = re.ReplaceAllString(c, "")
+
 	for idx := strings.Index(c, "\n\n"); idx >= 0; idx = strings.Index(c, "\n\n") {
 		c = strings.Replace(c, "\n\n", "\n", -1)
 	}
