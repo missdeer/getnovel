@@ -14,7 +14,7 @@ package lua
 #cgo luajit LDFLAGS: -L ${SRCDIR}/luajit -lluajit
 
 #cgo windows LDFLAGS: -L${SRCDIR} -lmingwex -lmingw32
-#cgo linux LDFLAGS: -lm
+#cgo linux LDFLAGS: -lm -ldl
 
 #include <lua.h>
 #include <lualib.h>
