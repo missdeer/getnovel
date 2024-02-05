@@ -23,7 +23,7 @@ compile_lua() {
 	else
 		# For other OSes
 		env CGO_ENABLED=1 go clean --tags ${lua_tag}
-		env CGO_ENABLED=1 go build -ldflags="-s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" --tags ${lua_tag} -o getnovel-${lua_tag}
+		env CGO_ENABLED=1 go build -ldflags="-linkmode 'external' -extldflags '-static' -s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" --tags ${lua_tag} -o getnovel-${lua_tag}
 	fi
 }
 
