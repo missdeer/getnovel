@@ -6,6 +6,9 @@
 *.o
 *.a
 
+*.zip
+*.ttf
+
 # Test binary, build with `go test -c`
 *.test
 
