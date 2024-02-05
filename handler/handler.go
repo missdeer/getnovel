@@ -8,12 +8,12 @@ import (
 )
 
 var (
-	NovelSiteHandlers []*config.NovelSiteHandler
+	novelSiteHandlers []*config.NovelSiteHandler
 )
 
 func ListHandlers() {
 	fmt.Println("当前支持小说网站：")
-	for _, h := range NovelSiteHandlers {
+	for _, h := range novelSiteHandlers {
 		for _, site := range h.Sites {
 			fmt.Println("\t" + site.Title + ": " + strings.Join(site.Urls, ", "))
 		}
@@ -21,7 +21,7 @@ func ListHandlers() {
 }
 
 func RunHandler(runHandler func(*config.NovelSiteHandler) bool) bool {
-	for _, handler := range NovelSiteHandlers {
+	for _, handler := range novelSiteHandlers {
 		if runHandler(handler) {
 			return true
 		}
@@ -31,5 +31,5 @@ func RunHandler(runHandler func(*config.NovelSiteHandler) bool) bool {
 }
 
 func registerNovelSiteHandler(handler *config.NovelSiteHandler) {
-	NovelSiteHandlers = append(NovelSiteHandlers, handler)
+	novelSiteHandlers = append(novelSiteHandlers, handler)
 }
