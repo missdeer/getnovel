@@ -141,15 +141,17 @@ func listenAndServe() {
 	log.Fatal(http.ListenAndServe(config.Opts.ListenAndServe, http.FileServer(http.Dir(dir))))
 }
 
-func main() {
-	luaVersion := lua.GetLuaRelease()
-	luajitVersion := lua.GetLuaJITVersion()
-	if luajitVersion != "" {
-		luaVersion = luajitVersion
+func getEffectiveLuaVersion() string {
+	if luajitVersion := lua.GetLuaJITVersion(); luajitVersion != "" {
+		return luajitVersion
 	}
-	fmt.Printf("GetNovel集成%s\n提交编号：%s\n构建于%s\n\n", luaVersion, sha1ver, buildTime)
+	return lua.GetLuaRelease()
+}
+
+func main() {
+	fmt.Printf("GetNovel集成%s，提交编号：%s，构建于%s\n\n", getEffectiveLuaVersion(), sha1ver, buildTime)
 	if len(os.Args) < 2 {
-		fmt.Println("使用方法：\n\tgetnovel 小说目录网址")
+		fmt.Println("使用方法：\n\tgetnovel 目录网址")
 		handler.ListHandlers()
 		return
 	}
@@ -204,7 +206,7 @@ func main() {
 	}
 
 	if !downloaded {
-		fmt.Println("使用方法：\n\tgetnovel 小说目录网址")
+		fmt.Println("使用方法：\n\tgetnovel 目录网址")
 		handler.ListHandlers()
 	}
 }
