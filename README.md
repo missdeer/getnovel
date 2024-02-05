@@ -39,6 +39,7 @@ https://github.com/missdeer/getnovel/releases
 
 ### 常用用法
 
+* 输出适合在多种设备上看的epub格式（推荐）：`getnovel -f epub https://www.piaotia.com/html/15/15316/`
 * 输出适合在电脑上看的PDF格式：`getnovel -f pdf -c pc https://www.piaotia.com/html/15/15316/`
 * 输出适合在电脑上看的PDF格式，但只要其中第11章~第20章内容：`getnovel -f pdf -c pc --fromChapter=11 --toChapter=20 https://www.piaotia.com/html/15/15316/`
 * 输出适合在电脑上看的PDF格式，但以每100章为一个文件：`getnovel -f pdf -c pc --chaptersPerFile=100 https://www.piaotia.com/html/15/15316/`
