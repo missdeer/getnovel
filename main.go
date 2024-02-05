@@ -156,8 +156,13 @@ func main() {
 
 	args, err := flags.Parse(&config.Opts)
 	if err != nil {
+		if len(os.Args) == 2 {
+			switch os.Args[1] {
+			case "-h", "--help", "/help", "/?", "/h":
+				return
+			}
+		}
 		log.Fatalln("解析命令行参数失败", err)
-		return
 	}
 
 	config.ReadLocalBookSource()
