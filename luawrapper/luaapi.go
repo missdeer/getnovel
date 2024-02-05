@@ -1,4 +1,4 @@
-package main
+package luawrapper
 
 import (
 	"github.com/aarzilli/golua/lua"
@@ -26,7 +26,7 @@ func DetectContentCharset(L *lua.State) int {
 	return 1
 }
 
-func registerLuaAPIs(L *lua.State) {
+func RegisterLuaAPIs(L *lua.State) {
 	// add string.convert(from, to, str) method
 	L.GetGlobal("string")
 	L.PushGoFunction(ConvertEncoding)

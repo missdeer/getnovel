@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/aarzilli/golua/lua"
+	lw "github.com/missdeer/getnovel/luawrapper"
 	"github.com/missdeer/golib/httputil"
 	"gitlab.com/ambrevar/golua/unicode"
 )
@@ -124,7 +125,7 @@ func checkLuaFile(localDirPath string, fileName string) error {
 func (h *ExternalHandler) initLuaEnv() {
 	h.l.OpenLibs()
 
-	registerLuaAPIs(h.l)
+	lw.RegisterLuaAPIs(h.l)
 
 	unicode.GoLuaReplaceFuncs(h.l)
 
