@@ -145,9 +145,14 @@ func (h *ExternalHandler) initLuaEnv() {
 	files, err := os.ReadDir(directory)
 	if err != nil {
 		log.Println(err)
+		return
 	}
 
 	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+
 		if strings.ToLower(filepath.Ext(file.Name())) != ".lua" {
 			continue
 		}
@@ -170,6 +175,7 @@ func (h *ExternalHandler) invokePreprocessExternalChapterListURL(u string) strin
 	h.l.GetGlobal("PreprocessChapterListURL")
 	h.l.PushString(u)
 	h.l.Call(1, 1)
+	defer h.l.Pop(1)
 	if !h.l.IsString(-1) {
 		return u
 	}
@@ -217,7 +223,7 @@ func (h *ExternalHandler) invokeExtractExternalChapterList(u string, rawPageCont
 		}
 		h.l.Pop(1)
 	}
-
+	h.l.Pop(2)
 	return
 }
 
@@ -225,6 +231,7 @@ func (h *ExternalHandler) invokeExtractExternalChapterContent(rawPageContent []b
 	h.l.GetGlobal("ExtractChapterContent")
 	h.l.PushBytes(rawPageContent)
 	h.l.Call(1, 1)
+	defer h.l.Pop(1)
 	if !h.l.IsString(-1) {
 		return
 	}
@@ -235,6 +242,7 @@ func (h *ExternalHandler) invokeCanHandleExternalSite(u string) bool {
 	h.l.GetGlobal("CanHandle")
 	h.l.PushString(u)
 	h.l.Call(1, 1)
+	defer h.l.Pop(1)
 	if !h.l.IsBoolean(-1) {
 		return false
 	}
