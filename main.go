@@ -29,7 +29,7 @@ func registerNovelSiteHandler(handler *NovelSiteHandler) {
 }
 
 func listCommandHandler() {
-	fmt.Println("内建支持小说网站：")
+	fmt.Println("当前支持小说网站：")
 	for _, h := range novelSiteHandlers {
 		for _, site := range h.Sites {
 			fmt.Println("\t" + site.Title + ": " + strings.Join(site.Urls, ", "))
@@ -100,8 +100,7 @@ func runHandler(handler *NovelSiteHandler, novelURL string, ch chan bool) bool {
 	dlutil.Wait()
 	gen.End()
 
-	//handler.Download(novelURL, gen)
-	fmt.Println("downloaded", novelURL)
+	fmt.Println("已下载", novelURL)
 	ch <- true
 	return true
 }
@@ -113,7 +112,7 @@ func downloadBook(novelURL string, ch chan bool) {
 		}
 	}
 
-	fmt.Println("not downloaded", novelURL)
+	fmt.Println("未下载", novelURL)
 	ch <- false
 }
 
@@ -148,9 +147,9 @@ func listenAndServe() {
 			}
 		}
 	}
-	fmt.Println("Local IP:")
+	fmt.Println("本机IP：")
 	fmt.Println(strings.Join(ips, "\n"))
-	fmt.Println("starting http server on", config.Opts.ListenAndServe)
+	fmt.Println("启动HTTP服务器于", config.Opts.ListenAndServe)
 	log.Fatal(http.ListenAndServe(config.Opts.ListenAndServe, http.FileServer(http.Dir(dir))))
 }
 
@@ -160,7 +159,7 @@ func main() {
 	if luajitVersion != "" {
 		luaVersion = luajitVersion
 	}
-	fmt.Printf("GetNovel with %s\nCommit Id: %s\nBuilt at %s\n", luaVersion, sha1ver, buildTime)
+	fmt.Printf("GetNovel集成%s\n提交编号：%s\n构建于%s\n\n", luaVersion, sha1ver, buildTime)
 	if len(os.Args) < 2 {
 		fmt.Println("使用方法：\n\tgetnovel 小说目录网址")
 		listCommandHandler()
@@ -169,7 +168,7 @@ func main() {
 
 	args, err := flags.Parse(&config.Opts)
 	if err != nil {
-		log.Fatalln("parsing flags failed", err)
+		log.Fatalln("解析命令行参数失败", err)
 		return
 	}
 
@@ -198,7 +197,7 @@ func main() {
 	for _, novelURL := range args {
 		_, e := url.Parse(novelURL)
 		if e != nil {
-			fmt.Println("invalid URL", novelURL)
+			fmt.Println("无效URL", novelURL)
 			continue
 		}
 		downloadCount++

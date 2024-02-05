@@ -19,11 +19,11 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
-type ContentUtil struct {
-	Index   int
-	Title   string
-	LinkURL string
-	Content string
+type ContentInfo struct {
+	Index           int
+	Title           string
+	LinkURL         string
+	ContentFilePath string
 }
 type DownloadUtil struct {
 	ContentExtractor func([]byte) []byte
@@ -32,92 +32,92 @@ type DownloadUtil struct {
 	CurrentPage      int32
 	MaxPage          int32
 	Quit             chan bool
-	Content          chan ContentUtil
-	Buffer           []ContentUtil
-	StartContent     *ContentUtil
-	EndContent       *ContentUtil
+	Content          chan ContentInfo
+	Buffer           []ContentInfo
+	StartContent     *ContentInfo
+	EndContent       *ContentInfo
 	Ctx              context.Context
 	Semaphore        *semaphore.Weighted
 }
 
-func NewDownloadUtil(extractor func([]byte) []byte, generator ebook.IBook) (du *DownloadUtil) {
-	du = &DownloadUtil{
+func NewDownloadUtil(extractor func([]byte) []byte, generator ebook.IBook) (dlutil *DownloadUtil) {
+	dlutil = &DownloadUtil{
 		ContentExtractor: extractor,
 		Generator:        generator,
 		Quit:             make(chan bool),
 		Ctx:              context.TODO(),
 		Semaphore:        semaphore.NewWeighted(config.Opts.ParallelCount),
-		Content:          make(chan ContentUtil),
+		Content:          make(chan ContentInfo),
 	}
 	if config.Opts.FromChapter != 0 {
-		du.StartContent = &ContentUtil{Index: config.Opts.FromChapter}
+		dlutil.StartContent = &ContentInfo{Index: config.Opts.FromChapter}
 	}
 	if config.Opts.FromTitle != "" {
-		du.StartContent = &ContentUtil{Title: config.Opts.FromTitle, Index: math.MaxInt32}
+		dlutil.StartContent = &ContentInfo{Title: config.Opts.FromTitle, Index: math.MaxInt32}
 	}
 	if config.Opts.ToChapter != 0 {
-		du.EndContent = &ContentUtil{Index: config.Opts.ToChapter}
+		dlutil.EndContent = &ContentInfo{Index: config.Opts.ToChapter}
 	}
 	if config.Opts.ToTitle != "" {
-		du.EndContent = &ContentUtil{Title: config.Opts.ToTitle}
+		dlutil.EndContent = &ContentInfo{Title: config.Opts.ToTitle}
 	}
 	var err error
-	du.TempDir, err = os.MkdirTemp("", uuid.New().String())
+	dlutil.TempDir, err = os.MkdirTemp("", uuid.New().String())
 	if err != nil {
 		log.Fatal("creating temporary directory failed", err)
 	}
 	return
 }
 
-func (du *DownloadUtil) Wait() {
-	<-du.Quit
-	os.RemoveAll(du.TempDir)
+func (dlutil *DownloadUtil) Wait() {
+	<-dlutil.Quit
+	os.RemoveAll(dlutil.TempDir)
 }
 
-func (du *DownloadUtil) PreprocessURL(index int, title string, link string) (returnImmediately bool, reachEnd bool) {
-	atomic.StoreInt32(&du.MaxPage, int32(index))
-	if du.StartContent != nil {
-		if du.StartContent.Index == index {
-			du.StartContent.Title = title
-			du.StartContent.LinkURL = link
-			atomic.StoreInt32(&du.CurrentPage, int32(index-1))
+func (dlutil *DownloadUtil) PreprocessURL(index int, title string, link string) (returnImmediately bool, reachEnd bool) {
+	atomic.StoreInt32(&dlutil.MaxPage, int32(index))
+	if dlutil.StartContent != nil {
+		if dlutil.StartContent.Index == index {
+			dlutil.StartContent.Title = title
+			dlutil.StartContent.LinkURL = link
+			atomic.StoreInt32(&dlutil.CurrentPage, int32(index-1))
 		}
-		if du.StartContent.Title == title {
-			du.StartContent.Index = index
-			du.StartContent.LinkURL = link
-			atomic.StoreInt32(&du.CurrentPage, int32(index-1))
+		if dlutil.StartContent.Title == title {
+			dlutil.StartContent.Index = index
+			dlutil.StartContent.LinkURL = link
+			atomic.StoreInt32(&dlutil.CurrentPage, int32(index-1))
 		}
 
-		if du.StartContent.Index > index {
+		if dlutil.StartContent.Index > index {
 			return true, false
 		}
 	}
-	if du.EndContent != nil {
-		if du.EndContent.Index == index {
-			du.EndContent.Title = title
-			du.EndContent.LinkURL = link
+	if dlutil.EndContent != nil {
+		if dlutil.EndContent.Index == index {
+			dlutil.EndContent.Title = title
+			dlutil.EndContent.LinkURL = link
 		}
-		if du.EndContent.Title == title {
-			du.EndContent.Index = index
-			du.EndContent.LinkURL = link
+		if dlutil.EndContent.Title == title {
+			dlutil.EndContent.Index = index
+			dlutil.EndContent.LinkURL = link
 		}
-		atomic.StoreInt32(&du.MaxPage, int32(du.EndContent.Index))
+		atomic.StoreInt32(&dlutil.MaxPage, int32(dlutil.EndContent.Index))
 
-		if index > du.EndContent.Index && du.EndContent.Index != 0 {
+		if index > dlutil.EndContent.Index && dlutil.EndContent.Index != 0 {
 			return true, true
 		}
 	}
 	return false, false
 }
 
-func (du *DownloadUtil) AddURL(index int, title string, link string) (reachEnd bool) {
-	if r, e := du.PreprocessURL(index, title, link); r == true {
+func (dlutil *DownloadUtil) AddURL(index int, title string, link string) (reachEnd bool) {
+	if r, e := dlutil.PreprocessURL(index, title, link); r == true {
 		return e
 	}
 	// semaphore
-	du.Semaphore.Acquire(du.Ctx, 1)
+	dlutil.Semaphore.Acquire(dlutil.Ctx, 1)
 	go func() {
-		filePath := fmt.Sprintf("%s/%d.txt", du.TempDir, index)
+		filePath := fmt.Sprintf("%s/%d.txt", dlutil.TempDir, index)
 		contentFd, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 		if err != nil {
 			log.Println("opening file", filePath, "for writing failed ", err)
@@ -137,61 +137,61 @@ func (du *DownloadUtil) AddURL(index int, title string, link string) (reachEnd b
 			log.Println("getting chapter content from", link, "failed ", err)
 			return
 		}
-		contentFd.Write(du.ContentExtractor(rawPageContent))
+		contentFd.Write(dlutil.ContentExtractor(rawPageContent))
 		contentFd.Close()
 
-		du.Content <- ContentUtil{
-			Index:   index,
-			Title:   title,
-			LinkURL: link,
-			Content: filePath,
+		dlutil.Content <- ContentInfo{
+			Index:           index,
+			Title:           title,
+			LinkURL:         link,
+			ContentFilePath: filePath,
 		}
-		du.Semaphore.Release(1)
+		dlutil.Semaphore.Release(1)
 	}()
 	return false
 }
 
-func (du *DownloadUtil) BufferHandler(cu ContentUtil) (exit bool) {
-	fmt.Println(cu.Title, cu.LinkURL)
+func (dlutil *DownloadUtil) BufferHandler(contentInfo ContentInfo) (exit bool) {
+	fmt.Println(contentInfo.Title, contentInfo.LinkURL)
 	// insert into local buffer
-	if len(du.Buffer) == 0 || du.Buffer[0].Index > cu.Index {
+	if len(dlutil.Buffer) == 0 || dlutil.Buffer[0].Index > contentInfo.Index {
 		// push front
-		du.Buffer = append([]ContentUtil{cu}, du.Buffer...)
+		dlutil.Buffer = append([]ContentInfo{contentInfo}, dlutil.Buffer...)
 		// check local buffer to pick items to generator
-		for ; len(du.Buffer) > 0 && int32(du.Buffer[0].Index) == atomic.LoadInt32(&du.CurrentPage)+1; du.Buffer = du.Buffer[1:] {
-			contentFd, err := os.OpenFile(du.Buffer[0].Content, os.O_RDONLY, 0644)
+		for ; len(dlutil.Buffer) > 0 && int32(dlutil.Buffer[0].Index) == atomic.LoadInt32(&dlutil.CurrentPage)+1; dlutil.Buffer = dlutil.Buffer[1:] {
+			contentFd, err := os.OpenFile(dlutil.Buffer[0].ContentFilePath, os.O_RDONLY, 0644)
 			if err != nil {
-				log.Println("opening file ", du.Buffer[0].Content, " for reading failed ", err)
+				log.Println("opening file ", dlutil.Buffer[0].ContentFilePath, " for reading failed ", err)
 				continue
 			}
 
 			contentC, err := io.ReadAll(contentFd)
 			contentFd.Close()
 			if err != nil {
-				log.Println("reading file ", du.Buffer[0].Content, " failed ", err)
+				log.Println("reading file ", dlutil.Buffer[0].ContentFilePath, " failed ", err)
 				continue
 			}
-			os.Remove(du.Buffer[0].Content)
+			os.Remove(dlutil.Buffer[0].ContentFilePath)
 
-			du.Generator.AppendContent(du.Buffer[0].Title, du.Buffer[0].LinkURL, string(contentC))
-			atomic.AddInt32(&du.CurrentPage, 1)
+			dlutil.Generator.AppendContent(dlutil.Buffer[0].Title, dlutil.Buffer[0].LinkURL, string(contentC))
+			atomic.AddInt32(&dlutil.CurrentPage, 1)
 		}
 
-		if atomic.LoadInt32(&du.CurrentPage) == atomic.LoadInt32(&du.MaxPage) {
-			du.Quit <- true
+		if atomic.LoadInt32(&dlutil.CurrentPage) == atomic.LoadInt32(&dlutil.MaxPage) {
+			dlutil.Quit <- true
 			return true
 		}
 		return false
 	}
-	if du.Buffer[len(du.Buffer)-1].Index < cu.Index {
+	if dlutil.Buffer[len(dlutil.Buffer)-1].Index < contentInfo.Index {
 		// push back
-		du.Buffer = append(du.Buffer, cu)
+		dlutil.Buffer = append(dlutil.Buffer, contentInfo)
 		return false
 	}
-	for i := 0; i < len(du.Buffer)-1; i++ {
-		if du.Buffer[i].Index < cu.Index && du.Buffer[i+1].Index > cu.Index {
+	for i := 0; i < len(dlutil.Buffer)-1; i++ {
+		if dlutil.Buffer[i].Index < contentInfo.Index && dlutil.Buffer[i+1].Index > contentInfo.Index {
 			// insert at i+1
-			du.Buffer = append(du.Buffer[:i+1], append([]ContentUtil{cu}, du.Buffer[i+1:]...)...)
+			dlutil.Buffer = append(dlutil.Buffer[:i+1], append([]ContentInfo{contentInfo}, dlutil.Buffer[i+1:]...)...)
 			return false
 		}
 	}
@@ -199,12 +199,12 @@ func (du *DownloadUtil) BufferHandler(cu ContentUtil) (exit bool) {
 	return false
 }
 
-func (du *DownloadUtil) Process() {
+func (dlutil *DownloadUtil) Process() {
 	go func() {
 		for {
 			select {
-			case cu := <-du.Content:
-				if du.BufferHandler(cu) {
+			case cu := <-dlutil.Content:
+				if dlutil.BufferHandler(cu) {
 					return
 				}
 			}
