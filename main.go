@@ -172,7 +172,7 @@ func main() {
 
 	opts = Options{
 		InsecureSkipVerify:         false,
-		Format:                     "mobi",
+		Format:                     "epub",
 		List:                       false,
 		LeftMargin:                 10,
 		TopMargin:                  10,
