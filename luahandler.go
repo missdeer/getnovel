@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/aarzilli/golua/lua"
+	"github.com/missdeer/getnovel/config"
 	lw "github.com/missdeer/getnovel/luawrapper"
 	"github.com/missdeer/golib/httputil"
 	"gitlab.com/ambrevar/golua/unicode"
@@ -151,7 +152,7 @@ func (h *ExternalHandler) initLuaEnv() {
 			continue
 		}
 
-		if opts.AutoUpdateExternalHandlers {
+		if config.Opts.AutoUpdateExternalHandlers {
 			if err := checkLuaFile(directory, file.Name()); err != nil {
 				log.Println(err)
 			}

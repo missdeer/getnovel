@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"encoding/json"
@@ -14,7 +14,7 @@ import (
 	"github.com/missdeer/golib/fsutil"
 )
 
-func readLocalBookSource() {
+func ReadLocalBookSource() {
 	matches, err := filepath.Glob("booksource/*")
 	if err != nil {
 		panic(err)
@@ -39,7 +39,7 @@ func readLocalBookSource() {
 	}
 }
 
-func parseConfigurations(content []byte, opts *Options) bool {
+func ParseConfigurations(content []byte, opts *Options) bool {
 	var options map[string]interface{}
 	if err := json.Unmarshal(content, &options); err != nil {
 		log.Println("unmarshal configurations failed", err)
@@ -71,7 +71,7 @@ func parseConfigurations(content []byte, opts *Options) bool {
 	return true
 }
 
-func readRemotePreset(opts *Options) bool {
+func ReadRemotePreset(opts *Options) bool {
 	u := "https://raw.githubusercontent.com/missdeer/getnovel/master/pdfpresets/" + opts.ConfigFile
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", u, nil)
@@ -97,10 +97,10 @@ func readRemotePreset(opts *Options) bool {
 		return false
 	}
 
-	return parseConfigurations(c, opts)
+	return ParseConfigurations(c, opts)
 }
 
-func readLocalConfigFile(opts *Options) bool {
+func ReadLocalConfigFile(opts *Options) bool {
 	configFile := opts.ConfigFile
 	if b, e := fsutil.FileExists(configFile); e != nil || !b {
 		configFile = filepath.Join("pdfpresets", opts.ConfigFile)
@@ -123,5 +123,5 @@ func readLocalConfigFile(opts *Options) bool {
 		return false
 	}
 
-	return parseConfigurations(contentC, opts)
+	return ParseConfigurations(contentC, opts)
 }

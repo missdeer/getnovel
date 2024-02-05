@@ -8,58 +8,18 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 
 	"github.com/aarzilli/golua/lua"
 	"github.com/jessevdk/go-flags"
+	"github.com/missdeer/getnovel/config"
 	"github.com/missdeer/getnovel/ebook"
 	"github.com/missdeer/golib/httputil"
 )
 
-// Options for all command line options, long name must match field name
-type Options struct {
-	InsecureSkipVerify         bool    `short:"V" long:"insecureSkipVerify" description:"if true, TLS accepts any certificate"`
-	ListenAndServe             string  `short:"s" long:"listenAndServe" description:"set http listen and serve address, example: :8080"`
-	Format                     string  `short:"f" long:"format" description:"set generated file format, candidate values: mobi, epub, pdf, html, txt"`
-	List                       bool    `short:"l" long:"list" description:"list supported novel websites"`
-	LeftMargin                 float64 `long:"leftMargin" description:"set left margin for PDF format"`
-	TopMargin                  float64 `long:"topMargin" description:"set top margin for PDF format"`
-	PageWidth                  float64 `long:"pageWidth" description:"set page width for PDF format(unit: mm)"`
-	PageHeight                 float64 `long:"pageHeight" description:"set page height for PDF format(unit: mm)"`
-	PageType                   string  `short:"p" long:"pageType" description:"set page type for PDF format, add suffix to output file name"`
-	TitleFontSize              int     `long:"titleFontSize" description:"set title font point size for PDF format"`
-	ContentFontSize            int     `long:"contentFontSize" description:"set content font point size for PDF format"`
-	LineSpacing                float64 `long:"lineSpacing" description:"set line spacing rate for PDF format"`
-	PagesPerFile               int     `long:"pagesPerFile" description:"split the big single PDF file to several smaller PDF files, how many pages should be included in a file, 0 means don't split"`
-	ChaptersPerFile            int     `long:"chaptersPerFile" description:"split the big single PDF file to several smaller PDF files, how many chapters should be included in a file, 0 means don't split"`
-	FontFile                   string  `long:"fontFile" description:"set TTF font file path"`
-	H1FontFamily               string  `long:"h1FontFamily" description:"set H1 font family for mobi/epub/html format"`
-	H1FontSize                 string  `long:"h1FontSize" description:"set H1 font size for mobi/epub/html format"`
-	H2FontFamily               string  `long:"h2FontFamily" description:"set H2 font family for mobi/epub/html format"`
-	H2FontSize                 string  `long:"h2FontSize" description:"set H2 font size for mobi/epub/html format"`
-	BodyFontFamily             string  `long:"bodyFontFamily" description:"set body font family for mobi/epub/html format"`
-	BodyFontSize               string  `long:"bodyFontSize" description:"set body font size for mobi/epub/html format"`
-	ParaFontFamily             string  `long:"paraFontFamily" description:"set paragraph font family for mobi/epub/html format"`
-	ParaFontSize               string  `long:"paraFontSize" description:"set paragraph font size for mobi/epub/html format"`
-	ParaLineHeight             string  `long:"paraLineHeight" description:"set paragraph line height for mobi/epub/html format"`
-	RetryCount                 int     `short:"r" long:"retryCount" description:"download retry count"`
-	Timeout                    int     `short:"t" long:"timeout" description:"download timeout seconds"`
-	ParallelCount              int64   `long:"parallelCount" description:"parallel count for downloading"`
-	ConfigFile                 string  `short:"c" long:"configFile" description:"read configurations from local file"`
-	OutputFile                 string  `short:"o" long:"outputFile" description:"output file path"`
-	FromChapter                int     `long:"fromChapter" description:"from chapter"`
-	FromTitle                  string  `long:"fromTitle" description:"from title"`
-	ToChapter                  int     `long:"toChapter" description:"to chapter"`
-	ToTitle                    string  `long:"toTitle" description:"to title"`
-	Author                     string  `short:"a" long:"author" description:"author"`
-	AutoUpdateExternalHandlers bool    `long:"autoUpdateExternalHandlers" description:"auto update external handlers"`
-}
-
 var (
 	novelSiteHandlers []*NovelSiteHandler
-	opts              Options
 	sha1ver           string // sha1 revision used to build the program
 	buildTime         string // when the executable was built
 )
@@ -89,20 +49,20 @@ func runHandler(handler *NovelSiteHandler, novelURL string, ch chan bool) bool {
 	if !handler.CanHandle(novelURL) {
 		return false
 	}
-	gen := ebook.NewBook(opts.Format)
-	gen.SetPDFFontSize(opts.TitleFontSize, opts.ContentFontSize)
-	gen.SetHTMLBodyFont(opts.BodyFontFamily, opts.BodyFontSize)
-	gen.SetHTMLH1Font(opts.H1FontFamily, opts.H1FontSize)
-	gen.SetHTMLH2Font(opts.H2FontFamily, opts.H2FontSize)
-	gen.SetHTMLParaFont(opts.ParaFontFamily, opts.ParaFontSize, opts.ParaLineHeight)
-	gen.SetLineSpacing(opts.LineSpacing)
-	gen.PagesPerFile(opts.PagesPerFile)
-	gen.ChaptersPerFile(opts.ChaptersPerFile)
-	gen.SetMargins(opts.LeftMargin, opts.TopMargin)
-	gen.SetPageType(opts.PageType)
-	gen.SetPageSize(opts.PageWidth, opts.PageHeight)
-	gen.SetFontFile(opts.FontFile)
-	gen.Output(opts.OutputFile)
+	gen := ebook.NewBook(config.Opts.Format)
+	gen.SetPDFFontSize(config.Opts.TitleFontSize, config.Opts.ContentFontSize)
+	gen.SetHTMLBodyFont(config.Opts.BodyFontFamily, config.Opts.BodyFontSize)
+	gen.SetHTMLH1Font(config.Opts.H1FontFamily, config.Opts.H1FontSize)
+	gen.SetHTMLH2Font(config.Opts.H2FontFamily, config.Opts.H2FontSize)
+	gen.SetHTMLParaFont(config.Opts.ParaFontFamily, config.Opts.ParaFontSize, config.Opts.ParaLineHeight)
+	gen.SetLineSpacing(config.Opts.LineSpacing)
+	gen.PagesPerFile(config.Opts.PagesPerFile)
+	gen.ChaptersPerFile(config.Opts.ChaptersPerFile)
+	gen.SetMargins(config.Opts.LeftMargin, config.Opts.TopMargin)
+	gen.SetPageType(config.Opts.PageType)
+	gen.SetPageSize(config.Opts.PageWidth, config.Opts.PageHeight)
+	gen.SetFontFile(config.Opts.FontFile)
+	gen.Output(config.Opts.OutputFile)
 	if handler.PreprocessChapterListURL != nil {
 		novelURL = handler.PreprocessChapterListURL(novelURL)
 	}
@@ -114,7 +74,7 @@ func runHandler(handler *NovelSiteHandler, novelURL string, ch chan bool) bool {
 		"Accept-Language":           []string{`en-US,en;q=0.8`},
 		"Upgrade-Insecure-Requests": []string{"1"},
 	}
-	rawPageContent, err := httputil.GetBytes(novelURL, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
+	rawPageContent, err := httputil.GetBytes(novelURL, headers, time.Duration(config.Opts.Timeout)*time.Second, config.Opts.RetryCount)
 	if err != nil {
 		ch <- false
 		return true
@@ -129,7 +89,7 @@ func runHandler(handler *NovelSiteHandler, novelURL string, ch chan bool) bool {
 	gen.Begin()
 
 	gen.SetTitle(title)
-	gen.SetAuthor(opts.Author)
+	gen.SetAuthor(config.Opts.Author)
 	dlutil := NewDownloadUtil(handler.ExtractChapterContent, gen)
 	dlutil.Process()
 	for _, chapter := range chapters {
@@ -170,50 +130,20 @@ func main() {
 		return
 	}
 
-	opts = Options{
-		InsecureSkipVerify:         false,
-		Format:                     "epub",
-		List:                       false,
-		LeftMargin:                 10,
-		TopMargin:                  10,
-		PageHeight:                 841.89,
-		PageWidth:                  595.28,
-		TitleFontSize:              24,
-		ContentFontSize:            18,
-		H1FontFamily:               "CustomFont",
-		H2FontFamily:               "CustomFont",
-		BodyFontFamily:             "CustomFont",
-		ParaFontFamily:             "CustomFont",
-		H1FontSize:                 "4em",
-		H2FontSize:                 "1.2em",
-		BodyFontSize:               "1.2em",
-		ParaFontSize:               "1.0em",
-		ParaLineHeight:             "1.0em",
-		LineSpacing:                1.2,
-		PagesPerFile:               0,
-		ChaptersPerFile:            0,
-		FontFile:                   filepath.Join("fonts", "CustomFont.ttf"),
-		RetryCount:                 3,
-		Timeout:                    60,
-		ParallelCount:              int64(runtime.NumCPU()) * 2, // get cpu logical core number
-		Author:                     "GetNovel用户",
-		AutoUpdateExternalHandlers: false,
-	}
-
-	args, err := flags.Parse(&opts)
+	args, err := flags.Parse(&config.Opts)
 	if err != nil {
 		log.Fatalln("parsing flags failed", err)
 		return
 	}
 
-	readLocalBookSource()
+	config.ReadLocalBookSource()
 
-	if opts.List {
+	if config.Opts.List {
 		listCommandHandler()
 		return
 	}
 
-	if opts.ListenAndServe != "" {
+	if config.Opts.ListenAndServe != "" {
 		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 		if err != nil {
 			log.Fatal(err)
@@ -247,18 +177,18 @@ func main() {
 		}
 		fmt.Println("Local IP:")
 		fmt.Println(strings.Join(ips, "\n"))
-		fmt.Println("starting http server on", opts.ListenAndServe)
-		log.Fatal(http.ListenAndServe(opts.ListenAndServe, http.FileServer(http.Dir(dir))))
+		fmt.Println("starting http server on", config.Opts.ListenAndServe)
+		log.Fatal(http.ListenAndServe(config.Opts.ListenAndServe, http.FileServer(http.Dir(dir))))
 		return
 	}
 
-	if opts.ConfigFile != "" {
-		if !readLocalConfigFile(&opts) && !readRemotePreset(&opts) {
+	if config.Opts.ConfigFile != "" {
+		if !config.ReadLocalConfigFile(&config.Opts) && !config.ReadRemotePreset(&config.Opts) {
 			return
 		}
 	}
 
-	httputil.SetInsecureSkipVerify(opts.InsecureSkipVerify)
+	httputil.SetInsecureSkipVerify(config.Opts.InsecureSkipVerify)
 
 	downloadedChannel := make(chan bool)
 	downloadCount := 0

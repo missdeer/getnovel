@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/missdeer/getnovel/config"
 	"github.com/missdeer/getnovel/ebook"
 	"github.com/missdeer/golib/httputil"
 	"golang.org/x/sync/semaphore"
@@ -45,20 +46,20 @@ func NewDownloadUtil(extractor func([]byte) []byte, generator ebook.IBook) (du *
 		Generator:        generator,
 		Quit:             make(chan bool),
 		Ctx:              context.TODO(),
-		Semaphore:        semaphore.NewWeighted(opts.ParallelCount),
+		Semaphore:        semaphore.NewWeighted(config.Opts.ParallelCount),
 		Content:          make(chan ContentUtil),
 	}
-	if opts.FromChapter != 0 {
-		du.StartContent = &ContentUtil{Index: opts.FromChapter}
+	if config.Opts.FromChapter != 0 {
+		du.StartContent = &ContentUtil{Index: config.Opts.FromChapter}
 	}
-	if opts.FromTitle != "" {
-		du.StartContent = &ContentUtil{Title: opts.FromTitle, Index: math.MaxInt32}
+	if config.Opts.FromTitle != "" {
+		du.StartContent = &ContentUtil{Title: config.Opts.FromTitle, Index: math.MaxInt32}
 	}
-	if opts.ToChapter != 0 {
-		du.EndContent = &ContentUtil{Index: opts.ToChapter}
+	if config.Opts.ToChapter != 0 {
+		du.EndContent = &ContentUtil{Index: config.Opts.ToChapter}
 	}
-	if opts.ToTitle != "" {
-		du.EndContent = &ContentUtil{Title: opts.ToTitle}
+	if config.Opts.ToTitle != "" {
+		du.EndContent = &ContentUtil{Title: config.Opts.ToTitle}
 	}
 	var err error
 	du.TempDir, err = os.MkdirTemp("", uuid.New().String())
@@ -131,7 +132,7 @@ func (du *DownloadUtil) AddURL(index int, title string, link string) (reachEnd b
 			"Accept-Language":           []string{`en-US,en;q=0.8`},
 			"Upgrade-Insecure-Requests": []string{"1"},
 		}
-		rawPageContent, err := httputil.GetBytes(link, headers, time.Duration(opts.Timeout)*time.Second, opts.RetryCount)
+		rawPageContent, err := httputil.GetBytes(link, headers, time.Duration(config.Opts.Timeout)*time.Second, config.Opts.RetryCount)
 		if err != nil {
 			log.Println("getting chapter content from", link, "failed ", err)
 			return
