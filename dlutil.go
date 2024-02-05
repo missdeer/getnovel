@@ -201,12 +201,9 @@ func (dlutil *DownloadUtil) BufferHandler(contentInfo ContentInfo) (exit bool) {
 
 func (dlutil *DownloadUtil) Process() {
 	go func() {
-		for {
-			select {
-			case cu := <-dlutil.Content:
-				if dlutil.BufferHandler(cu) {
-					return
-				}
+		for contentInfo := range dlutil.Content {
+			if dlutil.BufferHandler(contentInfo) {
+				return
 			}
 		}
 	}()
