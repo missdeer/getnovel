@@ -15,29 +15,16 @@ import (
 	"github.com/jessevdk/go-flags"
 	"github.com/missdeer/getnovel/config"
 	"github.com/missdeer/getnovel/ebook"
+	"github.com/missdeer/getnovel/handler"
 	"github.com/missdeer/golib/httputil"
 )
 
 var (
-	novelSiteHandlers []*NovelSiteHandler
-	sha1ver           string // sha1 revision used to build the program
-	buildTime         string // when the executable was built
+	sha1ver   string // sha1 revision used to build the program
+	buildTime string // when the executable was built
 )
 
-func registerNovelSiteHandler(handler *NovelSiteHandler) {
-	novelSiteHandlers = append(novelSiteHandlers, handler)
-}
-
-func listCommandHandler() {
-	fmt.Println("当前支持小说网站：")
-	for _, h := range novelSiteHandlers {
-		for _, site := range h.Sites {
-			fmt.Println("\t" + site.Title + ": " + strings.Join(site.Urls, ", "))
-		}
-	}
-}
-
-func runHandler(handler *NovelSiteHandler, novelURL string, ch chan bool) bool {
+func runHandler(handler *config.NovelSiteHandler, novelURL string, ch chan bool) bool {
 	if handler.Begin != nil {
 		handler.Begin()
 	}
@@ -106,10 +93,11 @@ func runHandler(handler *NovelSiteHandler, novelURL string, ch chan bool) bool {
 }
 
 func downloadBook(novelURL string, ch chan bool) {
-	for _, handler := range novelSiteHandlers {
-		if runHandler(handler, novelURL, ch) {
-			return
-		}
+	runHanderWrapper := func(handler *config.NovelSiteHandler) bool {
+		return runHandler(handler, novelURL, ch)
+	}
+	if handler.RunHandler(runHanderWrapper) {
+		return
 	}
 
 	fmt.Println("未下载", novelURL)
@@ -162,7 +150,7 @@ func main() {
 	fmt.Printf("GetNovel集成%s\n提交编号：%s\n构建于%s\n\n", luaVersion, sha1ver, buildTime)
 	if len(os.Args) < 2 {
 		fmt.Println("使用方法：\n\tgetnovel 小说目录网址")
-		listCommandHandler()
+		handler.ListHandlers()
 		return
 	}
 
@@ -175,7 +163,7 @@ func main() {
 	config.ReadLocalBookSource()
 
 	if config.Opts.List {
-		listCommandHandler()
+		handler.ListHandlers()
 		return
 	}
 
@@ -212,6 +200,6 @@ func main() {
 
 	if !downloaded {
 		fmt.Println("使用方法：\n\tgetnovel 小说目录网址")
-		listCommandHandler()
+		handler.ListHandlers()
 	}
 }

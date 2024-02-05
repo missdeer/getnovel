@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"bufio"
@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/missdeer/getnovel/config"
 	"github.com/missdeer/golib/ic"
 )
 
@@ -17,7 +18,7 @@ type Uukanshu struct {
 	canHandleRegexp *regexp.Regexp
 }
 
-func (uu *Uukanshu) extractChapterList(u string, rawPageContent []byte) (title string, chapters []*NovelChapterInfo) {
+func (uu *Uukanshu) extractChapterList(u string, rawPageContent []byte) (title string, chapters []*config.NovelChapterInfo) {
 	var lines []string
 	// 	<li><a href="/b/2816/52791.html" title="调教初唐 第一千零八十五章 调教完毕……" target="_blank">第一千零八十五章 调教完毕……</a></li>
 	r := regexp.MustCompile(`<li><a\shref="/b/[0-9]+/([0-9]+\.html)"\stitle="[^"]+"\starget="_blank">([^<]+)</a></li>$`)
@@ -50,7 +51,7 @@ func (uu *Uukanshu) extractChapterList(u string, rawPageContent []byte) (title s
 		ss := r.FindAllStringSubmatch(l, -1)
 		s := ss[0]
 		finalURL := fmt.Sprintf("%s%s", u, s[1])
-		chapters = append(chapters, &NovelChapterInfo{
+		chapters = append(chapters, &config.NovelChapterInfo{
 			Index: index + 1,
 			Title: s[2],
 			URL:   finalURL,
@@ -114,8 +115,8 @@ func init() {
 		removeRegexp:    regexp.MustCompile(`<!--flag[a-zA-Z0-9_]*-->`),
 		canHandleRegexp: regexp.MustCompile(`https://www\.uukanshu\.net/b/[0-9]+/`),
 	}
-	registerNovelSiteHandler(&NovelSiteHandler{
-		Sites: []NovelSite{
+	registerNovelSiteHandler(&config.NovelSiteHandler{
+		Sites: []config.NovelSite{
 			{
 				Title: `UU看书`,
 				Urls:  []string{`https://www.uukanshu.net/`},

@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"crypto/md5"
@@ -25,7 +25,7 @@ type extractExternalChapterListRequest struct {
 
 type extractExternalChapterListResponse struct {
 	title    string
-	chapters []*NovelChapterInfo
+	chapters []*config.NovelChapterInfo
 }
 
 type ExternalHandler struct {
@@ -176,7 +176,7 @@ func (h *ExternalHandler) invokePreprocessExternalChapterListURL(u string) strin
 	return h.l.ToString(-1)
 }
 
-func (h *ExternalHandler) invokeExtractExternalChapterList(u string, rawPageContent []byte) (title string, chapters []*NovelChapterInfo) {
+func (h *ExternalHandler) invokeExtractExternalChapterList(u string, rawPageContent []byte) (title string, chapters []*config.NovelChapterInfo) {
 	h.l.GetGlobal("ExtractChapterList")
 	h.l.PushString(u)
 	h.l.PushBytes(rawPageContent)
@@ -190,7 +190,7 @@ func (h *ExternalHandler) invokeExtractExternalChapterList(u string, rawPageCont
 	for h.l.Next(-2) != 0 {
 		// 现在栈的情况：-1 => 值（表），-2 => 键，-3 => 章节表
 		if h.l.IsTable(-1) {
-			chapter := &NovelChapterInfo{}
+			chapter := &config.NovelChapterInfo{}
 
 			h.l.PushString("Index")
 			h.l.GetTable(-2)
@@ -287,7 +287,7 @@ func (h *ExternalHandler) preprocessExternalChapterListURL(u string) string {
 	return <-h.preprocessExternalChapterListURLResponse
 }
 
-func (h *ExternalHandler) extractExternalChapterList(u string, rawPageContent []byte) (title string, chapters []*NovelChapterInfo) {
+func (h *ExternalHandler) extractExternalChapterList(u string, rawPageContent []byte) (title string, chapters []*config.NovelChapterInfo) {
 	h.extractExternalChapterListRequestParam <- extractExternalChapterListRequest{
 		url:            u,
 		rawPageContent: rawPageContent,
@@ -309,8 +309,8 @@ func (h *ExternalHandler) canHandleExternalSite(u string) bool {
 func init() {
 	handler := newExternalHandler()
 
-	registerNovelSiteHandler(&NovelSiteHandler{
-		Sites: []NovelSite{
+	registerNovelSiteHandler(&config.NovelSiteHandler{
+		Sites: []config.NovelSite{
 			{
 				Title: `外部脚本处理器`,
 				Urls:  []string{},

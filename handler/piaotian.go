@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"bufio"
@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/missdeer/getnovel/config"
 	"github.com/missdeer/golib/ic"
 )
 
@@ -20,7 +21,7 @@ func preprocessPtwxzChapterListURL(u string) string {
 	return u
 }
 
-func extractPtrwxzChapterList(u string, rawPageContent []byte) (title string, chapters []*NovelChapterInfo) {
+func extractPtrwxzChapterList(u string, rawPageContent []byte) (title string, chapters []*config.NovelChapterInfo) {
 	index := 0
 	r := regexp.MustCompile(`^<li><a\shref="([0-9]+\.html)">([^<]+)</a></li>$`)
 	re := regexp.MustCompile(`^<h1>([^<]+)</h1>$`)
@@ -47,7 +48,7 @@ func extractPtrwxzChapterList(u string, rawPageContent []byte) (title string, ch
 			s := ss[0]
 			finalURL := fmt.Sprintf("%s%s", u, s[1])
 			index++
-			chapters = append(chapters, &NovelChapterInfo{
+			chapters = append(chapters, &config.NovelChapterInfo{
 				Index: index,
 				Title: s[2],
 				URL:   finalURL,
@@ -87,8 +88,8 @@ func extractPtrwxzChapterContent(rawPageContent []byte) (c []byte) {
 }
 
 func init() {
-	registerNovelSiteHandler(&NovelSiteHandler{
-		Sites: []NovelSite{
+	registerNovelSiteHandler(&config.NovelSiteHandler{
+		Sites: []config.NovelSite{
 			{
 				Title: `飘天文学`,
 				Urls:  []string{`https://www.piaotia.com/`},
