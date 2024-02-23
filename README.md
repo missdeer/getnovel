@@ -33,9 +33,9 @@ https://github.com/missdeer/getnovel/releases
 
 ## 使用方法
 
-1. 首先，在当前目录创建名为fonts的目录，并将你喜欢的字体文件改名为CustomFont.ttf后放入该目录；
+1. 首先，在当前目录创建名为`fonts`的目录，并将你喜欢的字体文件改名为`CustomFont.ttf`后放入该目录；
 2. 然后，在当前目录执行命令获取小说内容：`getnovel 小说目录网址`，如`getnovel https://www.piaotia.com/html/15/15316/`，可以通过命令行参数对程序行为进行设置，比如指定输出文件格式为PDF或epub等等；
-3. 最后，如果需要得到mobi文件，则继续执行命令打包成mobi文件：`kindlegen -c2 -o xxxx.mobi content.opf`, kindlegen工具可在Amazon官网[下载Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011)安装后获取。可以将`kindlegen`的路径设置到环境变量`KINDLEGEN_PATH`中，或者将`kindlegen`所在目录路径添加到环境变量`PATH`中，则`getnovel`会自动调用`kindlegen`生成mobi文件，省去手动输入命令的步骤。
+3. 最后，如果需要得到mobi文件，则继续执行命令打包成mobi文件：`kindlegen -c2 -o xxxx.mobi content.opf`, `kindlegen`工具可在Amazon官网[下载Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011)安装后获取。可以将`kindlegen`的路径设置到环境变量`KINDLEGEN_PATH`中，或者将`kindlegen`所在目录路径添加到环境变量`PATH`中，则`getnovel`会自动调用`kindlegen`生成mobi文件，省去手动输入命令的步骤。
 
 ### 常用用法
 
@@ -54,6 +54,8 @@ https://github.com/missdeer/getnovel/releases
 ## 注意
 
 * 输出为PDF格式时，如果遇到打开PDF文件为空白，原因可能是所使用的自定义字体文件中未包含某些字符却被使用了，可以尝试更换嵌入字体文件为字符集较大的，比如“方正准雅宋GBK”等。
+* 如果需要使用代理，则设置环境变量`HTTP_PROXY`或`HTTPS_PROXY`。
+* 推荐适合屏幕阅读的简体中文字体：方正准雅宋、方正屏显雅宋、方正莹雪、霞鹜文楷、仓耳今楷 etc.
 
 ## 待办事项
 
