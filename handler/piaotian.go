@@ -11,7 +11,7 @@ import (
 	"github.com/missdeer/golib/ic"
 )
 
-func preprocessPtwxzChapterListURL(u string) string {
+func preprocessPiaotianChapterListURL(u string) string {
 	reg := regexp.MustCompile(`https://www\.piaotia\.com/bookinfo/([0-9]+)/([0-9]+)\.html`)
 	if reg.MatchString(u) {
 		ss := reg.FindAllStringSubmatch(u, -1)
@@ -21,7 +21,7 @@ func preprocessPtwxzChapterListURL(u string) string {
 	return u
 }
 
-func extractPtrwxzChapterList(u string, rawPageContent []byte) (title string, chapters []*config.NovelChapterInfo) {
+func extractPiaotianChapterList(u string, rawPageContent []byte) (title string, chapters []*config.NovelChapterInfo) {
 	index := 0
 	r := regexp.MustCompile(`^<li><a\shref="([0-9]+\.html)">([^<]+)</a></li>$`)
 	re := regexp.MustCompile(`^<h1>([^<]+)</h1>$`)
@@ -58,7 +58,7 @@ func extractPtrwxzChapterList(u string, rawPageContent []byte) (title string, ch
 	return
 }
 
-func extractPtrwxzChapterContent(rawPageContent []byte) (c []byte) {
+func extractPiaotianChapterContent(rawPageContent []byte) (c []byte) {
 	c = ic.Convert("gbk", "utf-8", rawPageContent)
 	c = bytes.Replace(c, []byte("\r\n"), []byte(""), -1)
 	c = bytes.Replace(c, []byte("\r"), []byte(""), -1)
@@ -66,7 +66,7 @@ func extractPtrwxzChapterContent(rawPageContent []byte) (c []byte) {
 	c = bytes.Replace(c, []byte(`更多更快章节请到。`), []byte(""), -1)
 	c = bytes.Replace(c, []byte(`第一时间更新`), []byte(""), -1)
 	c = bytes.Replace(c, []byte(`本书首发来自17K小说网，第一时间看正版内容！`), []byte(""), -1)
-	c = bytes.Replace(c, []byte(`手机用户请访问http://m.ptwxz.net`), []byte(""), -1)
+	c = bytes.Replace(c, []byte(`手机用户请访问http://m.Piaotian.net`), []byte(""), -1)
 	idx := bytes.Index(c, []byte(`&nbsp;&nbsp;&nbsp;&nbsp;`))
 	if idx > 1 {
 		c = c[idx:]
@@ -108,8 +108,8 @@ func init() {
 			}
 			return false
 		},
-		PreprocessChapterListURL: preprocessPtwxzChapterListURL,
-		ExtractChapterList:       extractPtrwxzChapterList,
-		ExtractChapterContent:    extractPtrwxzChapterContent,
+		PreprocessChapterListURL: preprocessPiaotianChapterListURL,
+		ExtractChapterList:       extractPiaotianChapterList,
+		ExtractChapterContent:    extractPiaotianChapterContent,
 	})
 }
