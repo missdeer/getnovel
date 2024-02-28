@@ -59,15 +59,17 @@ func extract69xinshuChapterList(u string, rawPageContent []byte) (title string, 
 
 func extract69xinshuChapterContent(rawPageContent []byte) (c []byte) {
 	c = ic.Convert("gbk", "utf-8", rawPageContent)
-	c = bytes.Replace(c, []byte("\r\n"), []byte(""), -1)
-	c = bytes.Replace(c, []byte("\r"), []byte(""), -1)
-	c = bytes.Replace(c, []byte("\n"), []byte(""), -1)
-
 	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(c))
 	if err != nil {
 		log.Fatal(err)
 	}
-	c = []byte(doc.Find("div.txtnav").Text())
+
+	html, err := doc.Find("div.txtnav").Html()
+	if err != nil {
+		log.Fatal(err)
+	}
+	c = bytes.Replace([]byte(html), []byte(`&emsp;&emsp;`), []byte("  "), -1)
+	c = bytes.Replace(c, []byte("<br /><br />"), []byte(""), -1)
 	return
 }
 
