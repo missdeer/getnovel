@@ -50,12 +50,14 @@ https://github.com/missdeer/getnovel/releases
 
 * 飘天: https://www.piaotia.com
 * UU看书: https://www.uukanshu.net
+* 69看吧: https://www.69xinshu.com
 
 ## 注意
 
 * 输出为PDF格式时，如果遇到打开PDF文件为空白，原因可能是所使用的自定义字体文件中未包含某些字符却被使用了，可以尝试更换嵌入字体文件为字符集较大的，比如“方正准雅宋GBK”等。
-* 如果需要使用代理，则设置环境变量`HTTP_PROXY`或`HTTPS_PROXY`。
 * 推荐适合屏幕阅读的简体中文字体：方正准雅宋、方正屏显雅宋、方正莹雪、霞鹜文楷、仓耳今楷 etc.
+* 如果需要使用代理，则设置环境变量`HTTP_PROXY/HTTPS_PROXY/SOCKS5_PROXY`，注意`HTTP_PROXY/HTTPS_PROXY`需要带scheme，如`HTTP_PROXY=http://127.0.0.1:7890`，`SOCKS5_PROXY`则不用，如`SOCKS5_PROXY=127.0.0.1:7891`。
+* 69看吧等有反爬机制的网站，可以通过轮循代理的方式解决，例如使用clash配置多个代理服务器，加到同一个代理组并设置`type: load-balance, strategy: round-robin`，然后让getnovel走clash的代理端口即可。
 
 ## 待办事项
 
