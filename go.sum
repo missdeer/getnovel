@@ -66,8 +66,8 @@ github.com/mattn/go-isatty v0.0.19 h1:JITubQf0MOLdlGRuRq+jtsDlekdYPia9ZFsB8h/APP
 github.com/mattn/go-isatty v0.0.19/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
 github.com/mattn/go-runewidth v0.0.4 h1:2BvfKmzob6Bmd4YsL0zygOqfdFnK7GR4QL06Do4/p7Y=
 github.com/mattn/go-runewidth v0.0.4/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzpuz5H//U1FU=
-github.com/missdeer/golib v1.0.8 h1:vjGnJGKvf/hT1hACP4Nrov318l1bRkNusNQlJ3Z6LbU=
-github.com/missdeer/golib v1.0.8/go.mod h1:lqrdPqnUHj4+T74MRblH/PYfbQAiOsnhfs/aIXFFyMA=
+github.com/missdeer/golib v1.0.9 h1:SJF/0Wt5g/uwtNZ6qp32dscrPUTa07rvTJdA+W4x49k=
+github.com/missdeer/golib v1.0.9/go.mod h1:gk9WnVU9ewI7D2OilJ1LBH9hQL9OwOURqy9UnjcBOdU=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd h1:TRLaZ9cD/w8PVh93nsPXa1VrQ6jlwL5oN8l14QlcNfg=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
