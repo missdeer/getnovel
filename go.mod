@@ -15,7 +15,7 @@ require (
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
-	github.com/missdeer/golib v1.0.8
+	github.com/missdeer/golib v1.0.9
 	github.com/mozillazg/go-pinyin v0.20.0
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
