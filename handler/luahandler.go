@@ -320,8 +320,8 @@ func init() {
 	registerNovelSiteHandler(&config.NovelSiteHandler{
 		Sites: []config.NovelSite{
 			{
-				Title: `外部脚本处理器`,
-				Urls:  []string{},
+				Title: `外部处理器`,
+				Urls:  []string{`暂无`},
 			},
 		},
 		CanHandle:                handler.canHandleExternalSite,
