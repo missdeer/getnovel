@@ -73,7 +73,9 @@ func extract69xinshuChapterContent(rawPageContent []byte) (c []byte) {
 		log.Fatal(err)
 	}
 	c = bytes.Replace([]byte(html), []byte(`&emsp;&emsp;`), []byte("  "), -1)
-	c = bytes.Replace(c, []byte("<br /><br />"), []byte(""), -1)
+	c = bytes.Replace(c, []byte("<br /><br />"), []byte("<br/>"), -1)
+	c = bytes.Replace(c, []byte("<br/><br/>"), []byte("<br/>"), -1)
+	c = bytes.Replace(c, []byte("\xe2\x80\x83"), []byte("&nbsp;"), -1)
 	return
 }
 
