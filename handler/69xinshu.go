@@ -66,16 +66,18 @@ func extract69xinshuChapterContent(rawPageContent []byte) (c []byte) {
 
 	doc.Find("h1.hide720").Remove()
 	doc.Find("div.txtinfo.hide720").Remove()
+	doc.Find("div.contentadv").Remove()
+	doc.Find("div.bottom-ad").Remove()
 	doc.Find("div#txtright").Remove()
 
 	html, err := doc.Find("div.txtnav").Html()
 	if err != nil {
 		log.Fatal(err)
 	}
-	c = bytes.Replace([]byte(html), []byte(`&emsp;&emsp;`), []byte("  "), -1)
+	c = bytes.Replace([]byte(html), []byte(`&emsp;`), []byte("　"), -1)
 	c = bytes.Replace(c, []byte("<br /><br />"), []byte("<br/>"), -1)
 	c = bytes.Replace(c, []byte("<br/><br/>"), []byte("<br/>"), -1)
-	c = bytes.Replace(c, []byte("\xe2\x80\x83"), []byte("&nbsp;"), -1)
+	c = bytes.Replace(c, []byte("\xe2\x80\x83"), []byte("　"), -1)
 	return
 }
 
