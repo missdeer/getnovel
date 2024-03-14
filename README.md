@@ -50,7 +50,7 @@ https://github.com/missdeer/getnovel/releases
 
 * 飘天: https://www.piaotia.com
 * UU看书: https://www.uukanshu.net
-* 69看吧: https://www.69xinshu.com
+* 69看吧: https://www.69shu.pro
 
 ## 注意
 

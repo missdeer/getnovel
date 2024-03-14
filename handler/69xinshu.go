@@ -14,11 +14,11 @@ import (
 )
 
 func preprocess69xinshuChapterListURL(u string) string {
-	reg := regexp.MustCompile(`https://www\.69xinshu\.com/book/([0-9]+)\.htm`)
+	reg := regexp.MustCompile(`https://www\.69shu\.pro/book/([0-9]+)\.htm`)
 	if reg.MatchString(u) {
 		ss := reg.FindAllStringSubmatch(u, -1)
 		s := ss[0]
-		return fmt.Sprintf("https://www.69xinshu.com/book/%s/", s[1])
+		return fmt.Sprintf("https://www.69shu.pro/book/%s/", s[1])
 	}
 	return u
 }
@@ -64,6 +64,10 @@ func extract69xinshuChapterContent(rawPageContent []byte) (c []byte) {
 		log.Fatal(err)
 	}
 
+	doc.Find("h1.hide720").Remove()
+	doc.Find("div.txtinfo.hide720").Remove()
+	doc.Find("div#txtright").Remove()
+
 	html, err := doc.Find("div.txtnav").Html()
 	if err != nil {
 		log.Fatal(err)
@@ -78,13 +82,13 @@ func init() {
 		Sites: []config.NovelSite{
 			{
 				Title: `69书吧`,
-				Urls:  []string{`https://www.69xinshu.com/`},
+				Urls:  []string{`https://www.69shu.pro/`},
 			},
 		},
 		CanHandle: func(u string) bool {
 			patterns := []string{
-				`https://www\.69xinshu\.com/book/[0-9]+/`,
-				`^https://www\.69xinshu\.com/book/[0-9]+\.html?$`,
+				`https://www\.69shu\.pro/book/[0-9]+/`,
+				`^https://www\.69shu\.pro/book/[0-9]+\.html?$`,
 			}
 			for _, pattern := range patterns {
 				reg := regexp.MustCompile(pattern)
