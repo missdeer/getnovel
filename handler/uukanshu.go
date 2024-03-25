@@ -113,13 +113,13 @@ func (uu *Uukanshu) canHandle(u string) bool {
 func init() {
 	u := &Uukanshu{
 		removeRegexp:    regexp.MustCompile(`<!--flag[a-zA-Z0-9_]*-->`),
-		canHandleRegexp: regexp.MustCompile(`https://www\.uukanshu\.net/b/[0-9]+/`),
+		canHandleRegexp: regexp.MustCompile(`https://www\.zhaoshuyuan\.com/b/[0-9]+/`),
 	}
 	registerNovelSiteHandler(&config.NovelSiteHandler{
 		Sites: []config.NovelSite{
 			{
-				Title: `UU看书`,
-				Urls:  []string{`https://www.uukanshu.net/`},
+				Title: `找书苑`,
+				Urls:  []string{`https://www.zhaoshuyuan.com/`},
 			},
 		},
 		CanHandle:                u.canHandle,
