@@ -79,7 +79,10 @@ func runHandler(handler *config.NovelSiteHandler, novelURL string, ch chan bool)
 	gen.SetAuthor(config.Opts.Author)
 	dlutil := NewDownloadUtil(handler.ExtractChapterContent, gen)
 	dlutil.Process()
-	for _, chapter := range chapters {
+	for i, chapter := range chapters {
+		if config.Opts.WaitInterval > 0 && (i+1)%int(config.Opts.ParallelCount) == 0 {
+			time.Sleep(time.Duration(config.Opts.WaitInterval) * time.Second)
+		}
 		if dlutil.AddURL(chapter.Index, chapter.Title, chapter.URL) {
 			break
 		}
