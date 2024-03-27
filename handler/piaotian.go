@@ -58,7 +58,7 @@ func extractPiaotianChapterList(u string, rawPageContent []byte) (title string, 
 	return
 }
 
-func extractPiaotianChapterContent(rawPageContent []byte) (c []byte) {
+func extractPiaotianChapterContent(u string, rawPageContent []byte) (c []byte) {
 	c = ic.Convert("gbk", "utf-8", rawPageContent)
 	c = bytes.Replace(c, []byte("\r\n"), []byte(""), -1)
 	c = bytes.Replace(c, []byte("\r"), []byte(""), -1)

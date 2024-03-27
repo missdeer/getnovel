@@ -60,7 +60,7 @@ func (uu *Uukanshu) extractChapterList(u string, rawPageContent []byte) (title s
 	return
 }
 
-func (uu *Uukanshu) extractChapterContent(rawPageContent []byte) (c []byte) {
+func (uu *Uukanshu) extractChapterContent(u string, rawPageContent []byte) (c []byte) {
 	c = ic.Convert("gbk", "utf-8", rawPageContent)
 	c = bytes.Replace(c, []byte("\r\n"), []byte(""), -1)
 	c = bytes.Replace(c, []byte("\r"), []byte(""), -1)

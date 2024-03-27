@@ -18,7 +18,7 @@ import (
 	"gitlab.com/ambrevar/golua/unicode"
 )
 
-type extractExternalChapterListRequest struct {
+type extractExternalChapterListContentRequest struct {
 	url            string
 	rawPageContent []byte
 }
@@ -33,9 +33,9 @@ type ExternalHandler struct {
 	quit                                         chan bool
 	preprocessExternalChapterListURLRequestParam chan string
 	preprocessExternalChapterListURLResponse     chan string
-	extractExternalChapterListRequestParam       chan extractExternalChapterListRequest
+	extractExternalChapterListRequestParam       chan extractExternalChapterListContentRequest
 	extractExternalChapterListResponse           chan extractExternalChapterListResponse
-	extractExternalChapterContentRequestParam    chan []byte
+	extractExternalChapterContentRequestParam    chan extractExternalChapterListContentRequest
 	extractExternalChapterContentResponse        chan []byte
 	canHandleExternalSiteRequestParam            chan string
 	canHandleExternalSiteResponse                chan bool
@@ -47,9 +47,9 @@ func newExternalHandler() *ExternalHandler {
 		quit: make(chan bool),
 		preprocessExternalChapterListURLRequestParam: make(chan string),
 		preprocessExternalChapterListURLResponse:     make(chan string),
-		extractExternalChapterListRequestParam:       make(chan extractExternalChapterListRequest),
+		extractExternalChapterListRequestParam:       make(chan extractExternalChapterListContentRequest),
 		extractExternalChapterListResponse:           make(chan extractExternalChapterListResponse),
-		extractExternalChapterContentRequestParam:    make(chan []byte),
+		extractExternalChapterContentRequestParam:    make(chan extractExternalChapterListContentRequest),
 		extractExternalChapterContentResponse:        make(chan []byte),
 		canHandleExternalSiteRequestParam:            make(chan string),
 		canHandleExternalSiteResponse:                make(chan bool),
@@ -227,10 +227,11 @@ func (h *ExternalHandler) invokeExtractExternalChapterList(u string, rawPageCont
 	return
 }
 
-func (h *ExternalHandler) invokeExtractExternalChapterContent(rawPageContent []byte) (c []byte) {
+func (h *ExternalHandler) invokeExtractExternalChapterContent(u string, rawPageContent []byte) (c []byte) {
 	h.l.GetGlobal("ExtractChapterContent")
+	h.l.PushString(u)
 	h.l.PushBytes(rawPageContent)
-	h.l.Call(1, 1)
+	h.l.Call(2, 1)
 	defer h.l.Pop(1)
 	if !h.l.IsString(-1) {
 		return
@@ -264,8 +265,8 @@ func (h *ExternalHandler) invokeMethodLoop() {
 			h.extractExternalChapterListResponse <- extractExternalChapterListResponse{title: title, chapters: chapters}
 			break
 
-		case rawPageContent := <-h.extractExternalChapterContentRequestParam:
-			h.extractExternalChapterContentResponse <- h.invokeExtractExternalChapterContent(rawPageContent)
+		case req := <-h.extractExternalChapterContentRequestParam:
+			h.extractExternalChapterContentResponse <- h.invokeExtractExternalChapterContent(req.url, req.rawPageContent)
 			break
 
 		case u := <-h.canHandleExternalSiteRequestParam:
@@ -296,7 +297,7 @@ func (h *ExternalHandler) preprocessExternalChapterListURL(u string) string {
 }
 
 func (h *ExternalHandler) extractExternalChapterList(u string, rawPageContent []byte) (title string, chapters []*config.NovelChapterInfo) {
-	h.extractExternalChapterListRequestParam <- extractExternalChapterListRequest{
+	h.extractExternalChapterListRequestParam <- extractExternalChapterListContentRequest{
 		url:            u,
 		rawPageContent: rawPageContent,
 	}
@@ -304,8 +305,11 @@ func (h *ExternalHandler) extractExternalChapterList(u string, rawPageContent []
 	return resp.title, resp.chapters
 }
 
-func (h *ExternalHandler) extractExternalChapterContent(rawPageContent []byte) (c []byte) {
-	h.extractExternalChapterContentRequestParam <- rawPageContent
+func (h *ExternalHandler) extractExternalChapterContent(u string, rawPageContent []byte) (c []byte) {
+	h.extractExternalChapterContentRequestParam <- extractExternalChapterListContentRequest{
+		url:            u,
+		rawPageContent: rawPageContent,
+	}
 	return <-h.extractExternalChapterContentResponse
 }
 

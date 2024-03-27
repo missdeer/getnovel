@@ -57,7 +57,7 @@ func extract69xinshuChapterList(u string, rawPageContent []byte) (title string, 
 	return
 }
 
-func extract69xinshuChapterContent(rawPageContent []byte) (c []byte) {
+func extract69xinshuChapterContent(u string, rawPageContent []byte) (c []byte) {
 	c = ic.Convert("gbk", "utf-8", rawPageContent)
 	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(c))
 	if err != nil {

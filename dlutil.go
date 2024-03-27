@@ -26,28 +26,30 @@ type ContentInfo struct {
 	ContentFilePath string
 }
 type DownloadUtil struct {
-	ContentExtractor func([]byte) []byte
-	Generator        ebook.IBook
-	TempDir          string
-	CurrentPage      int32
-	MaxPage          int32
-	Quit             chan bool
-	Content          chan ContentInfo
-	Buffer           []ContentInfo
-	StartContent     *ContentInfo
-	EndContent       *ContentInfo
-	Ctx              context.Context
-	Semaphore        *semaphore.Weighted
+	ContentExtractor        func(string, []byte) []byte
+	ContentLinkPreprocessor func(string) (string, http.Header)
+	Generator               ebook.IBook
+	TempDir                 string
+	CurrentPage             int32
+	MaxPage                 int32
+	Quit                    chan bool
+	Content                 chan ContentInfo
+	Buffer                  []ContentInfo
+	StartContent            *ContentInfo
+	EndContent              *ContentInfo
+	Ctx                     context.Context
+	Semaphore               *semaphore.Weighted
 }
 
-func NewDownloadUtil(extractor func([]byte) []byte, generator ebook.IBook) (dlutil *DownloadUtil) {
+func NewDownloadUtil(contentExtractor func(string, []byte) []byte, contentLinkPreprocessor func(string) (string, http.Header), generator ebook.IBook) (dlutil *DownloadUtil) {
 	dlutil = &DownloadUtil{
-		ContentExtractor: extractor,
-		Generator:        generator,
-		Quit:             make(chan bool),
-		Ctx:              context.TODO(),
-		Semaphore:        semaphore.NewWeighted(config.Opts.ParallelCount),
-		Content:          make(chan ContentInfo),
+		ContentExtractor:        contentExtractor,
+		ContentLinkPreprocessor: contentLinkPreprocessor,
+		Generator:               generator,
+		Quit:                    make(chan bool),
+		Ctx:                     context.TODO(),
+		Semaphore:               semaphore.NewWeighted(config.Opts.ParallelCount),
+		Content:                 make(chan ContentInfo),
 	}
 	if config.Opts.FromChapter != 0 {
 		dlutil.StartContent = &ContentInfo{Index: config.Opts.FromChapter}
@@ -132,12 +134,15 @@ func (dlutil *DownloadUtil) AddURL(index int, title string, link string) (reachE
 			"Accept-Language":           []string{`en-US,en;q=0.8`},
 			"Upgrade-Insecure-Requests": []string{"1"},
 		}
+		if dlutil.ContentLinkPreprocessor != nil {
+			link, headers = dlutil.ContentLinkPreprocessor(link)
+		}
 		rawPageContent, err := httputil.GetBytes(link, headers, time.Duration(config.Opts.Timeout)*time.Second, config.Opts.RetryCount)
 		if err != nil {
 			log.Println("getting chapter content from", link, "failed ", err)
 			return
 		}
-		contentFd.Write(dlutil.ContentExtractor(rawPageContent))
+		contentFd.Write(dlutil.ContentExtractor(link, rawPageContent))
 		contentFd.Close()
 
 		dlutil.Content <- ContentInfo{

@@ -1,6 +1,10 @@
 package config
 
-import "github.com/missdeer/getnovel/ebook"
+import (
+	"net/http"
+
+	"github.com/missdeer/getnovel/ebook"
+)
 
 type TOCPattern struct {
 	Host            string
@@ -34,7 +38,8 @@ type NovelSiteHandler struct {
 	CanHandle                func(string) bool                                  // (url) -> can handle
 	PreprocessChapterListURL func(string) string                                // (original url) -> final url
 	ExtractChapterList       func(string, []byte) (string, []*NovelChapterInfo) // (url, raw page content) (title, chapters)
-	ExtractChapterContent    func([]byte) []byte                                // (raw page content) -> cleanup content
+	ExtractChapterContent    func(string, []byte) []byte                        // (raw page content) -> cleanup content
+	PreprocessContentLink    func(string) (string, http.Header)                 // (url) -> (final url, headers)
 	Download                 func(string, ebook.IBook)
 	Begin                    func()
 	End                      func()
