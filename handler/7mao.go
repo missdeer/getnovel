@@ -1,3 +1,6 @@
+// https://greasyfork.org/zh-CN/scripts/479460-%E4%B8%83%E7%8C%AB%E5%85%A8%E6%96%87%E5%9C%A8%E7%BA%BF%E5%85%8D%E8%B4%B9%E8%AF%BB
+// https://github.com/shing-yu/7mao-novel-downloader
+
 package handler
 
 import (
@@ -66,7 +69,7 @@ func preprocessQimaoChapterLink(u string) (string, http.Header) {
 		"chapterId": ids[1],
 	}
 
-	signKey := "d3dGiJc651gSQ8w1"
+	const signKey = "d3dGiJc651gSQ8w1"
 	params["sign"] = generateMD5Sign(params, signKey)
 
 	// 构造Headers
