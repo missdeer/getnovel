@@ -14,11 +14,11 @@ import (
 )
 
 func preprocess69xinshuChapterListURL(u string) string {
-	reg := regexp.MustCompile(`https://www\.69shu\.pro/book/([0-9]+)\.htm`)
+	reg := regexp.MustCompile(`https://www\.69shu\.top/book/([0-9]+)\.htm`)
 	if reg.MatchString(u) {
 		ss := reg.FindAllStringSubmatch(u, -1)
 		s := ss[0]
-		return fmt.Sprintf("https://www.69shu.pro/book/%s/", s[1])
+		return fmt.Sprintf("https://www.69shu.top/book/%s/", s[1])
 	}
 	return u
 }
@@ -86,13 +86,13 @@ func init() {
 		Sites: []config.NovelSite{
 			{
 				Title: `69书吧`,
-				Urls:  []string{`https://www.69shu.pro/`},
+				Urls:  []string{`https://www.69shu.top/`},
 			},
 		},
 		CanHandle: func(u string) bool {
 			patterns := []string{
-				`https://www\.69shu\.pro/book/[0-9]+/`,
-				`^https://www\.69shu\.pro/book/[0-9]+\.html?$`,
+				`https://www\.69shu\.top/book/[0-9]+/`,
+				`^https://www\.69shu\.top/book/[0-9]+\.html?$`,
 			}
 			for _, pattern := range patterns {
 				reg := regexp.MustCompile(pattern)
