@@ -11,7 +11,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/google/uuid v1.6.0
 	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7
-	github.com/jessevdk/go-flags v1.5.0
+	github.com/jessevdk/go-flags v1.6.1
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/missdeer/golib v1.0.9
