@@ -23,7 +23,7 @@ require (
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/vincent-petithory/dataurl v1.0.0 // indirect
 	gitlab.com/ambrevar/golua v0.0.0-20180622185024-6b6c7877b31e
-	golang.org/x/image v0.15.0 // indirect
+	golang.org/x/image v0.18.0 // indirect
 	golang.org/x/net v0.26.0
 	golang.org/x/sync v0.7.0
 	golang.org/x/text v0.16.0
