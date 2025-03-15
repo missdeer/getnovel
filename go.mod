@@ -2,7 +2,7 @@ module github.com/missdeer/getnovel
 
 go 1.23.0
 
-toolchain go1.23.7
+toolchain go1.24.1
 
 require (
 	github.com/PuerkitoBio/goquery v1.10.2
@@ -17,7 +17,7 @@ require (
 	github.com/mozillazg/go-pinyin v0.20.0
 	github.com/signintech/gopdf v0.23.1
 	gitlab.com/ambrevar/golua v0.0.0-20180622185024-6b6c7877b31e
-	golang.org/x/net v0.36.0
+	golang.org/x/net v0.37.0
 	golang.org/x/sync v0.12.0
 	golang.org/x/text v0.23.0
 )
@@ -53,9 +53,9 @@ require (
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	github.com/vincent-petithory/dataurl v1.0.0 // indirect
 	golang.org/x/arch v0.8.0 // indirect
-	golang.org/x/crypto v0.35.0 // indirect
+	golang.org/x/crypto v0.36.0 // indirect
 	golang.org/x/image v0.18.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
