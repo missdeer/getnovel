@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.24.1
 
 require (
-	github.com/PuerkitoBio/goquery v1.10.2
+	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/aarzilli/golua v0.0.0-20210507130708-11106aa57765
 	github.com/bmaupin/go-epub v1.1.0
 	github.com/gin-gonic/gin v1.10.0
