@@ -8,7 +8,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/aarzilli/golua v0.0.0-20210507130708-11106aa57765
 	github.com/bmaupin/go-epub v1.1.0
-	github.com/gin-gonic/gin v1.10.0
+	github.com/gin-gonic/gin v1.10.1
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/google/uuid v1.6.0
 	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7
