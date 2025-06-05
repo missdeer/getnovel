@@ -18,8 +18,8 @@ require (
 	github.com/signintech/gopdf v0.23.1
 	gitlab.com/ambrevar/golua v0.0.0-20180622185024-6b6c7877b31e
 	golang.org/x/net v0.40.0
-	golang.org/x/sync v0.14.0
-	golang.org/x/text v0.25.0
+	golang.org/x/sync v0.15.0
+	golang.org/x/text v0.26.0
 )
 
 require (
