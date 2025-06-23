@@ -32,11 +32,15 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
-    - name: Build Lua on Unix
-      if: matrix.os != 'windows'
+    - name: Install dependencies on ubuntu
+      if: matrix.os == 'ubuntu'
       run: |
         sudo apt-get update -qq
         sudo apt-get install -qq libreadline-dev
+
+    - name: Build Lua on Unix
+      if: matrix.os != 'windows'
+      run: |
         cd golua/lua
         ./buildlua.sh
         cd -
