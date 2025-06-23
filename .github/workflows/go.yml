@@ -106,7 +106,7 @@ jobs:
         cp -r lua ${{ matrix.os }}-amd64/
       
     - name: Upload artifact getnovel-${{ matrix.os }}-amd64
-      uses: actions/upload-artifact@v1.0.0
+      uses: actions/upload-artifact@v4
       with:
         name: getnovel-${{ matrix.os }}-${{ matrix.lua-version }}
         path: ${{ matrix.os }}-amd64
