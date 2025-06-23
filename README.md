@@ -49,7 +49,7 @@ https://github.com/missdeer/getnovel/releases
 ## 内建支持网站
 
 * 飘天: https://www.piaotia.com
-* 69看吧: https://www.69shu.top
+* 69看吧: https://www.69shuba.com
 
 ## 注意
 
