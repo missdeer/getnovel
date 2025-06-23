@@ -4,8 +4,8 @@ jobs:
   Build:
     strategy:
       matrix:
-        lua-version: [lua51, lua52, lua53, lua54, luajit]
         os: [ubuntu, macos, windows]
+        lua-version: [lua54, luajit]
         include:
           - os: ubuntu
             image: ubuntu-latest
@@ -19,7 +19,7 @@ jobs:
     - name: Set up Go 
       uses: actions/setup-go@v3
       with:
-        go-version: 1.22
+        go-version: 1.24
       id: go
     
     - uses: msys2/setup-msys2@v2
@@ -42,6 +42,7 @@ jobs:
     - name: Build GetNovel on Linux
       if: matrix.os == 'ubuntu'
       run: |
+        sudo apt install readline-dev
         go build -ldflags="-linkmode 'external' -extldflags '-static' -s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" -tags ${{ matrix.lua-version }} -o getnovel .
         mkdir ${{ matrix.os }}-amd64
         cp getnovel ${{ matrix.os }}-amd64/
