@@ -3,7 +3,7 @@ where gcc >nul 2>&1
 if %ERRORLEVEL% == 0 (
 echo GCC is available.
 ) else (
-set "PATH=%PATH%;H:\msys64\mingw64\bin"
+set "PATH=%PATH%;D:\msys64\mingw64\bin"
 )
 set CGO_ENABLED=1
 for /F "tokens=*" %%R in ('git rev-parse --short HEAD') do set REV=%%R
