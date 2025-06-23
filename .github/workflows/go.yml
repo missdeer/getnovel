@@ -35,6 +35,8 @@ jobs:
     - name: Build Lua on Unix
       if: matrix.os != 'windows'
       run: |
+        sudo apt-get update -qq
+        sudo apt-get install -qq libreadline-dev
         cd golua/lua
         ./buildlua.sh
         cd -
@@ -42,8 +44,6 @@ jobs:
     - name: Build GetNovel on Linux
       if: matrix.os == 'ubuntu'
       run: |
-        sudo apt-get update -qq
-        sudo apt-get install -qq libreadline-dev
         go build -ldflags="-linkmode 'external' -extldflags '-static' -s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" -tags ${{ matrix.lua-version }} -o getnovel .
         mkdir ${{ matrix.os }}-amd64
         cp getnovel ${{ matrix.os }}-amd64/
