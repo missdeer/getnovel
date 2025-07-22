@@ -14,7 +14,7 @@ require (
 	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7
 	github.com/jessevdk/go-flags v1.6.1
 	github.com/missdeer/golib v1.0.9
-	github.com/mozillazg/go-pinyin v0.20.0
+	github.com/mozillazg/go-pinyin v0.21.0
 	github.com/signintech/gopdf v0.23.1
 	gitlab.com/ambrevar/golua v0.0.0-20180622185024-6b6c7877b31e
 	golang.org/x/net v0.42.0
