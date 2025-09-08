@@ -1,6 +1,6 @@
 module github.com/missdeer/getnovel
 
-go 1.23.0
+go 1.24.0
 
 toolchain go1.24.1
 
@@ -18,7 +18,7 @@ require (
 	github.com/signintech/gopdf v0.23.1
 	gitlab.com/ambrevar/golua v0.0.0-20180622185024-6b6c7877b31e
 	golang.org/x/net v0.42.0
-	golang.org/x/sync v0.16.0
+	golang.org/x/sync v0.17.0
 	golang.org/x/text v0.27.0
 )
 
