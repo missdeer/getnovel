@@ -19,7 +19,7 @@ require (
 	gitlab.com/ambrevar/golua v0.0.0-20180622185024-6b6c7877b31e
 	golang.org/x/net v0.48.0
 	golang.org/x/sync v0.19.0
-	golang.org/x/text v0.32.0
+	golang.org/x/text v0.33.0
 )
 
 require (
