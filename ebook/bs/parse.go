@@ -9,10 +9,106 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/jaytaylor/html2text"
+	"github.com/missdeer/getnovel/legado"
 	"golang.org/x/net/html"
 )
 
+// useLegadoParser controls whether to use legado parser for advanced rules
+var useLegadoParser = true
+
+// SetUseLegadoParser sets whether to use legado parser
+func SetUseLegadoParser(use bool) {
+	useLegadoParser = use
+}
+
+// isAdvancedRule checks if a rule uses advanced syntax that requires legado parser
+func isAdvancedRule(rule string) bool {
+	// Check for CSS selector prefix
+	if strings.HasPrefix(rule, "@css:") {
+		return true
+	}
+	// Check for JSONPath
+	if strings.HasPrefix(rule, "$.") || strings.HasPrefix(rule, "@json:") {
+		return true
+	}
+	// Check for XPath
+	if strings.HasPrefix(rule, "//") || strings.HasPrefix(rule, "@XPath:") {
+		return true
+	}
+	// Check for JavaScript
+	if strings.HasPrefix(rule, "@js:") || strings.Contains(rule, "<js>") {
+		return true
+	}
+	// Check for combinators
+	if strings.Contains(rule, "&&") || strings.Contains(rule, "||") || strings.Contains(rule, "%%") {
+		return true
+	}
+	// Check for templates
+	if strings.Contains(rule, "{{") && strings.Contains(rule, "}}") {
+		return true
+	}
+	return false
+}
+
+// ParseRulesWithLegado uses legado.RuleAnalyzer for parsing
+func ParseRulesWithLegado(doc interface{}, rule string, baseURL string) (*goquery.Selection, string) {
+	if rule == "" {
+		return nil, ""
+	}
+
+	var htmlContent []byte
+	var document *goquery.Document
+
+	switch d := doc.(type) {
+	case *goquery.Document:
+		document = d
+		h, _ := d.Html()
+		htmlContent = []byte(h)
+	case *goquery.Selection:
+		document = nil
+		h, _ := goquery.OuterHtml(d)
+		htmlContent = []byte(h)
+	default:
+		return nil, ""
+	}
+
+	analyzer := legado.NewRuleAnalyzer(htmlContent, baseURL)
+
+	// Get elements for selection-based rules
+	elements := analyzer.GetElements(rule)
+	if len(elements) > 0 {
+		// Wrap elements into a single selection if we have a document
+		if document != nil && len(elements) > 0 {
+			// Create a combined selection from all elements
+			var nodes []*html.Node
+			for _, elem := range elements {
+				for _, n := range elem.Nodes {
+					nodes = append(nodes, n)
+				}
+			}
+			if len(nodes) > 0 {
+				return document.FindNodes(nodes...), ""
+			}
+		}
+		return elements[0], ""
+	}
+
+	// Get string result
+	result := analyzer.GetString(rule)
+	return nil, result
+}
+
 func ParseRules(doc interface{}, rule string) (*goquery.Selection, string) {
+	return ParseRulesWithBaseURL(doc, rule, "")
+}
+
+// ParseRulesWithBaseURL parses rules with a base URL for URL resolution
+func ParseRulesWithBaseURL(doc interface{}, rule string, baseURL string) (*goquery.Selection, string) {
+	// Use legado parser for advanced rules or when enabled
+	if useLegadoParser && isAdvancedRule(rule) {
+		return ParseRulesWithLegado(doc, rule, baseURL)
+	}
+
 	// log.Debugf("parsing rules:%s\n", rule)
 	var sel *goquery.Selection
 	var result string

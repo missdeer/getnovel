@@ -22,15 +22,16 @@ type Book struct {
 	BookmarkList []interface{} `json:"bookmarkList"`
 	ChapterURL   string        `json:"chapterUrl"`
 	// BookURL        string            `json:"book_url"`
-	CoverURL         string            `json:"coverUrl"`
-	Kind             string            `json:"kind"`
-	LastChapter      string            `json:"lastChapter"`
-	FinalRefreshDate UnixTime          `json:"finalRefreshData"` // typo here
-	NoteURL          string            `json:"noteUrl"`
-	Introduce        string            `json:"introduce"`
-	ChapterList      []*Chapter        `json:"-"`
-	BookSourceInst   *BookSourceV2     `json:"-"`
-	Page             *goquery.Document `json:"-"`
+	CoverURL         string              `json:"coverUrl"`
+	Kind             string              `json:"kind"`
+	LastChapter      string              `json:"lastChapter"`
+	FinalRefreshDate UnixTime            `json:"finalRefreshData"` // typo here
+	NoteURL          string              `json:"noteUrl"`
+	Introduce        string              `json:"introduce"`
+	ChapterList      []*Chapter          `json:"-"`
+	BookSourceInst   *BookSourceV2       `json:"-"`
+	Page             *goquery.Document   `json:"-"`
+	LegadoSource     *LegadoBookSource   `json:"-"` // Legado source for full rule support
 }
 
 func (b Book) String() string {
@@ -48,6 +49,15 @@ func (b *Book) findBookSourceForBook() *BookSourceV2 {
 		}
 		b.Tag = httputil.GetHostByURL(b.NoteURL)
 	}
+
+	// Try to find legado source first for full rule support
+	if b.LegadoSource == nil {
+		if ls := FindLegadoSourceByHost(b.Tag); ls != nil {
+			b.LegadoSource = ls
+			b.Origin = ls.Source.BookSourceName
+		}
+	}
+
 	if bs := allBookSources.FindBookSourceByHost(b.Tag); bs != nil {
 		b.BookSourceInst = bs
 		b.Origin = bs.BookSourceName
@@ -86,7 +96,7 @@ func (b *Book) getBookPage() (*goquery.Document, error) {
 	if bs == nil {
 		return nil, errors.New("No valid book source")
 	}
-	p, err := httputil.GetPage(b.NoteURL, b.findBookSourceForBook().HTTPUserAgent)
+	p, err := httputil.GetPage(b.NoteURL, bs.HTTPUserAgent)
 	if err != nil {
 		return nil, err
 	}
@@ -126,8 +136,31 @@ func (b *Book) UpdateChapterList(startFrom int) error {
 	var doc *goquery.Document
 	var err error
 	bs := b.findBookSourceForBook()
-	if bs == nil {
+	if bs == nil && b.LegadoSource == nil {
 		return errors.New("No valid book source")
+	}
+
+	// Try using legado executor for full rule support
+	if b.LegadoSource != nil {
+		chapters, err := b.LegadoSource.LegadoGetChapterList(b.GetChapterURL())
+		if err == nil && len(chapters) > 0 {
+			for i, ch := range chapters {
+				if i < startFrom {
+					continue
+				}
+				ch.BelongToBook = b
+				ch.BookSourceInst = bs
+				b.ChapterList = append(b.ChapterList, ch)
+			}
+			return nil
+		}
+		// Fall back to regular parsing if legado fails
+		log.Printf("Legado chapter list failed, falling back: %v", err)
+	}
+
+	// If no V2 book source available, can't proceed with fallback
+	if bs == nil {
+		return errors.New("no valid book source for fallback parsing")
 	}
 
 	p, err := httputil.GetPage(b.GetChapterURL(), bs.HTTPUserAgent)
@@ -249,6 +282,7 @@ func (b *Book) DownloadCover(coverPath string) error {
 	if err != nil {
 		return err
 	}
+	defer res.Body.Close()
 	f, err := os.Create(coverPath)
 	if err != nil {
 		return err

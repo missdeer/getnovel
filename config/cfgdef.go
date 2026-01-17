@@ -42,6 +42,9 @@ type Options struct {
 	ToTitle                    string  `long:"toTitle" description:"to title"`
 	Author                     string  `short:"a" long:"author" description:"author"`
 	WaitInterval               int     `long:"waitInterval" description:"wait interval seconds between each download"`
+	BookSourceURL              string  `long:"bookSourceURL" description:"URL to download book source JSON file"`
+	BookSourceDir              string  `long:"bookSourceDir" description:"directory containing book source JSON files"`
+	BookSourceFile             string  `long:"bookSourceFile" description:"path to a single book source JSON file"`
 }
 
 var (

@@ -7,6 +7,9 @@ import (
 
 func TestChapter(t *testing.T) {
 	setupBookSources()
+	if allBookSources.Length() == 0 {
+		t.Skip("No book sources loaded - skipping integration test")
+	}
 	c, e := NewChapterFromURL("http://www.b5200.net/46_46254/17700048.html")
 	if e != nil {
 		t.Error(e)

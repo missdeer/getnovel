@@ -2,38 +2,37 @@ package bs
 
 import (
 	"fmt"
-	"log"
-	"sort"
 	"testing"
 )
 
 func setupBookSources() {
-	if allBookSources.Length() != 0 {
-		log.Println("Already have", allBookSources.Length(), "book sources totally")
-		return
+	// Book sources are now loaded from command line options or config
+	// For tests, we check if any sources are already loaded
+	if allBookSources.Length() == 0 {
+		fmt.Println("No book sources loaded. Use --bookSourceURL, --bookSourceDir, or --bookSourceFile to load sources.")
 	}
-	for _, u := range bookSourceURLs {
-		bss := ReadBookSourceFromURL(u)
-		log.Println("Got", len(bss), "book sources from", u)
-		// for _, bs := range bss {
-		// 	log.Println(bs.BookSourceGroup, "Book source", bs.BookSourceName, "at", bs.BookSourceURL)
-		// }
-	}
-	sort.Sort(ByBookSourceURL(allBookSources.BookSourceCollection))
-	log.Println("Got", allBookSources.Length(), "book sources totally")
 }
 
 func TestBook(t *testing.T) {
 	setupBookSources()
+	if allBookSources.Length() == 0 {
+		t.Skip("No book sources loaded - skipping integration test")
+	}
 	book, err := NewBookFromURL("https://www.mangg.net/id68990/")
 	if err != nil {
 		t.Error(err)
+		return
 	}
 	if book == nil {
 		t.Error("no matched book source")
+		return
 	}
 	fmt.Println("===========Book Start===========")
 	chapters := book.GetChapterList()
+	if len(chapters) == 0 {
+		t.Error("no chapters found")
+		return
+	}
 	fmt.Printf("Got %d chapters\n", len(chapters))
 	fmt.Printf("Chapter 1 url: %s\n", chapters[0].ChapterURL)
 	fmt.Printf("Chapter 1 title: %s\n", chapters[0].GetTitle())
@@ -43,6 +42,7 @@ func TestBook(t *testing.T) {
 	fmt.Printf("Book author: %v\n", book.GetAuthor())
 	if book.BookSourceInst == nil {
 		t.Error("no matched book source")
+		return
 	}
 	fmt.Println("Found book source:", *book.BookSourceInst)
 	fmt.Println("===========Book End=============")

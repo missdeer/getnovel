@@ -5,94 +5,67 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
+	"github.com/missdeer/getnovel/legado"
 	"github.com/missdeer/golib/httputil"
 )
 
 var (
 	allBookSources BookSources
-	bookSourceURLs = []string{
-		"https://cdn.jsdelivr.net/gh/yeyulingfeng01/yuedu.github.io/202003.txt",
-		"https://gitee.com/vpq/codes/ez5qu1ifx260layps3b7981/raw?blob_name=3.0sy.json",
-		"https://xiu2.github.io/yuedu/shuyuan",
-		"https://moonbegonia.github.io/Source/yuedu/full.json",
-		"https://github.com/idalin/govel/raw/master/models/bs_ok.json",
-		"http://alanskycn.gitee.io/vip/assets/import/book_source.json",
-		"https://gitee.com/haobai1/bookyuan/raw/master/shuyuan.json",
-		"https://gitee.com/zmn1307617161/booksource/raw/master/%E4%B9%A6%E6%BA%90/%E7%B2%BE%E6%8E%923.txt",
-		"https://gitee.com/slght/yuedu_booksource/raw/master/%E4%B9%A6%E6%BA%90/API%E4%B9%A6%E6%BA%90_3.0.json",
-		"https://gitee.com/gekunfei/web/raw/master/myBookshelf/bookSource_176",
-		"https://gitee.com/gekunfei/web/raw/master/myBookshelf/bookSource_176_1",
-		"https://gitee.com/gekunfei/web/raw/master/myBookshelf/bookSource_1909tv",
-		"https://gitee.com/gekunfei/web/raw/master/myBookshelf/bookSource_hy",
-		"https://gitee.com/gekunfei/web/raw/master/myBookshelf/bookSource_miui",
-		"https://gitee.com/gekunfei/web/raw/master/myBookshelf/bookSource_qidian",
-		"https://gitee.com/gekunfei/web/raw/master/myBookshelf/bookSource_tingfree",
-		"https://blackholep.github.io/20190815set1",
-		"https://blackholep.github.io/31xsw",
-		"https://blackholep.github.io/37shuwu",
-		"https://blackholep.github.io/58xsw",
-		"https://blackholep.github.io/abcxs",
-		"https://blackholep.github.io/abcxsw",
-		"https://blackholep.github.io/ayg",
-		"https://blackholep.github.io/bjzww",
-		"https://blackholep.github.io/bqgb5200",
-		"https://blackholep.github.io/bqgbiqubao",
-		"https://blackholep.github.io/bqgbiquge",
-		"https://blackholep.github.io/bqgbiquwu",
-		"https://blackholep.github.io/bqgbqg5",
-		"https://blackholep.github.io/bqgibiquge",
-		"https://blackholep.github.io/bqgkuxiaoshuo",
-		"https://blackholep.github.io/bqgwqge",
-		"https://blackholep.github.io/ddxs208xs",
-		"https://blackholep.github.io/dyddu1du",
-		"https://blackholep.github.io/dydduyidu",
-		"https://blackholep.github.io/fqxs",
-		"https://blackholep.github.io/gsw",
-		"https://blackholep.github.io/hysy",
-		"https://blackholep.github.io/mhtxsw",
-		"https://blackholep.github.io/psw",
-		"https://blackholep.github.io/shlwxw",
-		"https://blackholep.github.io/slk",
-		"https://blackholep.github.io/uxs",
-		"https://blackholep.github.io/wcxsw",
-		"https://blackholep.github.io/wlzww",
-		"https://blackholep.github.io/wxm",
-		"https://blackholep.github.io/xbqgxbaquge",
-		"https://blackholep.github.io/xbqgxbiquge6",
-		"https://blackholep.github.io/xbyzww",
-		"https://blackholep.github.io/xsz",
-		"https://blackholep.github.io/xszww",
-		"https://blackholep.github.io/ybzw",
-		"https://blackholep.github.io/ylgxs",
-		"https://blackholep.github.io/ymx",
-		"https://blackholep.github.io/yssm",
-		"https://blackholep.github.io/ywxs",
-		"https://blackholep.github.io/zsw",
-		"https://booksources.github.io/",
-		"https://booksources.github.io/list/biqudao_com.json",
-		"https://booksources.github.io/list/cn3k5_com.json",
-		"https://booksources.github.io/list/gzmeal_com.json",
-		"https://booksources.github.io/list/novel101_com.json",
-		"https://booksources.github.io/list/qinxiaoshuo.com.json",
-		"https://booksources.github.io/list/qxs.la.json",
-		"https://booksources.github.io/list/x23qb_com.json",
-		"https://booksources.github.io/list/x23us.com.json",
-		"https://booksources.github.io/list/xiashutxt_com.json",
-		"https://booksources.github.io/list/xslou_com.json",
-		"https://booksources.github.io/list/zhaishuyuan_com.json",
-	}
 )
+
+// LegadoSourceCollection is a thread-safe collection of legado book sources
+type LegadoSourceCollection struct {
+	sources []*LegadoBookSource
+	sync.RWMutex
+}
+
+// Add adds a legado source to the collection
+func (lsc *LegadoSourceCollection) Add(ls *LegadoBookSource) {
+	lsc.Lock()
+	lsc.sources = append(lsc.sources, ls)
+	lsc.Unlock()
+}
+
+// Clear removes all legado sources
+func (lsc *LegadoSourceCollection) Clear() {
+	lsc.Lock()
+	lsc.sources = nil
+	lsc.Unlock()
+}
+
+// Length returns the number of legado sources
+func (lsc *LegadoSourceCollection) Length() int {
+	lsc.RLock()
+	defer lsc.RUnlock()
+	return len(lsc.sources)
+}
+
+// Range iterates over all legado sources with a callback
+func (lsc *LegadoSourceCollection) Range(fn func(*LegadoBookSource) bool) {
+	lsc.RLock()
+	defer lsc.RUnlock()
+	for _, ls := range lsc.sources {
+		if !fn(ls) {
+			break
+		}
+	}
+}
+
+// legadoSources is the global thread-safe collection
+var legadoSources LegadoSourceCollection
 
 type SearchOutput map[string][]*Book
 
 func SortSearchOutput(so SearchOutput) []string {
 	sortedResult := make(map[string]int, len(so))
 	// var keys = make([]int, len(so))
-	var newKeys = make([]string, len(so))
+	var newKeys = make([]string, 0, len(so)) // Fixed: use 0 length with capacity
 	// var result = &SearchOutput{}
 	for k, v := range so {
 		sortedResult[k] = len(v)
@@ -133,6 +106,7 @@ func SearchBooks(title string) SearchOutput {
 	result := make(SearchOutput)
 
 	go func() {
+		defer close(c) // Fixed: close channel when done
 		allBookSources.RLock()
 		defer allBookSources.RUnlock()
 		for _, bs := range allBookSources.BookSourceCollection {
@@ -148,12 +122,14 @@ func SearchBooks(title string) SearchOutput {
 	for timeout := false; !timeout; {
 		select {
 		case i, ok := <-c:
-			if ok {
-				if _, ok = result[i.Name]; !ok {
-					result[i.Name] = []*Book{i}
-				} else {
-					result[i.Name] = append(result[i.Name], i)
-				}
+			if !ok {
+				timeout = true // Channel closed, exit loop
+				break
+			}
+			if _, ok = result[i.Name]; !ok {
+				result[i.Name] = []*Book{i}
+			} else {
+				result[i.Name] = append(result[i.Name], i)
 			}
 		case <-time.After(5 * time.Second):
 			log.Printf("Timeout,exiting...\n")
@@ -283,4 +259,222 @@ func ReadBookSourceFromURL(u string) (bss2 []BookSourceV2) {
 
 	CollectBookSources(bss2)
 	return
+}
+
+// ReadLegadoSourceFromBytes parses legado format book sources from bytes
+func ReadLegadoSourceFromBytes(c []byte) []*legado.BookSource {
+	sources, err := legado.LoadBookSources(c)
+	if err != nil {
+		log.Printf("Failed to parse legado book sources: %v", err)
+		return nil
+	}
+
+	// Convert to pointer slice
+	result := make([]*legado.BookSource, len(sources))
+	for i := range sources {
+		result[i] = &sources[i]
+	}
+	return result
+}
+
+// ReadLegadoSourceFromLocalFileSystem reads legado book sources from a local file
+func ReadLegadoSourceFromLocalFileSystem(fileName string) []*legado.BookSource {
+	c, e := os.ReadFile(fileName)
+	if e != nil {
+		log.Println(e)
+		return nil
+	}
+
+	sources := ReadLegadoSourceFromBytes(c)
+	CollectLegadoSources(sources)
+	return sources
+}
+
+// ReadLegadoSourceFromURL reads legado book sources from a URL
+func ReadLegadoSourceFromURL(u string) []*legado.BookSource {
+	c, e := httputil.GetBytes(u,
+		http.Header{"User-Agent": []string{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"}},
+		60*time.Second,
+		3)
+
+	if e != nil {
+		log.Println(u, e)
+		return nil
+	}
+
+	sources := ReadLegadoSourceFromBytes(c)
+	CollectLegadoSources(sources)
+	return sources
+}
+
+// CollectLegadoSources adds legado sources to the global collection
+func CollectLegadoSources(sources []*legado.BookSource) {
+	for _, source := range sources {
+		if source == nil {
+			continue
+		}
+		ls := NewLegadoBookSource(source)
+		legadoSources.Add(ls) // Fixed: use thread-safe collection
+
+		// Also add to V2 collection for backward compatibility
+		bs2 := ConvertLegadoToV2(source)
+		allBookSources.Add(&bs2)
+	}
+}
+
+// FindLegadoSourceByHost finds a legado book source by host
+func FindLegadoSourceByHost(host string) *LegadoBookSource {
+	var result *LegadoBookSource
+	legadoSources.Range(func(ls *LegadoBookSource) bool {
+		if ls.Source == nil {
+			return true // continue
+		}
+		if strings.Contains(ls.Source.BookSourceURL, host) {
+			result = ls
+			return false // stop
+		}
+		return true // continue
+	})
+	return result
+}
+
+// FindLegadoSourceByURL finds a legado book source that matches the given URL
+func FindLegadoSourceByURL(bookURL string) *LegadoBookSource {
+	var result *LegadoBookSource
+	legadoSources.Range(func(ls *LegadoBookSource) bool {
+		if ls.Source == nil {
+			return true // continue
+		}
+		// Check if the book URL matches the source's URL pattern
+		if ls.Source.BookURLPattern != "" {
+			// TODO: implement pattern matching
+			return true // continue
+		}
+		// Simple host matching
+		if strings.Contains(bookURL, strings.TrimPrefix(strings.TrimPrefix(ls.Source.BookSourceURL, "https://"), "http://")) {
+			result = ls
+			return false // stop
+		}
+		return true // continue
+	})
+	return result
+}
+
+// SearchBooksWithLegado searches books using legado sources
+func SearchBooksWithLegado(keyword string, page int) SearchOutput {
+	c := make(chan *Book, 10)
+	result := make(SearchOutput)
+
+	go func() {
+		defer close(c)
+		legadoSources.Range(func(ls *LegadoBookSource) bool {
+			if ls == nil || ls.Source == nil || !ls.Source.Enabled {
+				return true // continue
+			}
+			books, err := ls.LegadoSearchBook(keyword, page)
+			if err != nil {
+				log.Printf("Search error on %s: %v", ls.Source.BookSourceName, err)
+				return true // continue
+			}
+			for _, book := range books {
+				c <- book
+			}
+			return true // continue
+		})
+	}()
+
+	for timeout := false; !timeout; {
+		select {
+		case book, ok := <-c:
+			if !ok {
+				timeout = true
+				break
+			}
+			if book != nil && book.Name != "" {
+				if _, exists := result[book.Name]; !exists {
+					result[book.Name] = []*Book{book}
+				} else {
+					result[book.Name] = append(result[book.Name], book)
+				}
+			}
+		case <-time.After(30 * time.Second):
+			log.Printf("Search timeout, exiting...")
+			timeout = true
+		}
+	}
+
+	return result
+}
+
+// LoadBookSourcesFromDirectory loads all JSON book source files from a directory
+func LoadBookSourcesFromDirectory(dir string) error {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+
+		name := entry.Name()
+		if !strings.HasSuffix(strings.ToLower(name), ".json") {
+			continue
+		}
+
+		filePath := filepath.Join(dir, name) // Fixed: use filepath.Join
+		// Try to load as legado format first
+		sources := ReadLegadoSourceFromLocalFileSystem(filePath)
+		if len(sources) > 0 {
+			log.Printf("Loaded %d legado sources from %s", len(sources), name)
+			continue
+		}
+
+		// Fall back to V2/V3 format
+		bss2 := ReadBookSourceFromLocalFileSystem(filePath)
+		if len(bss2) > 0 {
+			log.Printf("Loaded %d V2/V3 sources from %s", len(bss2), name)
+		}
+	}
+
+	return nil
+}
+
+// LoadBookSourcesFromURLs loads book sources from a list of URLs
+func LoadBookSourcesFromURLs(urls []string) {
+	for _, u := range urls {
+		// Try to load as legado format first
+		sources := ReadLegadoSourceFromURL(u)
+		if len(sources) > 0 {
+			log.Printf("Loaded %d legado sources from %s", len(sources), u)
+			continue
+		}
+
+		// Fall back to V2/V3 format
+		bss2 := ReadBookSourceFromURL(u)
+		if len(bss2) > 0 {
+			log.Printf("Loaded %d V2/V3 sources from %s", len(bss2), u)
+		}
+	}
+}
+
+// GetBookSourceCount returns the total number of loaded book sources
+func GetBookSourceCount() int {
+	allBookSources.RLock()
+	defer allBookSources.RUnlock()
+	return len(allBookSources.BookSourceCollection)
+}
+
+// GetLegadoSourceCount returns the number of loaded legado sources
+func GetLegadoSourceCount() int {
+	return legadoSources.Length()
+}
+
+// ClearAllSources clears all loaded book sources
+func ClearAllSources() {
+	allBookSources.Lock()
+	allBookSources.BookSourceCollection = nil
+	allBookSources.Unlock()
+	legadoSources.Clear()
 }

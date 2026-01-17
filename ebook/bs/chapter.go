@@ -11,21 +11,20 @@ import (
 	"github.com/missdeer/golib/httputil"
 )
 
-var (
-	getChapterTried int = 0
-)
+const maxChapterRetries = 5
 
 // Chapter represent a chapter of a book
 type Chapter struct {
-	BookSourceSite string        `json:"source"`
-	BookSourceInst *BookSourceV2 `json:"-"`
-	Content        string        `json:"-"`
-	ChapterTitle   string        `json:"title"`
-	Read           bool          `json:"is_read"`
-	ChapterURL     string        `json:"url"`
-	Index          int           `json:"index"`
+	BookSourceSite string            `json:"source"`
+	BookSourceInst *BookSourceV2     `json:"-"`
+	Content        string            `json:"-"`
+	ChapterTitle   string            `json:"title"`
+	Read           bool              `json:"is_read"`
+	ChapterURL     string            `json:"url"`
+	Index          int               `json:"index"`
 	BelongToBook   *Book
 	Page           *goquery.Document `json:"-"`
+	LegadoSource   *LegadoBookSource `json:"-"` // Legado source for full rule support
 }
 
 func NewChapterFromURL(chapterURL string) (*Chapter, error) {
@@ -58,6 +57,17 @@ func (c *Chapter) findBookSourceForChapter() *BookSourceV2 {
 		}
 		c.BookSourceSite = httputil.GetHostByURL(c.ChapterURL)
 	}
+
+	// Try to find legado source first for full rule support
+	if c.LegadoSource == nil {
+		// Check if book has legado source
+		if c.BelongToBook != nil && c.BelongToBook.LegadoSource != nil {
+			c.LegadoSource = c.BelongToBook.LegadoSource
+		} else if ls := FindLegadoSourceByHost(c.BookSourceSite); ls != nil {
+			c.LegadoSource = ls
+		}
+	}
+
 	if bs := allBookSources.FindBookSourceByHost(c.BookSourceSite); bs != nil {
 		c.BookSourceInst = bs
 		return bs
@@ -73,7 +83,7 @@ func (c *Chapter) getChapterPage() (*goquery.Document, error) {
 	if c.ChapterURL == "" || bs == nil {
 		return nil, errors.New("can't get chapter page.")
 	}
-	p, err := httputil.GetPage(c.ChapterURL, c.findBookSourceForChapter().HTTPUserAgent)
+	p, err := httputil.GetPage(c.ChapterURL, bs.HTTPUserAgent)
 	if err != nil {
 		return nil, err
 	}
@@ -89,27 +99,39 @@ func (c *Chapter) GetContent() string {
 	if c.Content != "" {
 		return c.Content
 	}
+
+	// Try using legado executor for full rule support
+	c.findBookSourceForChapter()
+	if c.LegadoSource != nil {
+		content, err := c.LegadoSource.LegadoGetChapterContent(c.ChapterURL)
+		if err == nil && content != "" {
+			c.Content = content
+			return c.Content
+		}
+		// Fall back to regular parsing if legado fails
+		log.Printf("Legado content fetch failed, falling back: %v", err)
+	}
+
+	c.getContentWithRetry(0)
+	return c.Content
+}
+
+func (c *Chapter) getContentWithRetry(tried int) {
 	doc, err := c.getChapterPage()
 	if err == nil {
 		_, content := ParseRules(doc, c.BookSourceInst.RuleBookContent)
 		if content != "" {
-			// re := regexp.MustCompile("(\b)+")
-			// content = re.ReplaceAllString(content, "\n    ")
 			c.Content = content
-			getChapterTried = 0
-			return c.Content
+			return
 		}
 	} else {
-		if getChapterTried < 5 {
-			getChapterTried++
+		if tried < maxChapterRetries {
 			time.Sleep(1 * time.Second)
-			return c.GetContent()
-		} else {
-			getChapterTried = 0
+			c.getContentWithRetry(tried + 1)
+			return
 		}
 		log.Printf("get content error:%s\n", err.Error())
 	}
-	return c.Content
 }
 
 func (c *Chapter) GetTitle() string {

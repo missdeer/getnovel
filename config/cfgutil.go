@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -11,31 +10,51 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/missdeer/getnovel/ebook/bs"
 	"github.com/missdeer/golib/fsutil"
 )
 
+// ReadLocalBookSource reads book sources from the default booksource directory
 func ReadLocalBookSource() {
-	matches, err := filepath.Glob("booksource/*")
-	if err != nil {
-		panic(err)
+	// Load from command line specified sources first
+	LoadBookSourcesFromConfig()
+
+	// Then load from default booksource directory if exists
+	if b, _ := fsutil.FileExists("booksource"); b {
+		if err := bs.LoadBookSourcesFromDirectory("booksource"); err != nil {
+			log.Printf("Failed to load book sources from booksource directory: %v", err)
+		}
+	}
+}
+
+// LoadBookSourcesFromConfig loads book sources based on command line options
+func LoadBookSourcesFromConfig() {
+	// Load from URL
+	if Opts.BookSourceURL != "" {
+		urls := strings.Split(Opts.BookSourceURL, ",")
+		bs.LoadBookSourcesFromURLs(urls)
 	}
 
-	for _, configFile := range matches {
-		fd, err := os.OpenFile(configFile, os.O_RDONLY, 0644)
-		if err != nil {
-			log.Println("opening book source file ", configFile, " for reading failed ", err)
-			continue
+	// Load from directory
+	if Opts.BookSourceDir != "" {
+		if err := bs.LoadBookSourcesFromDirectory(Opts.BookSourceDir); err != nil {
+			log.Printf("Failed to load book sources from directory %s: %v", Opts.BookSourceDir, err)
 		}
+	}
 
-		c, err := io.ReadAll(fd)
-		if err != nil {
-			log.Println("reading book source file ", configFile, " failed ", err)
-			continue
+	// Load from single file
+	if Opts.BookSourceFile != "" {
+		// Try legado format first
+		sources := bs.ReadLegadoSourceFromLocalFileSystem(Opts.BookSourceFile)
+		if len(sources) > 0 {
+			log.Printf("Loaded %d legado sources from %s", len(sources), Opts.BookSourceFile)
+		} else {
+			// Fall back to V2/V3 format
+			bss2 := bs.ReadBookSourceFromLocalFileSystem(Opts.BookSourceFile)
+			if len(bss2) > 0 {
+				log.Printf("Loaded %d V2/V3 sources from %s", len(bss2), Opts.BookSourceFile)
+			}
 		}
-		fd.Close()
-
-		// read the content
-		fmt.Println(string(c))
 	}
 }
 
