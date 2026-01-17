@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"sync"
@@ -347,7 +348,13 @@ func FindLegadoSourceByURL(bookURL string) *LegadoBookSource {
 		}
 		// Check if the book URL matches the source's URL pattern
 		if ls.Source.BookURLPattern != "" {
-			// TODO: implement pattern matching
+			// Compile and match the pattern
+			re, err := regexp.Compile(ls.Source.BookURLPattern)
+			if err == nil && re.MatchString(bookURL) {
+				result = ls
+				return false // stop
+			}
+			// Pattern didn't match, try next source
 			return true // continue
 		}
 		// Simple host matching
