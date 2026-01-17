@@ -52,7 +52,7 @@ https://github.com/missdeer/getnovel/releases
 |-------|----------------------------------------|-------|--------|----------|-------------------------------------------------------------------------------------|
 | 1     | [书海阁小说网](https://www.shuhaige.net/)   | ❌      | ✅     | ✅          | 搜索限流 (Unexpected end of file from server)                                          |
 | 2     | [全本小说网](https://quanben5.com/)        | ❌      | ❓     | ✅          | 需要梯子，完本很全，连载基本搜不到，同 quanben5.io, quanben-xiaoshuo.com                              |
-| 3     | [69书吧1](https://www.69shuba.com/)     | ✅       | ❌     | ✅          | 需要梯子，搜索有CF，章节限流，推荐线程数1                                                             |
+| 3     | [69书吧](https://www.69shuba.com/)     | ✅       | ❌     | ✅          | 需要梯子，搜索有CF，章节限流，推荐线程数1                                                             |
 | 4     | [大熊猫文学](https://www.dxmwx.org/)       | ❌      | ✅     | ✅          |                                                                                    |
 | 5     | [笔趣阁22](https://www.22biqu.com/)      | ❌      | ✅     | ✅          |                                                                                    |
 | 6    | [零点小说](https://www.0xs.net/)          | ❌      | ✅     | ✅          | 限流程度和69书吧相似，爬取过快会封IP且获取不到正文                                                        |
