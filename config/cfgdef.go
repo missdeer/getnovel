@@ -45,6 +45,8 @@ type Options struct {
 	BookSourceURL              string  `long:"bookSourceURL" description:"URL to download book source JSON file"`
 	BookSourceDir              string  `long:"bookSourceDir" description:"directory containing book source JSON files"`
 	BookSourceFile             string  `long:"bookSourceFile" description:"path to a single book source JSON file"`
+	Search                     string  `long:"search" description:"search for books by keyword using legado book sources"`
+	SearchPage                 int     `long:"searchPage" description:"search result page number (default: 1)"`
 }
 
 var (

@@ -14,6 +14,7 @@ import (
 	"github.com/jessevdk/go-flags"
 	"github.com/missdeer/getnovel/config"
 	"github.com/missdeer/getnovel/ebook"
+	"github.com/missdeer/getnovel/ebook/bs"
 	"github.com/missdeer/getnovel/handler"
 	"github.com/missdeer/golib/httputil"
 )
@@ -143,6 +144,40 @@ func listenAndServe() {
 	log.Fatal(http.ListenAndServe(config.Opts.ListenAndServe, http.FileServer(http.Dir(dir))))
 }
 
+func performSearch(keyword string, page int) {
+	if page <= 0 {
+		page = 1
+	}
+
+	fmt.Printf("正在搜索: %s (第 %d 页)...\n", keyword, page)
+
+	results := bs.SearchBooksWithLegado(keyword, page)
+
+	if len(results) == 0 {
+		fmt.Println("未找到任何结果")
+		return
+	}
+
+	fmt.Printf("\n找到 %d 本书:\n", len(results))
+	fmt.Println(strings.Repeat("=", 60))
+
+	for bookName, books := range results {
+		fmt.Printf("\n【%s】\n", bookName)
+		for _, book := range books {
+			fmt.Printf("  作者: %s\n", book.Author)
+			fmt.Printf("  来源: %s\n", book.Tag)
+			fmt.Printf("  URL: %s\n", book.NoteURL)
+			if book.Kind != "" {
+				fmt.Printf("  分类: %s\n", book.Kind)
+			}
+			if book.LastChapter != "" {
+				fmt.Printf("  最新章节: %s\n", book.LastChapter)
+			}
+			fmt.Println(strings.Repeat("-", 40))
+		}
+	}
+}
+
 func main() {
 	fmt.Printf("GetNovel，提交编号：%s，构建于%s\n\n", sha1ver, buildTime)
 	if len(os.Args) < 2 {
@@ -171,6 +206,11 @@ func main() {
 
 	if config.Opts.ListenAndServe != "" {
 		listenAndServe()
+		return
+	}
+
+	if config.Opts.Search != "" {
+		performSearch(config.Opts.Search, config.Opts.SearchPage)
 		return
 	}
 
