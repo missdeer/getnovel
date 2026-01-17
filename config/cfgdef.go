@@ -41,7 +41,6 @@ type Options struct {
 	ToChapter                  int     `long:"toChapter" description:"to chapter"`
 	ToTitle                    string  `long:"toTitle" description:"to title"`
 	Author                     string  `short:"a" long:"author" description:"author"`
-	AutoUpdateExternalHandlers bool    `long:"autoUpdateExternalHandlers" description:"auto update external handlers"`
 	WaitInterval               int     `long:"waitInterval" description:"wait interval seconds between each download"`
 }
 
@@ -77,7 +76,6 @@ func init() {
 		Timeout:                    60,
 		ParallelCount:              int64(runtime.NumCPU()) * 2, // get cpu logical core number
 		Author:                     "GetNovel用户",
-		AutoUpdateExternalHandlers: false,
 		WaitInterval:               0,
 	}
 }

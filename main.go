@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aarzilli/golua/lua"
 	"github.com/jessevdk/go-flags"
 	"github.com/missdeer/getnovel/config"
 	"github.com/missdeer/getnovel/ebook"
@@ -144,15 +143,8 @@ func listenAndServe() {
 	log.Fatal(http.ListenAndServe(config.Opts.ListenAndServe, http.FileServer(http.Dir(dir))))
 }
 
-func getEffectiveLuaVersion() string {
-	if luajitVersion := lua.GetLuaJITVersion(); luajitVersion != "" {
-		return luajitVersion
-	}
-	return lua.GetLuaRelease()
-}
-
 func main() {
-	fmt.Printf("GetNovel集成%s，提交编号：%s，构建于%s\n\n", getEffectiveLuaVersion(), sha1ver, buildTime)
+	fmt.Printf("GetNovel，提交编号：%s，构建于%s\n\n", sha1ver, buildTime)
 	if len(os.Args) < 2 {
 		fmt.Println("使用方法：\n\tgetnovel 目录网址")
 		handler.ListHandlers()

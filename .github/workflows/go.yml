@@ -5,7 +5,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        lua-version: [lua51, lua52, lua53, lua54, luajit]
         include:
           - os: ubuntu
             image: ubuntu-latest
@@ -16,91 +15,48 @@ jobs:
 
     runs-on: ${{ matrix.image }}
     steps:
-    - name: Set up Go 
+    - name: Set up Go
       uses: actions/setup-go@v3
       with:
         go-version: 1.24
       id: go
-    
-    - uses: msys2/setup-msys2@v2
-      if: matrix.os == 'windows'
-      with:
-        update: true
-        msystem: MINGW64
-        install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make make curl unzip
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
-    - name: Install dependencies on ubuntu
-      if: matrix.os == 'ubuntu'
-      run: |
-        sudo apt-get update -qq
-        sudo apt-get install -qq libreadline-dev
-
-    - name: Build Lua on Unix
-      if: matrix.os != 'windows'
-      run: |
-        cd golua/lua
-        ./buildlua.sh
-        cd -
-
     - name: Build GetNovel on Linux
       if: matrix.os == 'ubuntu'
       run: |
-        go build -ldflags="-linkmode 'external' -extldflags '-static' -s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" -tags ${{ matrix.lua-version }} -o getnovel .
+        env CGO_ENABLED=0 go build -ldflags="-s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" -o getnovel .
         mkdir ${{ matrix.os }}-amd64
         cp getnovel ${{ matrix.os }}-amd64/
         cp -r pdfpresets ${{ matrix.os }}-amd64/
-        cp -r handlers ${{ matrix.os }}-amd64/
-        cp -r lua ${{ matrix.os }}-amd64/
 
     - name: Build GetNovel on macOS
       if: matrix.os == 'macos'
       run: |
-        env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" -tags ${{ matrix.lua-version }} -o getnovel-amd64 .
-        if [ "${{ matrix.lua-version }}" == "luajit" ]; then
-          mv getnovel-amd64 getnovel
-        else
-          env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" -tags ${{ matrix.lua-version }} -o getnovel-arm64 .
-          lipo -create -output getnovel getnovel-amd64 getnovel-arm64
-        fi
+        env CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" -o getnovel-amd64 .
+        env CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w -X main.sha1ver=$(git rev-parse --short HEAD) -X 'main.buildTime=$(date)'" -o getnovel-arm64 .
+        lipo -create -output getnovel getnovel-amd64 getnovel-arm64
         curl -sSL -o kindlegen.zip https://github.com/ystyle/kaf-cli/releases/download/kindlegen/KindleGen_Mac_64bit_v2_9.zip
         unzip kindlegen.zip
         mkdir ${{ matrix.os }}-amd64
         cp getnovel ${{ matrix.os }}-amd64/
         cp kindlegen ${{ matrix.os }}-amd64/
         cp -r pdfpresets ${{ matrix.os }}-amd64/
-        cp -r handlers ${{ matrix.os }}-amd64/
-        cp -r lua ${{ matrix.os }}-amd64/
 
-    - name: Download LuaJIT on Windows
-      if: matrix.os == 'windows' && matrix.lua-version == 'luajit'
-      run: |
-        cd golua/lua
-        git clone --depth 1 https://github.com/LuaJIT/LuaJIT.git luajit
-        cd -
-
-    - name: Build Lua on Windows
-      if: matrix.os == 'windows'
-      shell: msys2 {0}
-      run: |
-        cd golua/lua/${{ matrix.lua-version }}
-        if [ "${{ matrix.lua-version }}" == "luajit" ]; then env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin make BUILDMODE=static; mv src/libluajit.a ./ ; else env MSYSTEM=MINGW64 PATH=$PATH:/mingw64/bin make mingw; fi
-        cd -
-          
     - name: Build GetNovel on Windows
       if: matrix.os == 'windows'
       shell: cmd
       run: |
-        set PATH=D:\a\_temp\msys64\mingw64\bin;%PATH%
         for /F "tokens=*" %%R in ('git rev-parse --short HEAD') do set REV=%%R
         for /F "tokens=*" %%A in ('date /T') do set TODAY=%%A
-        go build -ldflags="-s -w -X main.sha1ver=%REV% -X 'main.buildTime=%TODAY%'" -tags ${{ matrix.lua-version }} -o getnovel.exe .
-          
+        set CGO_ENABLED=0
+        go build -ldflags="-s -w -X main.sha1ver=%REV% -X 'main.buildTime=%TODAY%'" -o getnovel.exe .
+
     - name: copy files on Windows
       if: matrix.os == 'windows'
-      shell: msys2 {0}
+      shell: bash
       run: |
         curl -sSL -o kindlegen.zip https://github.com/ystyle/kaf-cli/releases/download/kindlegen/kindlegen_win32_v2_9.zip
         unzip kindlegen.zip
@@ -108,29 +64,27 @@ jobs:
         cp getnovel.exe ${{ matrix.os }}-amd64/
         cp kindlegen.exe ${{ matrix.os }}-amd64/
         cp -r pdfpresets ${{ matrix.os }}-amd64/
-        cp -r handlers ${{ matrix.os }}-amd64/
-        cp -r lua ${{ matrix.os }}-amd64/
-      
+
     - name: Upload artifact getnovel-${{ matrix.os }}-amd64
       uses: actions/upload-artifact@v4
       with:
-        name: getnovel-${{ matrix.os }}-${{ matrix.lua-version }}
+        name: getnovel-${{ matrix.os }}
         path: ${{ matrix.os }}-amd64
- 
+
     - name: Pack release
       if: startsWith(github.event.ref, 'refs/tags/')
       uses: vimtor/action-zip@v1.1
       with:
-        files: ${{ matrix.os }}-amd64/ 
+        files: ${{ matrix.os }}-amd64/
         recursive: true
-        dest: getnovel-${{ matrix.os }}-${{ matrix.lua-version }}.zip
+        dest: getnovel-${{ matrix.os }}.zip
 
     - name: upload Release
       if: startsWith(github.event.ref, 'refs/tags/')
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GH_TOKEN }}
-        file: getnovel-${{ matrix.os }}-${{ matrix.lua-version }}.zip
-        asset_name: getnovel-${{ matrix.os }}-${{ matrix.lua-version }}.zip
+        file: getnovel-${{ matrix.os }}.zip
+        asset_name: getnovel-${{ matrix.os }}.zip
         tag: ${{ github.ref }}
         overwrite: true

@@ -8,24 +8,13 @@
 
 ## 编译
 
-以macOS或Linux平台为例，先安装C编译器（`clang`或`gcc`）和`make`工具，再编译`Lua`：
-
 ```bash
 git clone https://github.com/missdeer/getnovel.git
-cd getnovel/golua/lua
-./buildlua.sh
-cd ../..
+cd getnovel
+CGO_ENABLED=0 go build -ldflags="-s -w"
 ```
 
-最后编译`GetNovel`：
-
-```bash
-go build -ldflags="-s -w" -tags lua51
-```
-
-`tags`可选值为`lua51`，`lua52`，`lua53`，`lua54`，`luajit`表示集成哪个版本的Lua解释器。
-
-Windows平台编译需要MinGW编译`Lua`，再将MinGW的`bin`目录添加到`PATH`环境变量后编译`GetNovel`。
+无需CGO，可在任何平台直接编译。
 
 ## 下载
 
@@ -82,8 +71,7 @@ https://github.com/missdeer/getnovel/releases
 
 ## 待办事项
 
-- [x] 使用Lua配置网站支持
-- [ ] 支持[阅读](https://github.com/gedoor/legado)最新的书源格式
+- [x] 支持[阅读](https://github.com/gedoor/legado)书源格式
 
 ## 免责声明
 

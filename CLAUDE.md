@@ -4,30 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-GetNovel is a CLI tool for downloading novels from various Chinese novel websites and converting them to multiple ebook formats (epub, pdf, mobi, html). It integrates a Lua interpreter for extensible website handler support.
+GetNovel is a CLI tool for downloading novels from various Chinese novel websites and converting them to multiple ebook formats (epub, pdf, mobi, html).
 
 ## Build Commands
 
-### Building Lua (required first)
-On macOS/Linux:
-```bash
-cd golua/lua
-./buildlua.sh
-cd ../..
-```
-
-On Windows (requires MinGW/MSYS2):
-```bash
-cd golua/lua/<lua-version>
-make mingw  # or for LuaJIT: make BUILDMODE=static
-```
-
 ### Building GetNovel
 ```bash
-go build -ldflags="-s -w" -tags lua51
+CGO_ENABLED=0 go build -ldflags="-s -w"
 ```
-
-Available Lua version tags: `lua51`, `lua52`, `lua53`, `lua54`, `luajit`
 
 ### Running Tests
 ```bash
@@ -42,7 +26,6 @@ go test ./...
 - **config/**: Configuration types (`Options` struct) and command-line option definitions
 - **handler/**: Website handlers that extract chapter lists and content from novel sites
   - Built-in handlers: `piaotian.go`, `69shuba.go`, `uukanshu.go`, `7mao.go`
-  - `luahandler.go`: Loads external Lua-based handlers from `handlers/` directory
 - **ebook/**: Ebook generators implementing `IBook` interface
   - `epub.go`, `pdf.go`, `kindlegenmobi.go`, `html.go`
 - **ebook/bs/**: Book source support for "阅读" app format (v2/v3 JSON book sources)
@@ -57,8 +40,6 @@ go test ./...
   - `jsengine.go`: JavaScript engine (goja) with java.* method bindings
   - `analyzer.go`: Unified rule analyzer that auto-detects rule types
   - `executor.go`: Book source executor for search, book info, chapters, content
-- **luawrapper/**: Go-to-Lua API bindings exposed to Lua handlers
-- **golua/**: Local fork of `aarzilli/golua` with multi-version Lua support
 
 ### Handler Registration Pattern
 
@@ -67,16 +48,6 @@ Handlers are registered in `init()` functions using `registerNovelSiteHandler()`
 - `ExtractChapterList(url, rawContent)`: Parse chapter list from index page
 - `ExtractChapterContent(url, rawContent)`: Extract chapter text from chapter page
 - Optional: `PreprocessChapterListURL`, `PreprocessContentLink`, `Begin`, `End`
-
-### Lua Handler Extension
-
-External handlers in `handlers/*.lua` can define:
-- `CanHandle(url)` → boolean
-- `PreprocessChapterListURL(url)` → string
-- `ExtractChapterList(url, rawPageContent)` → title, chapters table
-- `ExtractChapterContent(url, rawPageContent)` → content string
-
-Register with `RegisterHandler(GetNovelSiteExternalHandler:new(...))`.
 
 ## Key Dependencies
 
@@ -87,8 +58,6 @@ Register with `RegisterHandler(GetNovelSiteExternalHandler:new(...))`.
 - `github.com/dop251/goja`: JavaScript engine for Legado rule execution
 - `github.com/tidwall/gjson`: Fast JSON parsing for JSONPath rules
 - `github.com/antchfx/htmlquery`: XPath queries on HTML documents
-- `github.com/aarzilli/golua` (local fork): Lua interpreter bindings
-- `gitlab.com/ambrevar/golua/unicode`: Unicode support for Lua
 
 ## Environment Variables
 
