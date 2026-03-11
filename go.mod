@@ -17,8 +17,8 @@ require (
 	github.com/signintech/gopdf v0.23.1
 	github.com/tidwall/gjson v1.18.0
 	golang.org/x/net v0.51.0
-	golang.org/x/sync v0.19.0
-	golang.org/x/text v0.34.0
+	golang.org/x/sync v0.20.0
+	golang.org/x/text v0.35.0
 )
 
 require (
