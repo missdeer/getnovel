@@ -3,7 +3,7 @@ module github.com/missdeer/getnovel
 go 1.25.0
 
 require (
-	github.com/PuerkitoBio/goquery v1.11.0
+	github.com/PuerkitoBio/goquery v1.12.0
 	github.com/antchfx/htmlquery v1.3.6
 	github.com/bmaupin/go-epub v1.1.0
 	github.com/dop251/goja v0.0.0-20260106131823-651366fbe6e3
