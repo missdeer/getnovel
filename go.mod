@@ -3,7 +3,7 @@ module github.com/missdeer/getnovel
 go 1.25.0
 
 require (
-	github.com/PuerkitoBio/goquery v1.12.0
+	github.com/PuerkitoBio/goquery v1.13.0
 	github.com/antchfx/htmlquery v1.3.6
 	github.com/bmaupin/go-epub v1.1.0
 	github.com/dop251/goja v0.0.0-20260106131823-651366fbe6e3
@@ -22,7 +22,7 @@ require (
 )
 
 require (
-	github.com/andybalholm/cascadia v1.3.3 // indirect
+	github.com/andybalholm/cascadia v1.3.4 // indirect
 	github.com/antchfx/xpath v1.3.6 // indirect
 	github.com/bytedance/gopkg v0.1.3 // indirect
 	github.com/bytedance/sonic v1.15.0 // indirect
