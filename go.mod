@@ -15,7 +15,7 @@ require (
 	github.com/missdeer/golib v1.0.9
 	github.com/mozillazg/go-pinyin v0.21.0
 	github.com/signintech/gopdf v0.23.1
-	github.com/tidwall/gjson v1.18.0
+	github.com/tidwall/gjson v1.20.0
 	golang.org/x/net v0.58.0
 	golang.org/x/sync v0.22.0
 	golang.org/x/text v0.41.0
