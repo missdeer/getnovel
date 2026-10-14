@@ -1,6 +1,6 @@
 module github.com/missdeer/getnovel
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/PuerkitoBio/goquery v1.12.0
@@ -17,8 +17,8 @@ require (
 	github.com/signintech/gopdf v0.23.1
 	github.com/tidwall/gjson v1.18.0
 	golang.org/x/net v0.58.0
-	golang.org/x/sync v0.22.0
-	golang.org/x/text v0.41.0
+	golang.org/x/sync v0.24.0
+	golang.org/x/text v0.43.0
 )
 
 require (
