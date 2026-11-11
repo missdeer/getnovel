@@ -15,7 +15,7 @@ require (
 	github.com/missdeer/golib v1.0.9
 	github.com/mozillazg/go-pinyin v0.21.0
 	github.com/signintech/gopdf v0.23.1
-	github.com/tidwall/gjson v1.18.0
+	github.com/tidwall/gjson v1.20.2
 	golang.org/x/net v0.58.0
 	golang.org/x/sync v0.22.0
 	golang.org/x/text v0.41.0
@@ -55,7 +55,7 @@ require (
 	github.com/quic-go/quic-go v0.59.1 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/tidwall/match v1.1.1 // indirect
-	github.com/tidwall/pretty v1.2.0 // indirect
+	github.com/tidwall/pretty v1.3.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.1 // indirect
 	github.com/vincent-petithory/dataurl v1.0.0 // indirect
