@@ -1,9 +1,9 @@
 module github.com/missdeer/getnovel
 
-go 1.25.0
+go 1.26.0
 
 require (
-	github.com/PuerkitoBio/goquery v1.12.0
+	github.com/PuerkitoBio/goquery v1.14.0
 	github.com/antchfx/htmlquery v1.3.6
 	github.com/bmaupin/go-epub v1.1.0
 	github.com/dop251/goja v0.0.0-20260106131823-651366fbe6e3
@@ -16,13 +16,13 @@ require (
 	github.com/mozillazg/go-pinyin v0.21.0
 	github.com/signintech/gopdf v0.23.1
 	github.com/tidwall/gjson v1.18.0
-	golang.org/x/net v0.58.0
-	golang.org/x/sync v0.22.0
-	golang.org/x/text v0.41.0
+	golang.org/x/net v0.62.0
+	golang.org/x/sync v0.24.0
+	golang.org/x/text v0.43.0
 )
 
 require (
-	github.com/andybalholm/cascadia v1.3.3 // indirect
+	github.com/andybalholm/cascadia v1.3.5 // indirect
 	github.com/antchfx/xpath v1.3.6 // indirect
 	github.com/bytedance/gopkg v0.1.3 // indirect
 	github.com/bytedance/sonic v1.15.0 // indirect
@@ -61,8 +61,8 @@ require (
 	github.com/vincent-petithory/dataurl v1.0.0 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.5.0 // indirect
 	golang.org/x/arch v0.22.0 // indirect
-	golang.org/x/crypto v0.55.0 // indirect
+	golang.org/x/crypto v0.58.0 // indirect
 	golang.org/x/image v0.38.0 // indirect
-	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/sys v0.49.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 )
